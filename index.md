@@ -1,123 +1,39 @@
+# DEVELOPERANAZ
+
+Welcome to my GitHub profile! I'm DEVELOPERANAZ, a passionate developer always eager to learn and innovate. Here you'll find a collection of my projects, contributions, and anything else I'm currently working on.
+
+## About Me
+
+I'm a developer with a keen interest in creating impactful software solutions. I enjoy working on a variety of technologies and exploring new tools and frameworks.
+
+## Projects
+
+### Project 1: Awesome Project
+- **Description:** A brief description of your awesome project.
+- **Technologies Used:** List the technologies used (e.g., Python, JavaScript, etc.).
+- **Link:** [Repository Link](https://github.com/DEVELOPERANAZ/awesome-project)
+
+### Project 2: Another Cool Project
+- **Description:** A brief description of another cool project.
+- **Technologies Used:** List the technologies used.
+- **Link:** [Repository Link](https://github.com/DEVELOPERANAZ/another-cool-project)
+
+## Skills
+
+- **Languages:** Python, JavaScript, Java, C++
+- **Frameworks:** React, Django, Flask, Spring
+- **Tools:** Git, Docker, Kubernetes, Jenkins
+
+## Contact
+
+Feel free to reach out to me via [email](mailto:developeranaz@example.com) or connect with me on [LinkedIn](https://www.linkedin.com/in/developeranaz).
+
 ---
-layout: default
+
+Thank you for visiting my GitHub profile! I hope you find my projects interesting and useful. Contributions and collaborations are always welcome.
+
 ---
 
-Text can be **bold**, _italic_, or ~~strikethrough~~.
-
-[Link to another page](./another-page.html).
-
-There should be whitespace between paragraphs.
-
-There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
-
-# Header 1
-
-This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
-
-## Header 2
-
-> This is a blockquote following a header.
->
-> When something is important enough, you do it even if the odds are not in your favor.
-
-### Header 3
-
-```js
-// Javascript code with syntax highlighting.
-var fun = function lang(l) {
-  dateformat.i18n = require('./lang/' + l)
-  return true;
-}
-```
-
-```ruby
-# Ruby code with syntax highlighting
-GitHubPages::Dependencies.gems.each do |gem, version|
-  s.add_dependency(gem, "= #{version}")
-end
-```
-
-#### Header 4
-
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-
-##### Header 5
-
-1.  This is an ordered list following a header.
-2.  This is an ordered list following a header.
-3.  This is an ordered list following a header.
-
-###### Header 6
-
-| head1        | head two          | three |
-|:-------------|:------------------|:------|
-| ok           | good swedish fish | nice  |
-| out of stock | good and plenty   | nice  |
-| ok           | good `oreos`      | hmm   |
-| ok           | good `zoute` drop | yumm  |
-
-### There's a horizontal rule below this.
-
-* * *
-
-### Here is an unordered list:
-
-*   Item foo
-*   Item bar
-*   Item baz
-*   Item zip
-
-### And an ordered list:
-
-1.  Item one
-1.  Item two
-1.  Item three
-1.  Item four
-
-### And a nested list:
-
-- level 1 item
-  - level 2 item
-  - level 2 item
-    - level 3 item
-    - level 3 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-
-### Small image
-
-![Octocat](https://github.githubassets.com/images/icons/emoji/octocat.png)
-
-### Large image
-
-![Branching](https://guides.github.com/activities/hello-world/branching.png)
-
-
-### Definition lists can be used with HTML syntax.
-
-<dl>
-<dt>Name</dt>
-<dd>Godzilla</dd>
-<dt>Born</dt>
-<dd>1952</dd>
-<dt>Birthplace</dt>
-<dd>Japan</dd>
-<dt>Color</dt>
-<dd>Green</dd>
-</dl>
-
-```
-Long, single-line code blocks should not wrap. They should horizontally scroll if they are too long. This line should be long enough to demonstrate this.
-```
-
-```
-The final element.
-```
+<p align="center">
+  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="100">
+</p>
