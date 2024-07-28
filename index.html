@@ -3,124 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeveloperAnaz - Profile</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Developer Anaz</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             background-color: #333;
-            padding: 10px;
+            overflow: hidden;
+            width: 100%;
         }
         .navbar a {
-            color: white;
-            text-decoration: none;
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
             padding: 14px 20px;
+            text-decoration: none;
         }
         .navbar a:hover {
             background-color: #ddd;
             color: black;
         }
-        .navbar .menu {
-            display: flex;
-        }
-        .navbar .menu a {
-            margin: 0 5px;
-        }
-        .navbar .toggle {
-            display: none;
-        }
         .content {
+            max-width: 800px;
+            text-align: center;
             padding: 20px;
+        }
+        .repositories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .repository {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px;
+            padding: 20px;
+            width: 300px;
         }
         .footer {
             background-color: #333;
-            color: white;
+            color: #f2f2f2;
             text-align: center;
             padding: 10px 0;
-            position: fixed;
-            bottom: 0;
             width: 100%;
-        }
-        @media (max-width: 600px) {
-            .navbar .menu {
-                display: none;
-                flex-direction: column;
-                width: 100%;
-            }
-            .navbar .toggle {
-                display: block;
-                cursor: pointer;
-            }
-            .navbar .menu.show {
-                display: flex;
-            }
+            position: absolute;
+            bottom: 0;
         }
     </style>
 </head>
 <body>
-
     <div class="navbar">
-        <a href="#">DEVELOPERANAZ</a>
-        <div class="toggle"><i class="fas fa-bars"></i></div>
-        <div class="menu">
-            <a href="#">About Me</a>
-            <a href="#">Projects</a>
-            <a href="#">Skills</a>
-            <a href="#">Contact</a>
-        </div>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
     </div>
 
     <div class="content">
-        <h1>Hi I'm Anas <img src="https://user-images.githubusercontent.com/1303154/88677602-1635ba80-d120-11ea-84d8-d263ba5fc3c0.gif" width="28px" alt="hi"></h1>
-        <p>Quiet people have the loudest minds.😶</p>
+        <h1>Hi, I'm Anas <img src="https://user-images.githubusercontent.com/1303154/88677602-1635ba80-d120-11ea-84d8-d263ba5fc3c0.gif" width="28px" alt="hi"></h1>
+        <p>Quiet people have the loudest minds. 😶</p>
         <p>Telegram: <a href="https://telegram.me/gitdeveloperanaz">https://telegram.me/gitdeveloperanaz</a></p>
         <p>SnapChat: <a href="https://www.snapchat.com/add/gitdevanaz">https://www.snapchat.com/add/gitdevanaz</a></p>
         <p>Instagram: <a href="https://instagram.com/t_h_e_anas">https://instagram.com/t_h_e_anas</a></p>
 
         <h2>Profile Visits</h2>
-        <p><a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fdeveloperanaz&count_bg=%23FF1A00&title_bg=%23000000&icon=&icon_color=%23E7E7E7&title=VISITORS&edge_flat=false"></a></p>
+        <p>
+            <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fdeveloperanaz&count_bg=%23FF1A00&title_bg=%23000000&icon=&icon_color=%23E7E7E7&title=VISITORS&edge_flat=false" alt="VISITORS">
+        </p>
 
         <h2>Github Stats</h2>
-        <p><img src="https://github-readme-stats.vercel.app/api?username=developeranaz&count_private=true&theme=tokyonight&hide=contribs,prs" alt="developeranaz's github stats"></p>
+        <p>
+            <img src="https://github-readme-stats.vercel.app/api?username=developeranaz&count_private=true&theme=tokyonight&hide=contribs,prs" alt="developeranaz's github stats">
+        </p>
         <p>Donate me BTC: <code>1J48LksQNiASuj48nwYATXdFzQSwdrnx7c</code></p>
 
-        <h2>About Me</h2>
-        <p>I'm a developer with a keen interest in creating impactful software solutions. I enjoy working on a variety of technologies and exploring new tools and frameworks.</p>
-
-        <h2>Projects</h2>
-        <ul>
-            <li><strong>Awesome Project</strong>: A brief description of your awesome project. <a href="#">Repository Link</a></li>
-            <li><strong>Another Cool Project</strong>: A brief description of another cool project. <a href="#">Repository Link</a></li>
-        </ul>
-
-        <h2>Skills</h2>
-        <ul>
-            <li>Languages: Python, JavaScript, Java, C++</li>
-            <li>Frameworks: React, Django, Flask, Spring</li>
-            <li>Tools: Git, Docker, Kubernetes, Jenkins</li>
-        </ul>
-
-        <h2>Contact</h2>
-        <p>Feel free to reach out to me via <a href="mailto:developeranaz@example.com">email</a> or connect with me on <a href="#">LinkedIn</a>.</p>
+        <h2>Repositories</h2>
+        <div class="repositories">
+            <div class="repository">
+                <h3><a href="https://github.com/developeranaz/Mega-index-heroku">Mega-index-heroku</a></h3>
+                <p>Mega nz heroku index, Serves mega.nz to http via heroku web. It Alters downloading speed and stability.</p>
+            </div>
+            <div class="repository">
+                <h3><a href="https://github.com/developeranaz/RCLONE-SERVE-INDEX">RCLONE-SERVE-INDEX</a></h3>
+                <p>Heroku Rclone Index Any Remote cloud drives to Index page.</p>
+            </div>
+            <!-- Add more repositories in the same format -->
+        </div>
     </div>
 
     <div class="footer">
-        <p>&copy; 2024 DEVELOPERANAZ. All rights reserved.</p>
-        <p>Follow me on <a href="#"><i class="fab fa-twitter"></i></a> <a href="#"><i class="fab fa-facebook"></i></a> <a href="#"><i class="fab fa-github"></i></a></p>
+        <p>Developer Anaz &copy; 2024</p>
     </div>
-
-    <script>
-        document.querySelector('.toggle').addEventListener('click', () => {
-            document.querySelector('.menu').classList.toggle('show');
-        });
-    </script>
-
 </body>
 </html>
