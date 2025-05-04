@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GoFile Code Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2962ff;
+      --secondary: #00c853;
+      --background: #f8f9fa;
+      --text: #212529;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: var(--text);
+      padding: 2rem 1rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    h2 {
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      font-size: 2.2rem;
+    }
+
+    .input-group {
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(41, 98, 255, 0.2);
+    }
+
+    .email-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .email-input {
+      flex: 1;
+    }
+
+    button {
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .send-btn {
+      background: var(--primary);
+      color: white;
+    }
+
+    .send-btn:hover {
+      background: #2041c7;
+      transform: translateY(-1px);
+    }
+
+    .generate-btn {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+    }
+
+    .generate-btn:hover {
+      background: #2041c7;
+      transform: translateY(-1px);
+    }
+
+    .code-container {
+      position: relative;
+      margin-top: 1.5rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: #f8f9fa;
+    }
+
+    .code-actions {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 8px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 2;
+    }
+
+    .code-container:hover .code-actions {
+      opacity: 1;
+    }
+
+    .code-action {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.95);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .code-action:hover {
+      background: var(--primary);
+      transform: scale(1.1);
+    }
+
+    .code-action i {
+      font-size: 15px;
+      color: #666;
+    }
+
+    .code-action:hover i {
+      color: white;
+    }
+
+    #codeOutput {
+      width: 100%;
+      height: 300px;
+      padding: 1.2rem;
+      padding-top: 3rem;
+      border: none;
+      background: transparent;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      resize: vertical;
+    }
+
+    .copy-notification {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--secondary);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 14px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
+    }
+
+    .copy-notification.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .alert {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      max-width: 90%;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .alert.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .alert-success {
+      background-color: #00c853;
+    }
+
+    .alert-error {
+      background-color: #dc3545;
+    }
+
+    .alert-icon {
+      font-size: 1.25rem;
+    }
+
+    .account-popup {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--secondary);
+      color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1001;
+      max-width: 300px;
+      font-size: 0.8rem;
+    }
+
+    .popup-content h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .popup-content p {
+      margin: 0.25rem 0;
+    }
+
+    .close-popup-btn {
+      background: white;
+      color: var(--secondary);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .close-popup-btn:hover {
+      opacity: 0.9;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1.5rem;
+      }
+      h2 {
+        font-size: 1.8rem;
+      }
+      .email-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><i class="fas fa-code"></i> GoFile Code Generator</h2>
+
+    <div class="email-group">
+      <input type="email" id="emailInput" class="email-input" placeholder="Enter your email address" />
+      <button class="send-btn" onclick="sendLoginLink()">
+        <i class="fas fa-paper-plane"></i> Send Login Link
+      </button>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="tokenInput" placeholder="Paste token or login URL here" />
+    </div>
+
+    <button class="generate-btn" onclick="generateCode()">
+      <i class="fas fa-download"></i> Generate Code
+    </button>
+
+    <div id="outputSection" style="display: none;">
+      <div class="code-container">
+        <div class="code-actions">
+          <button class="code-action" onclick="copyCode()" title="Copy code">
+            <i class="far fa-copy"></i>
+          </button>
+          <button class="code-action" onclick="downloadCode()" title="Download code">
+            <i class="fas fa-download"></i>
+          </button>
+        </div>
+        <textarea id="codeOutput" readonly></textarea>
+      </div>
+      <div class="copy-notification" id="copyNotification">Copied to clipboard!</div>
+    </div>
+  </div>
+
+  <div id="alert" class="alert">
+    <i class="alert-icon"></i>
+    <span id="alertMessage"></span>
+  </div>
+
+  <div id="accountPopup" class="account-popup">
+    <div class="popup-content">
+      <h3><i class="fas fa-check-circle"></i> Login Succeeded</h3>
+      <p><small>Email: <span id="popupEmail"></span></small></p>
+      <p><small>Tier: <span id="popupTier"></span></small></p>
+      <p><small>Created: <span id="popupCreateTime"></span></small></p>
+      <p><small>Root Folder: <span id="popupRootFolder"></span></small></p>
+      <p><small>Folders: <span id="popupFolders"></span>, Files: <span id="popupFiles"></span></small></p>
+      <p><small>Thank you for using GofileIndex!</small></p>
+      <button class="close-popup-btn" onclick="closeAccountPopup()">OK</button>
+    </div>
+  </div>
+
+  <script>
+    function showAlert(message, isSuccess) {
+      const alertEl = document.getElementById('alert');
+      const icon = alertEl.querySelector('.alert-icon');
+      alertEl.className = 'alert';
+      alertEl.classList.add(isSuccess ? 'alert-success' : 'alert-error');
+      icon.className = 'alert-icon ' + (isSuccess ? 'fas fa-check-circle' : 'fas fa-times-circle');
+      document.getElementById('alertMessage').textContent = message;
+      alertEl.classList.add('show');
+      setTimeout(() => alertEl.classList.remove('show'), 3000);
+    }
+
+    async function sendLoginLink() {
+      const email = document.getElementById('emailInput').value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showAlert("Please enter a valid email address", false);
+        return;
+      }
+
+      try {
+        const response = await fetch('https://api-gofileio.anas-appdata.workers.dev/', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ email })
+        });
+
+        const result = await response.json();
+        if (result.status === "ok") {
+          showAlert("Login link sent! Check your email.", true);
+        } else {
+          showAlert("Error: " + (result.error || "Failed to send link"), false);
+        }
+      } catch (error) {
+        showAlert("Request failed: " + error.message, false);
+      }
+    }
+
+    function formatTimestamp(timestamp) {
+      return new Date(timestamp * 1000).toLocaleDateString();
+    }
+
+    async function generateCode() {
+      const input = document.getElementById('tokenInput').value.trim();
+      const token = (input.match(/[A-Za-z0-9]{32,}/) || [])[0];
+      if (!token) {
+        showAlert("Invalid token/URL", false);
+        return;
+      }
+
+      try {
+        const accountResponse = await fetch('https://api.gofile.io/accounts/website', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const accountData = await accountResponse.json();
+        
+        if (accountData.status !== "ok") {
+          throw new Error(accountData.error || "Failed to fetch account data");
+        }
+
+        const { rootFolder, email, tier, createTime, statsCurrent } = accountData.data;
+        const codeResponse = await fetch("https://gist.githubusercontent.com/developeranaz/20f5f549c251dcec49c3d9722c5b48be/raw/worker.js");
+        const code = await codeResponse.text();
+
+        const modifiedCode = code
+          .replace(/THEGOFILETOKEN/g, token)
+          .replace(/THEROOTFOLDERID/g, rootFolder);
+
+        document.getElementById('codeOutput').value = modifiedCode;
+        document.getElementById('outputSection').style.display = 'block';
+
+        document.getElementById('popupEmail').textContent = email;
+        document.getElementById('popupTier').textContent = tier;
+        document.getElementById('popupCreateTime').textContent = formatTimestamp(createTime);
+        document.getElementById('popupRootFolder').textContent = rootFolder;
+        document.getElementById('popupFolders').textContent = statsCurrent.folderCount;
+        document.getElementById('popupFiles').textContent = statsCurrent.fileCount;
+        document.getElementById('accountPopup').style.display = 'block';
+      } catch (err) {
+        showAlert("Error: " + err.message, false);
+      }
+    }
+
+    function closeAccountPopup() {
+      document.getElementById('accountPopup').style.display = 'none';
+    }
+
+    function copyCode() {
+      const ta = document.getElementById('codeOutput');
+      ta.select();
+      document.execCommand("copy");
+      const note = document.getElementById('copyNotification');
+      note.classList.add('show');
+      setTimeout(() => note.classList.remove('show'), 2000);
+    }
+
+    function downloadCode() {
+      const code = document.getElementById('codeOutput').value;
+      if (!code) return;
+      const blob = new Blob([code], { type: 'text/javascript' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'gofile-worker.js';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
