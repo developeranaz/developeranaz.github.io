@@ -256,6 +256,13 @@
       opacity: 1;
       visibility: visible;
     }
+    .ad-container {
+            width: 728px; /* Match the width of the ad */
+            height: 90px; /* Match the height of the ad */
+            border: 1px solid #ccc; /* Optional: Add a border for visibility */
+            overflow: hidden; /* Ensure content doesn't overflow */
+            position: relative; /* Positioning context for absolute elements */
+     }
 
     .popup-content h3 {
       margin: 0 0 1rem 0;
@@ -323,7 +330,7 @@
     <button class="generate-btn" onclick="generateCode(event)">
       <i class="fas fa-download"></i> Generate Code
     </button>
- <div>
+ <div class="ad-container">
 <script type="text/javascript">
 	atOptions = {
 		'key' : 'cfdd26285d2be07540494f6205a5954a',
