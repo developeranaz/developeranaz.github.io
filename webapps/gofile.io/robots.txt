@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://developeranaz.github.io/webapps/gofile.io/sitemap.xml
