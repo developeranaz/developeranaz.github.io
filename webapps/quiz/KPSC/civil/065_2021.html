@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Application</title>
+    <meta name="description" content="Kerala PSC Exam Simulator - Practice with authentic 2021 Overseer/Draftsman question papers. Real exam experience with timed tests and performance tracking.">
+    <title>Kerala PSC Overseer/Draftsman Exam Simulator 2021</title>
     <script src="https://cdn.jsdelivr.net/npm/party-js@latest/bundle/party.min.js"></script>
     <style>
         :root {
@@ -13,6 +14,7 @@
             --correct-color: #00c853;
             --wrong-color: #ff1744;
             --card-bg: #2d2d2d;
+            --header-bg: #2c3e50;
         }
 
         [data-theme="light"] {
@@ -22,6 +24,7 @@
             --correct-color: #2ecc71;
             --wrong-color: #e74c3c;
             --card-bg: #ffffff;
+            --header-bg: #34495e;
         }
 
         * {
@@ -34,27 +37,83 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            padding: 20px;
             background-color: var(--bg-color);
             color: var(--text-color);
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        header {
+            grid-column: 1 / -1;
+            background: var(--header-bg);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .site-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .site-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .seo-text {
+            font-size: 0.8rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.7;
+        }
+
+        aside {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-right: 1px solid #3d3d3d;
+        }
+
+        .sidebar-content {
+            position: sticky;
+            top: 1rem;
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: var(--primary-color);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        footer {
+            grid-column: 1 / -1;
+            background: var(--header-bg);
+            padding: 1rem;
+            text-align: center;
+            margin-top: auto;
         }
 
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 100%;
         }
 
         .header-info {
             background: var(--card-bg);
-            padding: 20px;
+            padding: 1rem;
             border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .header-info div {
-            margin: 5px 0;
-            color: var(--primary-color);
+            margin-bottom: 1rem;
         }
 
         .mode-buttons {
@@ -143,29 +202,58 @@
             padding: 0;
         }
 
-        @media (max-width: 600px) {
-            .options-container {
+        @media (max-width: 768px) {
+            body {
                 grid-template-columns: 1fr;
+            }
+
+            aside {
+                display: none;
             }
         }
     </style>
 </head>
 <body data-theme="dark">
-    <div class="container">
-        <div class="header-info">
-            <div id="category-number"></div>
-            <div id="question-set"></div>
-            <div id="name-of-post"></div>
+    <header>
+        <h1 class="site-title">Kerala PSC Exam Simulator</h1>
+        <div class="site-subtitle">II Grade Overseer/Draftsman 2021 Exam Practice</div>
+        <div class="seo-text">
+            Practice with official 2021 Kerala PSC question papers for Overseer Grade II and Draftsman positions (Category No: 206/2020 & 324/2020). Real exam simulation with time tracking and performance analysis.
         </div>
-        
-        <div class="mode-buttons">
-            <button onclick="toggleAnswers()">Toggle All Answers</button>
-            <button onclick="resetQuiz()">Reset Quiz</button>
-            <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+    </header>
+
+    <aside>
+        <div class="sidebar-content">
+            <div class="timer" id="timer">00:00:00</div>
+            <div class="progress-summary">
+                <h3>Your Progress</h3>
+                <div id="progress-stats"></div>
+            </div>
         </div>
-        
-        <div id="quiz-container"></div>
-    </div>
+    </aside>
+
+    <main>
+        <div class="container">
+            <div class="header-info">
+                <div id="category-number"></div>
+                <div id="question-set"></div>
+            </div>
+            
+            <div class="mode-buttons">
+                <button onclick="toggleAnswers()">Toggle All Answers</button>
+                <button onclick="resetQuiz()">Reset Exam</button>
+                <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+            </div>
+            
+            <div id="quiz-container"></div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            © 2023 Kerala PSC Exam Simulator | Practice Platform for II Grade Overseer/Draftsman | Not affiliated with Kerala Public Service Commission
+        </div>
+    </footer>
 
     <script>
         // Embedded JSON Data
@@ -198,43 +286,36 @@
                         },
                         "correct_option": "B",
                         "answer_text": "Compressibility"
-                    },
-                    {
-                        "question_number": 3,
-                        "question_text": "The property of a fluid which enables it to resist tensile stress is known as",
-                        "choices": {
-                            "A": "Viscosity",
-                            "B": "Surface tension",
-                            "C": "Cohesion",
-                            "D": "Adhesion"
-                        },
-                        "correct_option": "B",
-                        "answer_text": "Surface tension"
                     }
                 ]
             }
         };
 
+        // Application State
         let showAllAnswers = false;
-        const COOKIE_NAME = 'quizProgress';
-        const COOKIE_EXPIRY_DAYS = 7;
+        let examStartTime = Date.now();
+        let timerInterval;
+        const COOKIE_NAME = 'pscExamData_v2';
+        const COOKIE_EXPIRY_DAYS = 30;
 
+        // Initialization
         function loadQuiz() {
-            const data = demoData;
-            renderHeader(data.question_paper);
-            renderQuestions(data.question_paper.questions);
-            loadFromCookies();
+            renderHeader(demoData.question_paper);
+            renderQuestions(demoData.question_paper.questions);
+            loadProgress();
+            startTimer();
+            updateProgressStats();
         }
 
+        // Header Rendering
         function renderHeader(questionPaper) {
             document.getElementById('category-number').textContent = 
                 `Category Number: ${questionPaper.category_number}`;
             document.getElementById('question-set').textContent = 
                 `Question Set: ${questionPaper.question_set}`;
-            document.getElementById('name-of-post').textContent = 
-                `Post: ${questionPaper.name_of_post}`;
         }
 
+        // Question Rendering
         function renderQuestions(questions) {
             const container = document.getElementById('quiz-container');
             container.innerHTML = questions.map(question => `
@@ -243,8 +324,10 @@
                     <div class="question-text">${question.question_text}</div>
                     <div class="options-container">${
                         Object.entries(question.choices).map(([key, value]) => `
-                            <div class="option" data-correct="${key === question.correct_option}" 
-                                 onclick="handleAnswer(this, '${key}', '${question.correct_option}', ${question.question_number})">
+                            <div class="option" 
+                                data-correct="${key === question.correct_option}"
+                                data-question="${question.question_number}"
+                                onclick="handleAnswer(this, '${key}', '${question.correct_option}')">
                                 ${key}: ${value}
                             </div>`
                         ).join('')
@@ -254,117 +337,158 @@
             ).join('');
         }
 
-        function handleAnswer(optionElement, selectedOption, correctOption, questionNumber) {
+        // Answer Handling
+        function handleAnswer(optionElement, selectedOption, correctOption) {
             if (optionElement.classList.contains('correct') || 
                 optionElement.classList.contains('wrong')) return;
 
+            const questionNumber = parseInt(optionElement.dataset.question);
             const isCorrect = selectedOption === correctOption;
-            
+
+            // Visual Feedback
+            optionElement.classList.add(isCorrect ? 'correct' : 'wrong');
+            if (!isCorrect) {
+                const correctElement = optionElement.parentNode.querySelector(`[data-correct="true"]`);
+                correctElement.classList.add('correct');
+            }
+
+            // Confetti Effect
             if (isCorrect) {
-                optionElement.classList.add('correct');
                 party.confetti(optionElement, {
                     count: 40,
                     spread: 15,
                     size: 1.5
                 });
-            } else {
-                optionElement.classList.add('wrong');
-                const correctElement = Array.from(optionElement.parentNode.children)
-                    .find(el => el.dataset.correct === 'true');
-                correctElement.classList.add('correct');
             }
-            
-            saveProgress(questionNumber, selectedOption);
+
+            saveProgress();
+            updateProgressStats();
         }
 
-        function saveProgress(questionNumber, selectedOption) {
-            const progress = getCookieData();
-            progress[questionNumber] = selectedOption;
-            setCookieData(progress);
+        // Progress Tracking
+        function getAnswerData() {
+            const answers = {};
+            document.querySelectorAll('.option').forEach(option => {
+                if (option.classList.contains('correct') || option.classList.contains('wrong')) {
+                    const questionNumber = parseInt(option.dataset.question);
+                    answers[questionNumber] = option.textContent.split(':')[0].trim();
+                }
+            });
+            return answers;
         }
 
-        function getCookieData() {
-            const cookieValue = document.cookie
+        // Cookie Management
+        function saveProgress() {
+            const progress = {
+                answers: getAnswerData(),
+                timeSpent: Math.floor((Date.now() - examStartTime) / 1000),
+                theme: document.body.dataset.theme
+            };
+            document.cookie = `${COOKIE_NAME}=${encodeURIComponent(JSON.stringify(progress))}; 
+                max-age=${COOKIE_EXPIRY_DAYS * 86400}; path=/; SameSite=Lax`;
+        }
+
+        function loadProgress() {
+            const cookieData = document.cookie
                 .split('; ')
                 .find(row => row.startsWith(`${COOKIE_NAME}=`))
                 ?.split('=')[1];
-            
-            try {
-                return cookieValue ? JSON.parse(decodeURIComponent(cookieValue)) : {};
-            } catch {
-                return {};
+
+            if (cookieData) {
+                try {
+                    const progress = JSON.parse(decodeURIComponent(cookieData));
+                    
+                    // Restore theme
+                    if (progress.theme) document.body.dataset.theme = progress.theme;
+                    
+                    // Restore timer
+                    if (progress.timeSpent) {
+                        examStartTime = Date.now() - (progress.timeSpent * 1000);
+                    }
+
+                    // Restore answers
+                    if (progress.answers) {
+                        Object.entries(progress.answers).forEach(([questionNumber, answer]) => {
+                            const options = document.querySelectorAll(`[data-question="${questionNumber}"]`);
+                            options.forEach(option => {
+                                const optionKey = option.textContent.split(':')[0].trim();
+                                if (optionKey === answer) {
+                                    const isCorrect = option.dataset.correct === 'true';
+                                    option.classList.add(isCorrect ? 'correct' : 'wrong');
+                                    if (!isCorrect) {
+                                        const correctElement = option.parentNode.querySelector(`[data-correct="true"]`);
+                                        correctElement.classList.add('correct');
+                                    }
+                                }
+                            });
+                        });
+                    }
+                } catch(e) {
+                    console.error('Error loading progress:', e);
+                }
             }
         }
 
-        function setCookieData(data) {
-            const d = new Date();
-            d.setTime(d.getTime() + (COOKIE_EXPIRY_DAYS * 24 * 60 * 60 * 1000));
-            document.cookie = `${COOKIE_NAME}=${encodeURIComponent(JSON.stringify(data))}; 
-                               expires=${d.toUTCString()}; path=/`;
+        // Timer Functions
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                const elapsed = Date.now() - examStartTime;
+                const hours = Math.floor(elapsed / 3600000);
+                const minutes = Math.floor((elapsed % 3600000) / 60000);
+                const seconds = Math.floor((elapsed % 60000) / 1000);
+                document.getElementById('timer').textContent = 
+                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                saveProgress();
+                updateProgressStats();
+            }, 1000);
         }
 
-        function loadFromCookies() {
-            const progress = getCookieData();
-            document.querySelectorAll('.question-card').forEach(card => {
-                const questionNumber = parseInt(card.querySelector('.question-number').textContent.replace('Question ', ''));
-                const selectedOption = progress[questionNumber];
-                
-                if (selectedOption) {
-                    const options = card.querySelectorAll('.option');
-                    options.forEach(option => {
-                        const optionKey = option.textContent.split(':')[0].trim();
-                        if (optionKey === selectedOption) {
-                            const correctOption = option.dataset.correct === 'true';
-                            option.classList.add(correctOption ? 'correct' : 'wrong');
-                            
-                            if (!correctOption) {
-                                const correctElement = Array.from(option.parentNode.children)
-                                    .find(el => el.dataset.correct === 'true');
-                                correctElement.classList.add('correct');
-                            }
-                        }
-                    });
-                }
-            });
+        function updateProgressStats() {
+            const totalQuestions = demoData.question_paper.questions.length;
+            const answered = document.querySelectorAll('.correct, .wrong').length;
+            const correct = document.querySelectorAll('.correct').length;
+            document.getElementById('progress-stats').innerHTML = `
+                Answered: ${answered}/${totalQuestions}<br>
+                Correct: ${correct}<br>
+                Score: ${Math.round((correct/totalQuestions)*100)}%
+            `;
         }
 
+        // UI Controls
         function toggleAnswers() {
             if (!confirm('This will reveal all answers. Are you sure?')) return;
             showAllAnswers = !showAllAnswers;
             document.querySelectorAll('.question-card').forEach(card => {
                 card.classList.toggle('show-answer', showAllAnswers);
-                if (showAllAnswers) {
-                    card.querySelectorAll('.option').forEach(opt => {
-                        if (opt.dataset.correct === 'true') {
-                            opt.classList.add('correct');
-                        }
-                    });
-                } else {
-                    card.querySelectorAll('.option').forEach(opt => {
-                        opt.classList.remove('correct', 'wrong');
-                    });
-                }
+                card.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('correct', 'wrong');
+                    if (showAllAnswers && opt.dataset.correct === 'true') {
+                        opt.classList.add('correct');
+                    }
+                });
             });
+            saveProgress();
         }
 
         function resetQuiz() {
             if (!confirm('Are you sure you want to reset all progress?')) return;
-            showAllAnswers = false;
-            document.querySelectorAll('.question-card').forEach(card => {
-                card.classList.remove('show-answer');
-                card.querySelectorAll('.option').forEach(opt => {
-                    opt.classList.remove('correct', 'wrong');
-                });
-            });
-            document.cookie = `${COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+            document.cookie = `${COOKIE_NAME}=; max-age=0; path=/`;
+            location.reload();
         }
 
         function toggleTheme() {
             const body = document.body;
             body.dataset.theme = body.dataset.theme === 'dark' ? 'light' : 'dark';
+            saveProgress();
         }
 
-        // Load quiz when page loads
+        // Event Listeners
+        window.addEventListener('beforeunload', (e) => {
+            saveProgress();
+        });
+
+        // Initialize
         loadQuiz();
     </script>
 </body>
