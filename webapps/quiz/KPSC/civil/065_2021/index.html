@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Application</title>
+    <script src="https://cdn.jsdelivr.net/npm/party-js@latest/bundle/party.min.js"></script>
+    <style>
+        /* Previous CSS remains unchanged */
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --primary-color: #4a9cff;
+            --correct-color: #00c853;
+            --wrong-color: #ff1744;
+            --card-bg: #2d2d2d;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f5f6fa;
+            --text-color: #2c3e50;
+            --primary-color: #2c3e50;
+            --correct-color: #2ecc71;
+            --wrong-color: #e74c3c;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header-info {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-info div {
+            margin: 5px 0;
+            color: var(--primary-color);
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: var(--primary-color);
+            color: white;
+            transition: opacity 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .question-number {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .options-container {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 10px;
+            border: 2px solid #3d3d3d;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: var(--card-bg);
+        }
+
+        .option:hover {
+            border-color: var(--primary-color);
+        }
+
+        .option.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+        }
+
+        .option.wrong {
+            background-color: var(--wrong-color);
+            color: white;
+            border-color: var(--wrong-color);
+        }
+
+        .answer-text {
+            margin-top: 10px;
+            display: none;
+            color: var(--correct-color);
+            font-weight: bold;
+        }
+
+        .show-answer .answer-text {
+            display: block;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+        }
+
+        @media (max-width: 600px) {
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <div class="header-info">
+            <div id="category-number"></div>
+            <div id="question-set"></div>
+            <div id="name-of-post"></div>
+        </div>
+        
+        <div class="mode-buttons">
+            <button onclick="toggleAnswers()">Toggle All Answers</button>
+            <button onclick="resetQuiz()">Reset Quiz</button>
+            <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+        </div>
+        
+        <div id="quiz-container"></div>
+    </div>
+
+    <script>
+        let showAllAnswers = false;
+        const COOKIE_NAME = 'quizProgress';
+        const COOKIE_EXPIRY_DAYS = 7;
+
+        async function loadQuiz() {
+            const response = await fetch('https://gist.githubusercontent.com/developeranaz/20113c4ba29dcff7fef00cddc18c216d/raw/065_2021.json');
+            const data = await response.json();
+            renderHeader(data.question_paper);
+            renderQuestions(data.question_paper.questions);
+            loadFromCookies();
+        }
+
+        function renderHeader(questionPaper) {
+            document.getElementById('category-number').textContent = 
+                `Category Number: ${questionPaper.category_number}`;
+            document.getElementById('question-set').textContent = 
+                `Question Set: ${questionPaper.question_set}`;
+            document.getElementById('name-of-post').textContent = 
+                `Post: ${questionPaper.name_of_post}`;
+        }
+
+        function renderQuestions(questions) {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = questions.map(question => `
+                <div class="question-card">
+                    <div class="question-number">Question ${question.question_number}</div>
+                    <div class="question-text">${question.question_text}</div>
+                    <div class="options-container">${
+                        Object.entries(question.choices).map(([key, value]) => `
+                            <div class="option" data-correct="${key === question.correct_option}" 
+                                 onclick="handleAnswer(this, '${key}', '${question.correct_option}', ${question.question_number})">
+                                ${key}: ${value}
+                            </div>`
+                        ).join('')
+                    }</div>
+                    <div class="answer-text">Correct Answer: ${question.correct_option} - ${question.answer_text}</div>
+                </div>`
+            ).join('');
+        }
+
+        function handleAnswer(optionElement, selectedOption, correctOption, questionNumber) {
+            if (optionElement.classList.contains('correct') || 
+                optionElement.classList.contains('wrong')) return;
+
+            const isCorrect = selectedOption === correctOption;
+            
+            if (isCorrect) {
+                optionElement.classList.add('correct');
+                party.confetti(optionElement, {
+                    count: 40,
+                    spread: 15,
+                    size: 1.5
+                });
+            } else {
+                optionElement.classList.add('wrong');
+                const correctElement = Array.from(optionElement.parentNode.children)
+                    .find(el => el.dataset.correct === 'true');
+                correctElement.classList.add('correct');
+            }
+            
+            saveProgress(questionNumber, selectedOption);
+        }
+
+        function saveProgress(questionNumber, selectedOption) {
+            const progress = getCookieData();
+            progress[questionNumber] = selectedOption;
+            setCookieData(progress);
+        }
+
+        function getCookieData() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith(`${COOKIE_NAME}=`))
+                ?.split('=')[1];
+            
+            try {
+                return cookieValue ? JSON.parse(decodeURIComponent(cookieValue)) : {};
+            } catch {
+                return {};
+            }
+        }
+
+        function setCookieData(data) {
+            const d = new Date();
+            d.setTime(d.getTime() + (COOKIE_EXPIRY_DAYS * 24 * 60 * 60 * 1000));
+            document.cookie = `${COOKIE_NAME}=${encodeURIComponent(JSON.stringify(data))}; 
+                               expires=${d.toUTCString()}; path=/`;
+        }
+
+        function loadFromCookies() {
+            const progress = getCookieData();
+            document.querySelectorAll('.question-card').forEach(card => {
+                const questionNumber = parseInt(card.querySelector('.question-number').textContent.replace('Question ', ''));
+                const selectedOption = progress[questionNumber];
+                
+                if (selectedOption) {
+                    const options = card.querySelectorAll('.option');
+                    options.forEach(option => {
+                        const optionKey = option.textContent.split(':')[0].trim();
+                        if (optionKey === selectedOption) {
+                            const correctOption = option.dataset.correct === 'true';
+                            option.classList.add(correctOption ? 'correct' : 'wrong');
+                            
+                            if (!correctOption) {
+                                const correctElement = Array.from(option.parentNode.children)
+                                    .find(el => el.dataset.correct === 'true');
+                                correctElement.classList.add('correct');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function toggleAnswers() {
+            if (!confirm('This will reveal all answers. Are you sure?')) return;
+            showAllAnswers = !showAllAnswers;
+            document.querySelectorAll('.question-card').forEach(card => {
+                card.classList.toggle('show-answer', showAllAnswers);
+                if (showAllAnswers) {
+                    card.querySelectorAll('.option').forEach(opt => {
+                        if (opt.dataset.correct === 'true') {
+                            opt.classList.add('correct');
+                        }
+                    });
+                } else {
+                    card.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('correct', 'wrong');
+                    });
+                }
+            });
+        }
+
+        function resetQuiz() {
+            if (!confirm('Are you sure you want to reset all progress?')) return;
+            showAllAnswers = false;
+            document.querySelectorAll('.question-card').forEach(card => {
+                card.classList.remove('show-answer');
+                card.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('correct', 'wrong');
+                });
+            });
+            document.cookie = `${COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            body.dataset.theme = body.dataset.theme === 'dark' ? 'light' : 'dark';
+        }
+
+        // Load quiz when page loads
+        loadQuiz();
+    </script>
+</body>
+</html>
