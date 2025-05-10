@@ -1,1 +1,1567 @@
-1
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kerala PSC Exam Simulator - Authentic practice tests for Overseer/Draftsman positions with real exam interface">
+    <title>Kerala PSC DRAFTSMAN GRADE II/ TOWN PLANNING SURVEYOR GR II Exam Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/party-js@latest/bundle/party.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --primary-color: #4a9cff;
+            --correct-color: #00c853;
+            --wrong-color: #ff1744;
+            --card-bg: #2d2d2d;
+            --timer-bg: #000000;
+            --control-bg: #333333;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f5f6fa;
+            --text-color: #2c3e50;
+            --primary-color: #2c3e50;
+            --correct-color: #2ecc71;
+            --wrong-color: #e74c3c;
+            --card-bg: #ffffff;
+            --timer-bg: #eeeeee;
+            --control-bg: #f0f0f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .exam-meta {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--control-bg);
+            border-radius: 10px;
+        }
+
+        .exam-meta div {
+            margin: 0.5rem 0;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .controls-top {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .text-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        .text-btn:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .timer-controls {
+            background: var(--timer-bg);
+            padding: 10px 15px;
+            border-radius: 30px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .timer-display {
+            font-weight: bold;
+            min-width: 85px;
+            text-align: center;
+            font-family: monospace;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 1rem auto;
+            max-width: 800px;
+        }
+
+        .question-number {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .options-container {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            background: transparent;
+        }
+
+        .option:hover {
+            transform: translateY(-2px);
+        }
+
+        .option.correct {
+            background: var(--correct-color);
+            border-color: var(--correct-color);
+            color: white;
+        }
+
+        .option.wrong {
+            background: var(--wrong-color);
+            border-color: var(--wrong-color);
+            color: white;
+        }
+
+        .bottom-spacer {
+            height: 120px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                padding-bottom: 80px;
+            }
+            
+            .control-btn {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .timer-controls {
+                padding: 8px 12px;
+            }
+            
+            .question-card {
+                padding: 15px;
+                margin: 0.5rem auto;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="header">
+        <h1>Kerala PSC Exam Simulator</h1>
+        <div class="exam-meta" id="examMeta"></div>
+        <div class="controls-top">
+            <button class="text-btn" onclick="toggleAnswers()">Toggle Answers</button>
+            <button class="text-btn" onclick="resetTest()">Clear All</button>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="timer-controls">
+            <div class="timer-display" id="timer">00:00:00</div>
+            <button class="control-btn" onclick="handleTimerControl()" id="timerBtn">▶️</button>
+            <button class="control-btn" onclick="resetTimer()">🔄</button>
+        </div>
+        <button class="control-btn" onclick="toggleTheme()">🌓</button>
+    </div>
+
+    <div id="quiz-container"></div>
+    <div class="bottom-spacer"></div>
+
+    <script>
+        // Exam Data (JSON Format)
+        const examData ={
+  "question_paper": {
+    "category_number": "682/2023",
+    "question_set": "A",
+    "name_of_post": "DRAFTSMAN GRADE II/ TOWN PLANNING SURVEYOR GR II",
+    "questions": [
+      {
+        "question_number": 1,
+        "question_text": "The designation of B2 drawing board is",
+        "choices": {
+          "A": "700 × 500 × 15 mm",
+          "B": "1000 × 500 × 15 mm",
+          "C": "500 × 350 × 15 mm",
+          "D": "1000 × 700 × 15 mm"
+        },
+        "correct_option": "D",
+        "answer_text": "1000 × 700 × 15 mm"
+      },
+      {
+        "question_number": 2,
+        "question_text": "Which part of a T-square is placed adjoining the working edge of the board and is made to slide?",
+        "choices": {
+          "A": "Blade",
+          "B": "Working edge",
+          "C": "Ebony edge",
+          "D": "Stock"
+        },
+        "correct_option": "D",
+        "answer_text": "Stock"
+      },
+      {
+        "question_number": 3,
+        "question_text": "The title block of a drawing is drawn at the ______ of the drawing sheet.",
+        "choices": {
+          "A": "Left bottom",
+          "B": "Right bottom",
+          "C": "Middle top",
+          "D": "Middle bottom"
+        },
+        "correct_option": "B",
+        "answer_text": "Right bottom"
+      },
+      {
+        "question_number": 4,
+        "question_text": "Which line connect a note with the feature in an engineering drawing?",
+        "choices": {
+          "A": "Section line",
+          "B": "Cutting plane line",
+          "C": "Leader line",
+          "D": "Extension line"
+        },
+        "correct_option": "C",
+        "answer_text": "Leader line"
+      },
+      {
+        "question_number": 5,
+        "question_text": "In which type of drawings the lower case letters are usually used?",
+        "choices": {
+          "A": "Sanction drawings",
+          "B": "Service drawings",
+          "C": "Architectural drawings",
+          "D": "Location drawings"
+        },
+        "correct_option": "C",
+        "answer_text": "Architectural drawings"
+      },
+      {
+        "question_number": 6,
+        "question_text": "What is the width of arrowhead in a dimension line compared to its length?",
+        "choices": {
+          "A": "1/3 of length",
+          "B": "1/2 of length",
+          "C": "1/4 of length",
+          "D": "1/6 of length"
+        },
+        "correct_option": "A",
+        "answer_text": "1/3 of length"
+      },
+      {
+        "question_number": 7,
+        "question_text": "Which scale is used to represent the same RF but graduated to read different units?",
+        "choices": {
+          "A": "Plain scale",
+          "B": "Comparative scale",
+          "C": "Diagonal scale",
+          "D": "Vernier scale"
+        },
+        "correct_option": "B",
+        "answer_text": "Comparative scale"
+      },
+      {
+        "question_number": 8,
+        "question_text": "In first angle projection the right side view is placed at the ______ side of drawing.",
+        "choices": {
+          "A": "Above",
+          "B": "Below",
+          "C": "Right side",
+          "D": "Left side"
+        },
+        "correct_option": "D",
+        "answer_text": "Left side"
+      },
+      {
+        "question_number": 9,
+        "question_text": "In addition to the doors and windows, ventilators should be provided having a total area of ______ of the floor area.",
+        "choices": {
+          "A": "4%",
+          "B": "10%",
+          "C": "5%",
+          "D": "20%"
+        },
+        "correct_option": "A",
+        "answer_text": "4%"
+      },
+      {
+        "question_number": 10,
+        "question_text": "Which estimate is prepared when further development is required for the progress of a work?",
+        "choices": {
+          "A": "Revised estimate",
+          "B": "Supplementary estimate",
+          "C": "Work charged establishment",
+          "D": "Annual repair estimate"
+        },
+        "correct_option": "B",
+        "answer_text": "Supplementary estimate"
+      },
+      {
+        "question_number": 11,
+        "question_text": "The hospital buildings are belong to which group of classification?",
+        "choices": {
+          "A": "Group C",
+          "B": "Group B",
+          "C": "Group D",
+          "D": "Group H"
+        },
+        "correct_option": "D",
+        "answer_text": "Group H"
+      },
+      {
+        "question_number": 12,
+        "question_text": "For residential buildings the livable area should be ______ of the plinth area.",
+        "choices": {
+          "A": "20 – 30%",
+          "B": "35 – 50%",
+          "C": "5 – 10%",
+          "D": "50 – 65%"
+        },
+        "correct_option": "D",
+        "answer_text": "50 – 65%"
+      },
+      {
+        "question_number": 13,
+        "question_text": "The scrap value of a building may be about ______ of its total cost of construction.",
+        "choices": {
+          "A": "1%",
+          "B": "5%",
+          "C": "10%",
+          "D": "20%"
+        },
+        "correct_option": "C",
+        "answer_text": "10%"
+      },
+      {
+        "question_number": 14,
+        "question_text": "The cost of charge when the engineering department takes up the work of other department is called as",
+        "choices": {
+          "A": "Contingencies",
+          "B": "Work charged establishment",
+          "C": "Cengage charges",
+          "D": "Lump sum"
+        },
+        "correct_option": "C",
+        "answer_text": "Cengage charges"
+      },
+      {
+        "question_number": 15,
+        "question_text": "The approximate quantity of work for brick work in cement mortar in foundation and plinth by an average artisan per day is",
+        "choices": {
+          "A": "1.5 cu m",
+          "B": "1.25 cu m",
+          "C": "1.85 cu m",
+          "D": "1.54 cu m"
+        },
+        "correct_option": "B",
+        "answer_text": "1.25 cu m"
+      },
+      {
+        "question_number": 16,
+        "question_text": "Which of the following is included in the plinth area of a building?",
+        "choices": {
+          "A": "Courtyard",
+          "B": "Balconies",
+          "C": "Open area",
+          "D": "Bathrooms"
+        },
+        "correct_option": "D",
+        "answer_text": "Bathrooms"
+      },
+      {
+        "question_number": 17,
+        "question_text": "The vertical circulation area of a building may be ______ of the plinth area.",
+        "choices": {
+          "A": "4 – 5%",
+          "B": "10 – 15%",
+          "C": "20%",
+          "D": "20 – 30%"
+        },
+        "correct_option": "A",
+        "answer_text": "4 – 5%"
+      },
+      {
+        "question_number": 18,
+        "question_text": "Net annual letting value of a property obtained after deducting the amount of yearly repairs from gross income is called",
+        "choices": {
+          "A": "Salvage value",
+          "B": "Annuity",
+          "C": "Years Purchase",
+          "D": "Rateable value"
+        },
+        "correct_option": "D",
+        "answer_text": "Rateable value"
+      },
+      {
+        "question_number": 19,
+        "question_text": "For fire resistant construction the minimum thickness of timber door leaf should be",
+        "choices": {
+          "A": "3 cm",
+          "B": "4 cm",
+          "C": "2 cm",
+          "D": "1 cm"
+        },
+        "correct_option": "B",
+        "answer_text": "4 cm"
+      },
+      {
+        "question_number": 20,
+        "question_text": "Which of the following area is included in the carpet area of a building?",
+        "choices": {
+          "A": "Stores",
+          "B": "Kitchen",
+          "C": "Dining",
+          "D": "Staircase"
+        },
+        "correct_option": "C",
+        "answer_text": "Dining"
+      },
+      {
+        "question_number": 21,
+        "question_text": "Which of the following is the property of material to absorb water vapour from air?",
+        "choices": {
+          "A": "Porosity",
+          "B": "Density",
+          "C": "Hygroscopicity",
+          "D": "Condensation"
+        },
+        "correct_option": "C",
+        "answer_text": "Hygroscopicity"
+      },
+      {
+        "question_number": 22,
+        "question_text": "Which of the following is/are the incorrect statement about stones? i. The dressing of stones proves to be tedious. ii. The stones of desired strength and Quality are easily available at moderate rate. iii. The alternatives to stones namely R.C.C. and steel have proved to be stronger. iv. The dressing of stones proves to be time consuming.",
+        "choices": {
+          "A": "Only i",
+          "B": "Only i and iv",
+          "C": "Only ii",
+          "D": "Only ii and iii"
+        },
+        "correct_option": "C",
+        "answer_text": "Only ii"
+      },
+      {
+        "question_number": 23,
+        "question_text": "A good brick should not break when made to fall on another brick from a height of ______ m.",
+        "choices": {
+          "A": "1.25",
+          "B": "1.00",
+          "C": "1.50",
+          "D": "10.50"
+        },
+        "correct_option": "B",
+        "answer_text": "1.00"
+      },
+      {
+        "question_number": 24,
+        "question_text": "The property of lime by which it sets in thick masonry walls where there is no free circulation of air is termed as",
+        "choices": {
+          "A": "Setting",
+          "B": "Hydraulicity",
+          "C": "Hardening",
+          "D": "Slaking"
+        },
+        "correct_option": "B",
+        "answer_text": "Hydraulicity"
+      },
+      {
+        "question_number": 25,
+        "question_text": "Which of the following statement indicate the advantages of timber? i. It does not require skilled supervision. ii. This method of seasoning is cheap and simple. iii. By this seasoning the moisture content of wood can be brought down to about 10 – 20%. iv. The process of seasoning is very slow.",
+        "choices": {
+          "A": "Only i",
+          "B": "Only ii",
+          "C": "Only i and ii",
+          "D": "Only i, ii and iii"
+        },
+        "correct_option": "D",
+        "answer_text": "Only i, ii and iii"
+      },
+      {
+        "question_number": 26,
+        "question_text": "Which of the following statement indicates the characteristics of good sand? i. It should be strong and durable. ii. It should be chemically inert. iii. The grains should retain in 4.75 mm sieve. iv. The grains should pass through IS sieve 75 micron.",
+        "choices": {
+          "A": "Only i",
+          "B": "Only i and ii",
+          "C": "Only ii",
+          "D": "All of the above (i, ii, iii and iv)"
+        },
+        "correct_option": "D",
+        "answer_text": "All of the above (i, ii, iii and iv)"
+      },
+      {
+        "question_number": 27,
+        "question_text": "Cement mortar recommended for reinforced brick work is",
+        "choices": {
+          "A": "1 : 1 to 1 : 2",
+          "B": "1 : 2",
+          "C": "1 : 3 to 1 : 4",
+          "D": "1 : 3"
+        },
+        "correct_option": "C",
+        "answer_text": "1 : 3 to 1 : 4"
+      },
+      {
+        "question_number": 28,
+        "question_text": "Bessemer pig is obtained from ______ ores.",
+        "choices": {
+          "A": "Limonite",
+          "B": "Haematite",
+          "C": "Magnetite",
+          "D": "Pyrite"
+        },
+        "correct_option": "B",
+        "answer_text": "Haematite"
+      },
+      {
+        "question_number": 29,
+        "question_text": "Which of the following statement is correct about Aluminium? i. It is very soft. ii. It is a non-magnetic substance. iii. Its specific gravity is about 2.70. iv. It readily dissolves in hydrochloric acid.",
+        "choices": {
+          "A": "Only i",
+          "B": "Only i and ii",
+          "C": "Only i, ii and iii",
+          "D": "All of the above (i, ii, iii and iv)"
+        },
+        "correct_option": "D",
+        "answer_text": "All of the above (i, ii, iii and iv)"
+      },
+      {
+        "question_number": 30,
+        "question_text": "The process of slow and homogeneous cooling of glass articles is known as the",
+        "choices": {
+          "A": "Annealing",
+          "B": "Casting",
+          "C": "Blowing",
+          "D": "Spinning"
+        },
+        "correct_option": "A",
+        "answer_text": "Annealing"
+      },
+      {
+        "question_number": 31,
+        "question_text": "The most common material used as vehicle of a paint is",
+        "choices": {
+          "A": "Poppy oil",
+          "B": "Nut oil",
+          "C": "Linseed oil",
+          "D": "Tung oil"
+        },
+        "correct_option": "C",
+        "answer_text": "Linseed oil"
+      },
+      {
+        "question_number": 32,
+        "question_text": "Which is the slump of concrete used for road construction?",
+        "choices": {
+          "A": "40 to 50 mm",
+          "B": "20 to 40 mm",
+          "C": "70 to 80 mm",
+          "D": "25 to 50 mm"
+        },
+        "correct_option": "B",
+        "answer_text": "20 to 40 mm"
+      },
+      {
+        "question_number": 33,
+        "question_text": "Depression or recess made inside the door frame, to receive the door shutter is known as",
+        "choices": {
+          "A": "Sill",
+          "B": "Reveal",
+          "C": "Architrave",
+          "D": "Rebate"
+        },
+        "correct_option": "D",
+        "answer_text": "Rebate"
+      },
+      {
+        "question_number": 34,
+        "question_text": "A pier is made monolithic with the walls to increase the stability of wall is called",
+        "choices": {
+          "A": "Buttress",
+          "B": "Corbel",
+          "C": "Template",
+          "D": "Spalls"
+        },
+        "correct_option": "A",
+        "answer_text": "Buttress"
+      },
+      {
+        "question_number": 35,
+        "question_text": "How to rectify if settlement of existing foundation has taken place?",
+        "choices": {
+          "A": "Single scaffolding",
+          "B": "Underpinning",
+          "C": "Timbering",
+          "D": "Racking shore"
+        },
+        "correct_option": "B",
+        "answer_text": "Underpinning"
+      },
+      {
+        "question_number": 36,
+        "question_text": "Which piles are driven up to a hard stratum in the ground to act as pillars for super structure?",
+        "choices": {
+          "A": "Bearing pile",
+          "B": "Friction pile",
+          "C": "Sheet pile",
+          "D": "Under reamed pile"
+        },
+        "correct_option": "A",
+        "answer_text": "Bearing pile"
+      },
+      {
+        "question_number": 37,
+        "question_text": "Cutting a brick longitudinally in two equal parts is known as",
+        "choices": {
+          "A": "King closer",
+          "B": "Queen closer",
+          "C": "Beyelled closer",
+          "D": "Half bat"
+        },
+        "correct_option": "B",
+        "answer_text": "Queen closer"
+      },
+      {
+        "question_number": 38,
+        "question_text": "Inclined support provided to an unsafe existing structure externally is called",
+        "choices": {
+          "A": "Racking shore",
+          "B": "Flying shore",
+          "C": "Dead shore",
+          "D": "Underpinning"
+        },
+        "correct_option": "A",
+        "answer_text": "Racking shore"
+      },
+      {
+        "question_number": 39,
+        "question_text": "Vertical member of a frame, which is employed to subdivide a window or a door opening is called",
+        "choices": {
+          "A": "Transom",
+          "B": "Mullion",
+          "C": "Hold fast",
+          "D": "Cross rail"
+        },
+        "correct_option": "B",
+        "answer_text": "Mullion"
+      },
+      {
+        "question_number": 40,
+        "question_text": "Which window is provided near the top of main roof?",
+        "choices": {
+          "A": "Panelled Window",
+          "B": "Casement Window",
+          "C": "Clere-storey Window",
+          "D": "Gable Window"
+        },
+        "correct_option": "C",
+        "answer_text": "Clere-storey Window"
+      },
+      {
+        "question_number": 41,
+        "question_text": "Horizontal distance between faces of two consecutive risers is called",
+        "choices": {
+          "A": "Tread",
+          "B": "Rise",
+          "C": "Landing",
+          "D": "Going"
+        },
+        "correct_option": "D",
+        "answer_text": "Going"
+      },
+      {
+        "question_number": 42,
+        "question_text": "What is the weight/m of 12 mm diameter round bar?",
+        "choices": {
+          "A": "0.39 kg/m",
+          "B": "0.62 kg/m",
+          "C": "0.89 kg/m",
+          "D": "1.58 kg/m"
+        },
+        "correct_option": "C",
+        "answer_text": "0.89 kg/m"
+      },
+      {
+        "question_number": 43,
+        "question_text": "The distance between the centres of the rivets in adjacent rows of zig-zag riveted joint is known as",
+        "choices": {
+          "A": "Pitch",
+          "B": "Back pitch",
+          "C": "Diagonal pitch",
+          "D": "Marginal pitch"
+        },
+        "correct_option": "C",
+        "answer_text": "Diagonal pitch"
+      },
+      {
+        "question_number": 44,
+        "question_text": "What is the excess length of the one side of the cranked bar?",
+        "choices": {
+          "A": "0.212 d",
+          "B": "0.414 d",
+          "C": "0.616 d",
+          "D": "0.818 d"
+        },
+        "correct_option": "B",
+        "answer_text": "0.414 d"
+      },
+      {
+        "question_number": 45,
+        "question_text": "The triangular upper part of a wall formed at the end of a pitched roof is called",
+        "choices": {
+          "A": "Gable",
+          "B": "Valley",
+          "C": "Eaves",
+          "D": "Cleat"
+        },
+        "correct_option": "A",
+        "answer_text": "Gable"
+      },
+      {
+        "question_number": 46,
+        "question_text": "Inner curve of an arch is called",
+        "choices": {
+          "A": "Soffit",
+          "B": "Extrados",
+          "C": "Intrados",
+          "D": "Haunch"
+        },
+        "correct_option": "C",
+        "answer_text": "Intrados"
+      },
+      {
+        "question_number": 47,
+        "question_text": "Which arch is constructed with two curves meeting at the apex of a triangle?",
+        "choices": {
+          "A": "Flat arch",
+          "B": "Pointed arch",
+          "C": "Segmental arch",
+          "D": "Elliptical arch"
+        },
+        "correct_option": "B",
+        "answer_text": "Pointed arch"
+      },
+      {
+        "question_number": 48,
+        "question_text": "The vertical joints separating the bricks in either length or cross direction is known as",
+        "choices": {
+          "A": "Lap joint",
+          "B": "Bed joint",
+          "C": "Header",
+          "D": "Perpends"
+        },
+        "correct_option": "D",
+        "answer_text": "Perpends"
+      },
+      {
+        "question_number": 49,
+        "question_text": "Which bond the bricks are laid at 45° from the centre in both the direction?",
+        "choices": {
+          "A": "Diagonal bond",
+          "B": "Zig-zag bond",
+          "C": "Dutch bond",
+          "D": "Herring bone bond"
+        },
+        "correct_option": "D",
+        "answer_text": "Herring bone bond"
+      },
+      {
+        "question_number": 50,
+        "question_text": "Which test is carried out for determining workability of concrete?",
+        "choices": {
+          "A": "Slump test",
+          "B": "Attrition test",
+          "C": "Cube test",
+          "D": "Sieve test"
+        },
+        "correct_option": "A",
+        "answer_text": "Slump test"
+      },
+      {
+        "question_number": 51,
+        "question_text": "Spread footing for a wall is known as",
+        "choices": {
+          "A": "Strip footing",
+          "B": "Pad footing",
+          "C": "Column footing",
+          "D": "Combined footing"
+        },
+        "correct_option": "A",
+        "answer_text": "Strip footing"
+      },
+      {
+        "question_number": 52,
+        "question_text": "Name the method of damp proofing water proofing compounds or materials are added during the process of mixing the materials.",
+        "choices": {
+          "A": "Surface treatment",
+          "B": "Integral treatment",
+          "C": "Membrane damp proofing",
+          "D": "Cavity wall construction"
+        },
+        "correct_option": "B",
+        "answer_text": "Integral treatment"
+      },
+      {
+        "question_number": 53,
+        "question_text": "In a surveying telescope, cross hairs are fixed in",
+        "choices": {
+          "A": "Centre of the telescope",
+          "B": "Front of the telescope",
+          "C": "Optical centre of the telescope",
+          "D": "Front of the objective"
+        },
+        "correct_option": "C",
+        "answer_text": "Optical centre of the telescope"
+      },
+      {
+        "question_number": 54,
+        "question_text": "When the angular and linear measurements are equally precise in traversing, the balancing of the traverse is done by",
+        "choices": {
+          "A": "Transit rule",
+          "B": "Empirical rule",
+          "C": "Bowditch’s rule",
+          "D": "None of these"
+        },
+        "correct_option": "C",
+        "answer_text": "Bowditch’s rule"
+      },
+      {
+        "question_number": 55,
+        "question_text": "In levelling, the correction for refraction (in meter) is equal to",
+        "choices": {
+          "A": "0.00785D²",
+          "B": "0.0785D²",
+          "C": "0.0112D²",
+          "D": "0.0673D²"
+        },
+        "correct_option": "C",
+        "answer_text": "0.0112D²"
+      },
+      {
+        "question_number": 56,
+        "question_text": "When the whole circle bearing of two lines AB and AC are 65° and 170° respectively. Then the included angle BAC will be",
+        "choices": {
+          "A": "105°",
+          "B": "235°",
+          "C": "65°",
+          "D": "190°"
+        },
+        "correct_option": "A",
+        "answer_text": "105°"
+      },
+      {
+        "question_number": 57,
+        "question_text": "A series of closed contour line on the map represents a ______ if the higher values are inside.",
+        "choices": {
+          "A": "Pond",
+          "B": "Uniform slope",
+          "C": "Hill",
+          "D": "Flat ground"
+        },
+        "correct_option": "C",
+        "answer_text": "Hill"
+      },
+      {
+        "question_number": 58,
+        "question_text": "The instrument which is the combination of electronic theodolite and electronic distance meter is",
+        "choices": {
+          "A": "Digital theodolite",
+          "B": "Tacheometer",
+          "C": "Telemeter",
+          "D": "Total station"
+        },
+        "correct_option": "D",
+        "answer_text": "Total station"
+      },
+      {
+        "question_number": 59,
+        "question_text": "The principle of chain surveying is",
+        "choices": {
+          "A": "Chaining",
+          "B": "Orientation",
+          "C": "Triangulation",
+          "D": "Traversing"
+        },
+        "correct_option": "C",
+        "answer_text": "Triangulation"
+      },
+      {
+        "question_number": 60,
+        "question_text": "The error in measured length due to incorrect holding of the chain is",
+        "choices": {
+          "A": "Cumulative error",
+          "B": "Compensating error",
+          "C": "Instrumental error",
+          "D": "Negative error"
+        },
+        "correct_option": "A",
+        "answer_text": "Cumulative error"
+      },
+      {
+        "question_number": 61,
+        "question_text": "The area enclosed in a contour may be found by",
+        "choices": {
+          "A": "Planimeter",
+          "B": "Periscope",
+          "C": "Pentagraph",
+          "D": "Elliptical tramme"
+        },
+        "correct_option": "A",
+        "answer_text": "Planimeter"
+      },
+      {
+        "question_number": 62,
+        "question_text": "Length of long chord is",
+        "choices": {
+          "A": "T tan φ / 2",
+          "B": "2R φ",
+          "C": "R Sin φ",
+          "D": "2R sin φ / 2"
+        },
+        "correct_option": "D",
+        "answer_text": "2R sin φ / 2"
+      },
+      {
+        "question_number": 63,
+        "question_text": "The back sight reading on a benchmark of reduced level 100.00 is 2.350. If fore sight reading on the point is 1.520, the reduced level of the point is",
+        "choices": {
+          "A": "100.830",
+          "B": "103.870",
+          "C": "101.230",
+          "D": "102.350"
+        },
+        "correct_option": "A",
+        "answer_text": "100.830"
+      },
+      {
+        "question_number": 64,
+        "question_text": "Remote sensing technique are being usefully employed for the purpose of",
+        "choices": {
+          "A": "Improving natural resource management",
+          "B": "Land use",
+          "C": "Protection of environment",
+          "D": "All of these"
+        },
+        "correct_option": "D",
+        "answer_text": "All of these"
+      },
+      {
+        "question_number": 65,
+        "question_text": "Which method is used for plotting inaccessible objects, broken boundaries, rivers etc.?",
+        "choices": {
+          "A": "Radiation method",
+          "B": "Traversing method",
+          "C": "Resection method",
+          "D": "Intersection method"
+        },
+        "correct_option": "D",
+        "answer_text": "Intersection method"
+      },
+      {
+        "question_number": 66,
+        "question_text": "The magnetic bearing of the line is 50° 10' and magnetic declination is 1° 20' east. The true bearing of the line will be",
+        "choices": {
+          "A": "51° 30'",
+          "B": "49° 50'",
+          "C": "49° 10'",
+          "D": "52°"
+        },
+        "correct_option": "A",
+        "answer_text": "51° 30'"
+      },
+      {
+        "question_number": 67,
+        "question_text": "The irrigation engineering may be defined as i. The process of artificial supplying water to soil for raising crops. ii. The science of planning and designing an efficient and economic system. iii. The capillary water is utilised by the plants.",
+        "choices": {
+          "A": "Only (i and ii)",
+          "B": "All (i, ii and iii)",
+          "C": "Only (ii and iii)",
+          "D": "Only (i and iii)"
+        },
+        "correct_option": "A",
+        "answer_text": "Only (i and ii)"
+      },
+      {
+        "question_number": 68,
+        "question_text": "What is the main advantage of irrigation?",
+        "choices": {
+          "A": "Water logging",
+          "B": "Yield of crops",
+          "C": "Complex",
+          "D": "Damper climate"
+        },
+        "correct_option": "B",
+        "answer_text": "Yield of crops"
+      },
+      {
+        "question_number": 69,
+        "question_text": "A groyne i. Trains the flow along a certain course. ii. Perpendicular to bank. iii. It constructed to protected the river banks.",
+        "choices": {
+          "A": "Only (ii and iii)",
+          "B": "Only (i and iii)",
+          "C": "All (i, ii and iii)",
+          "D": "Only (i and ii)"
+        },
+        "correct_option": "C",
+        "answer_text": "All (i, ii and iii)"
+      },
+      {
+        "question_number": 70,
+        "question_text": "Which cross drainage work is constructed to cross the canal and drainage at the same level?",
+        "choices": {
+          "A": "Aqueduct",
+          "B": "Super passage",
+          "C": "Canal syphon",
+          "D": "Level crossing"
+        },
+        "correct_option": "D",
+        "answer_text": "Level crossing"
+      },
+      {
+        "question_number": 71,
+        "question_text": "Which element of hydroelectric power plant reduce the water hammer pressure formed in the penstock?",
+        "choices": {
+          "A": "Valves",
+          "B": "Surge tank",
+          "C": "Turbines",
+          "D": "Draft tubes"
+        },
+        "correct_option": "B",
+        "answer_text": "Surge tank"
+      },
+      {
+        "question_number": 72,
+        "question_text": "Which of the following statements is wrong? i. Seepage drain reduce the chances of water logging. ii. The gravity water is harmful to the crops. iii. Water logging makes the land more productive.",
+        "choices": {
+          "A": "Only (i and iii)",
+          "B": "All (i, ii and iii)",
+          "C": "Only (ii and iii)",
+          "D": "Only (i and ii)"
+        },
+        "correct_option": "C",
+        "answer_text": "Only (ii and iii)"
+      },
+      {
+        "question_number": 73,
+        "question_text": "What is the name of the steel placed end to end to provide a level surface for the movement of trains?",
+        "choices": {
+          "A": "Ballast",
+          "B": "Sleepers",
+          "C": "Rails",
+          "D": "Fish plates"
+        },
+        "correct_option": "C",
+        "answer_text": "Rails"
+      },
+      {
+        "question_number": 74,
+        "question_text": "What is the slope provided to transverse direction road? i. Cross fall ii. Camber iii. Crown",
+        "choices": {
+          "A": "Only (i and ii)",
+          "B": "All (i, ii and iii)",
+          "C": "Only (ii and iii)",
+          "D": "Only (i and iii)"
+        },
+        "correct_option": "B",
+        "answer_text": "All (i, ii and iii)"
+      },
+      {
+        "question_number": 75,
+        "question_text": "Which shape of the surface drain is most preferred for heavy discharge in road?",
+        "choices": {
+          "A": "Rectangular",
+          "B": "U shaped",
+          "C": "Semicircular",
+          "D": "V shaped"
+        },
+        "correct_option": "B",
+        "answer_text": "U shaped"
+      },
+      {
+        "question_number": 76,
+        "question_text": "What is the minimum width of shoulders provided in national highways?",
+        "choices": {
+          "A": "1m",
+          "B": "1.5 m",
+          "C": "2 m",
+          "D": "2.5 m"
+        },
+        "correct_option": "C",
+        "answer_text": "2 m"
+      },
+      {
+        "question_number": 77,
+        "question_text": "Which of the following statement is wrong? i. Bearing plates are used in the case of hard sleepers. ii. Sleeper holds the gauge at proper rail. iii. Spacing of sleepers near the rail joint is closer.",
+        "choices": {
+          "A": "Only (i and ii)",
+          "B": "All (i, ii and iii)",
+          "C": "Only (ii and iii)",
+          "D": "Only (i and iii)"
+        },
+        "correct_option": "D",
+        "answer_text": "Only (i and iii)"
+      },
+      {
+        "question_number": 78,
+        "question_text": "Which bridge is mostly used for railway bridges of small spans?",
+        "choices": {
+          "A": "Steel girder",
+          "B": "Steel trough plate",
+          "C": "Suspension",
+          "D": "Steel truss"
+        },
+        "correct_option": "A",
+        "answer_text": "Steel girder"
+      },
+      {
+        "question_number": 79,
+        "question_text": "How a simple circular curve designated?",
+        "choices": {
+          "A": "Curvature of the curve",
+          "B": "Radius of the curve",
+          "C": "Angle subtended by an arc",
+          "D": "Angle subtended by a chord"
+        },
+        "correct_option": "B",
+        "answer_text": "Radius of the curve"
+      },
+      {
+        "question_number": 80,
+        "question_text": "Which is used for joining the rail?",
+        "choices": {
+          "A": "Spikes",
+          "B": "Rail chairs",
+          "C": "Fish plates",
+          "D": "Bearing plates"
+        },
+        "correct_option": "C",
+        "answer_text": "Fish plates"
+      },
+      {
+        "question_number": 81,
+        "question_text": "What is the dimensional formula for strain?",
+        "choices": {
+          "A": "M¹L⁻¹T²",
+          "B": "M⁰L⁰T⁰",
+          "C": "M⁰L⁰T⁻¹",
+          "D": "None of the above"
+        },
+        "correct_option": "B",
+        "answer_text": "M⁰L⁰T⁰"
+      },
+      {
+        "question_number": 82,
+        "question_text": "See saw is a ______ class lever.",
+        "choices": {
+          "A": "First",
+          "B": "Second",
+          "C": "Third",
+          "D": "None of the above"
+        },
+        "correct_option": "A",
+        "answer_text": "First"
+      },
+      {
+        "question_number": 83,
+        "question_text": "Following are the basic types of stress except",
+        "choices": {
+          "A": "Tensile stress",
+          "B": "Compressive stress",
+          "C": "Shear stress",
+          "D": "Volumetric stress"
+        },
+        "correct_option": "D",
+        "answer_text": "Volumetric stress"
+      },
+      {
+        "question_number": 84,
+        "question_text": "The length of a rectangle is 1 cm more than its width and its perimeter is 14 cm, then the area of the rectangle is",
+        "choices": {
+          "A": "16 cm²",
+          "B": "12 cm²",
+          "C": "10 cm²",
+          "D": "14 cm²"
+        },
+        "correct_option": "B",
+        "answer_text": "12 cm²"
+      },
+      {
+        "question_number": 85,
+        "question_text": "The slope of the stress-strain curve in the elastic deformation region is",
+        "choices": {
+          "A": "Elastic modulus",
+          "B": "Plastic modulus",
+          "C": "Poisson's ratio",
+          "D": "None of the above"
+        },
+        "correct_option": "A",
+        "answer_text": "Elastic modulus"
+      },
+      {
+        "question_number": 86,
+        "question_text": "An electric pole of 20 m height has casted a shadow of length 20√3 m, on the ground, then the angle of elevation of the sun at that time is",
+        "choices": {
+          "A": "60°",
+          "B": "90°",
+          "C": "30°",
+          "D": "45°"
+        },
+        "correct_option": "C",
+        "answer_text": "30°"
+      },
+      {
+        "question_number": 87,
+        "question_text": "Activated carbon is used for",
+        "choices": {
+          "A": "Disinfection",
+          "B": "Removing hardness",
+          "C": "Removing odours",
+          "D": "Removing corrosiveness"
+        },
+        "correct_option": "C",
+        "answer_text": "Removing odours"
+      },
+      {
+        "question_number": 88,
+        "question_text": "Which of the following water treatment process is done after filtration of water?",
+        "choices": {
+          "A": "Secondary sedimentation",
+          "B": "Flocculation",
+          "C": "Primary sedimentation",
+          "D": "Disinfection"
+        },
+        "correct_option": "D",
+        "answer_text": "Disinfection"
+      },
+      {
+        "question_number": 89,
+        "question_text": "Which of the following indicates that the water body has been used for waste disposal?",
+        "choices": {
+          "A": "Chlorides",
+          "B": "Nitrates",
+          "C": "Phosphates",
+          "D": "Ammonia"
+        },
+        "correct_option": "D",
+        "answer_text": "Ammonia"
+      },
+      {
+        "question_number": 90,
+        "question_text": "When a sewer line dips below the hydraulic grade line the sewer appurtenance chosen is",
+        "choices": {
+          "A": "Inverted Siphons",
+          "B": "Manholes",
+          "C": "Sewer Outlet",
+          "D": "Inlet"
+        },
+        "correct_option": "A",
+        "answer_text": "Inverted Siphons"
+      },
+      {
+        "question_number": 91,
+        "question_text": "The sewage treatment units in which anaerobic decomposition of organic matter is used, are called",
+        "choices": {
+          "A": "Imhoff tank",
+          "B": "Trickling filters",
+          "C": "Both A) and B)",
+          "D": "Sludge sedimentation tank"
+        },
+        "correct_option": "A",
+        "answer_text": "Imhoff tank"
+      },
+      {
+        "question_number": 92,
+        "question_text": "Which of the following is the product obtained when a coagulant is mixed with waste water?",
+        "choices": {
+          "A": "Floc",
+          "B": "Grit",
+          "C": "Acid",
+          "D": "Sediments"
+        },
+        "correct_option": "A",
+        "answer_text": "Floc"
+      },
+      {
+        "question_number": 93,
+        "question_text": "The basic software loaded from ROM chip is",
+        "choices": {
+          "A": "BIOS",
+          "B": "Application Software",
+          "C": "System Software",
+          "D": "Operating System"
+        },
+        "correct_option": "A",
+        "answer_text": "BIOS"
+      },
+      {
+        "question_number": 94,
+        "question_text": "For replacing text from the file, short cut command is",
+        "choices": {
+          "A": "Ctrl + X",
+          "B": "Ctrl + H",
+          "C": "Ctrl + R",
+          "D": "Ctrl + P"
+        },
+        "correct_option": "B",
+        "answer_text": "Ctrl + H"
+      },
+      {
+        "question_number": 95,
+        "question_text": "Which is the short cut keyboard command of quick calculation Auto CAD?",
+        "choices": {
+          "A": "Ctrl + Shift + 8",
+          "B": "Ctrl + 7",
+          "C": "Ctrl + Alt + 8",
+          "D": "Ctrl + 8"
+        },
+        "correct_option": "D",
+        "answer_text": "Ctrl + 8"
+      },
+      {
+        "question_number": 96,
+        "question_text": "______ is the function key used to turn object Snap Toggle in ‘3D’.",
+        "choices": {
+          "A": "F2",
+          "B": "F4",
+          "C": "F3",
+          "D": "F1"
+        },
+        "correct_option": "B",
+        "answer_text": "F4"
+      },
+      {
+        "question_number": 97,
+        "question_text": "In which bar do you find the Ortho and Osnap icons?",
+        "choices": {
+          "A": "Drew Toolbar",
+          "B": "Object properties",
+          "C": "Status bar",
+          "D": "Ribbon"
+        },
+        "correct_option": "C",
+        "answer_text": "Status bar"
+      },
+      {
+        "question_number": 98,
+        "question_text": "Which command is used to make the curves in the corner of the object?",
+        "choices": {
+          "A": "FILLET",
+          "B": "CURVE",
+          "C": "ARC",
+          "D": "CIRCLE"
+        },
+        "correct_option": "A",
+        "answer_text": "FILLET"
+      },
+      {
+        "question_number": 99,
+        "question_text": "To Align object with other objects in 2D and 3D in Auto CAD, the command is",
+        "choices": {
+          "A": "MIX",
+          "B": "TOBE MIX",
+          "C": "ALIGN",
+          "D": "GAIN"
+        },
+        "correct_option": "C",
+        "answer_text": "ALIGN"
+      },
+      {
+        "question_number": 100,
+        "question_text": "Which option is used to print all objects with in the printable area of the paper?",
+        "choices": {
+          "A": "Extents",
+          "B": "Limits",
+          "C": "Display",
+          "D": "Lay out"
+        },
+        "correct_option": "A",
+        "answer_text": "Extents"
+      }
+    ]
+  }
+}
+
+        // Application State
+        let timerInterval;
+        let examDuration = 0;
+        let isTimerRunning = false;
+        let startTime = 0;
+        let showAnswers = false;
+
+        // Initialization
+        function initializeExam() {
+            renderExamMeta();
+            renderQuestions();
+            updateTimerDisplay();
+        }
+
+        // Render Functions
+        function renderExamMeta() {
+            const meta = examData.question_paper;
+            document.getElementById('examMeta').innerHTML = `
+                <div>Category: ${meta.category_number}</div>
+                <div>Question Set: ${meta.question_set}</div>
+                <div>Post: ${meta.name_of_post}</div>
+                <div>Answer Sheet: ${meta.answer_sheet_code}</div>
+            `;
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = examData.question_paper.questions.map(question => `
+                <div class="question-card">
+                    <div class="question-number">Question ${question.question_number}</div>
+                    <div class="question-text">${question.question_text}</div>
+                    <div class="options-container">${
+                        Object.entries(question.choices).map(([key, value]) => `
+                            <div class="option" 
+                                onclick="handleAnswer(this, '${key}', '${question.correct_option}')"
+                                data-answer="${key === question.correct_option}">
+                                ${key}: ${value}
+                            </div>`
+                        ).join('')
+                    }</div>
+                </div>`
+            ).join('');
+            container.innerHTML += '<div class="bottom-spacer"></div>';
+        }
+
+        // Answer Handling
+        function handleAnswer(option, selected, correct) {
+            if (option.classList.contains('correct') || option.classList.contains('wrong')) return;
+            
+            const isCorrect = selected === correct;
+            option.classList.add(isCorrect ? 'correct' : 'wrong');
+            
+            if (!isCorrect) {
+                const correctOption = option.parentNode.querySelector(`[data-answer="true"]`);
+                correctOption.classList.add('correct');
+            }
+
+            if (isCorrect) {
+                party.confetti(option, { count: 30, spread: 15 });
+            }
+        }
+
+        // Timer Functions
+        function handleTimerControl() {
+            isTimerRunning ? pauseTimer() : startTimer();
+        }
+
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                startTime = Date.now() - (examDuration * 1000);
+                timerInterval = setInterval(updateTimer, 1000);
+                document.getElementById('timerBtn').textContent = '⏸️';
+            }
+        }
+
+        function pauseTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('timerBtn').textContent = '▶️';
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            examDuration = 0;
+            updateTimerDisplay();
+        }
+
+        function updateTimer() {
+            examDuration = Math.floor((Date.now() - startTime) / 1000);
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const pad = n => String(n).padStart(2, '0');
+            const hours = pad(Math.floor(examDuration / 3600));
+            const minutes = pad(Math.floor((examDuration % 3600) / 60));
+            const seconds = pad(examDuration % 60);
+            document.getElementById('timer').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Controls
+        function toggleAnswers() {
+            showAnswers = !showAnswers;
+            document.querySelectorAll('.option').forEach(option => {
+                if (showAnswers && option.dataset.answer === "true") {
+                    option.classList.add('correct');
+                } else if (!showAnswers) {
+                    option.classList.remove('correct', 'wrong');
+                }
+            });
+        }
+
+        function resetTest() {
+            if (confirm("Reset all progress?")) {
+                resetTimer();
+                showAnswers = false;
+                document.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('correct', 'wrong');
+                });
+            }
+        }
+
+        function toggleTheme() {
+            document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+        }
+
+        // Initialize
+        initializeExam();
+    </script>
+</body>
+</html>
