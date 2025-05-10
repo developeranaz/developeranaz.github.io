@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Kerala PSC Exam Simulator - Practice with authentic 2021 Overseer/Draftsman question papers. Real exam experience with timed tests and performance tracking.">
-    <title>Kerala PSC Overseer/Draftsman Exam Simulator 2021</title>
+    <meta name="description" content="Kerala PSC Exam Simulator - Authentic practice tests for Overseer/Draftsman positions with real exam interface">
+    <title>Kerala PSC Overseer/Draftsman Exam Simulator</title>
     <script src="https://cdn.jsdelivr.net/npm/party-js@latest/bundle/party.min.js"></script>
     <style>
         :root {
@@ -14,7 +14,8 @@
             --correct-color: #00c853;
             --wrong-color: #ff1744;
             --card-bg: #2d2d2d;
-            --header-bg: #2c3e50;
+            --timer-bg: #000000;
+            --control-bg: #333333;
         }
 
         [data-theme="light"] {
@@ -24,14 +25,15 @@
             --correct-color: #2ecc71;
             --wrong-color: #e74c3c;
             --card-bg: #ffffff;
-            --header-bg: #34495e;
+            --timer-bg: #eeeeee;
+            --control-bg: #f0f0f0;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            transition: background-color 0.3s, color 0.3s;
+            transition: all 0.3s ease;
         }
 
         body {
@@ -39,116 +41,105 @@
             line-height: 1.6;
             background-color: var(--bg-color);
             color: var(--text-color);
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 100px;
         }
 
-        header {
-            grid-column: 1 / -1;
-            background: var(--header-bg);
-            padding: 1rem;
+        .header {
             text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .exam-meta {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--control-bg);
+            border-radius: 10px;
+        }
+
+        .exam-meta div {
+            margin: 0.5rem 0;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .controls-top {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .text-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        .text-btn:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .timer-controls {
+            background: var(--timer-bg);
+            padding: 10px 15px;
+            border-radius: 30px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .site-title {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .site-subtitle {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-bottom: 1rem;
-        }
-
-        .seo-text {
-            font-size: 0.8rem;
-            max-width: 800px;
-            margin: 0 auto;
-            opacity: 0.7;
-        }
-
-        aside {
-            background: var(--card-bg);
-            padding: 1rem;
-            border-right: 1px solid #3d3d3d;
-        }
-
-        .sidebar-content {
-            position: sticky;
-            top: 1rem;
-        }
-
-        .timer {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            padding: 0.5rem;
-            background: var(--primary-color);
-            border-radius: 5px;
+        .timer-display {
+            font-weight: bold;
+            min-width: 85px;
             text-align: center;
+            font-family: monospace;
         }
 
-        main {
-            padding: 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        footer {
-            grid-column: 1 / -1;
-            background: var(--header-bg);
-            padding: 1rem;
-            text-align: center;
-            margin-top: auto;
-        }
-
-        .container {
-            max-width: 100%;
-        }
-
-        .header-info {
-            background: var(--card-bg);
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-        }
-
-        .mode-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            padding: 10px 20px;
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: var(--primary-color);
+            background: var(--primary-color);
             color: white;
-            transition: opacity 0.3s;
-        }
-
-        button:hover {
-            opacity: 0.9;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         .question-card {
             background: var(--card-bg);
             border-radius: 10px;
             padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 1rem auto;
+            max-width: 800px;
         }
 
         .question-number {
             color: var(--primary-color);
-            margin-bottom: 10px;
-            font-weight: bold;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .options-container {
@@ -157,339 +148,1420 @@
         }
 
         .option {
-            padding: 10px;
-            border: 2px solid #3d3d3d;
-            border-radius: 5px;
+            padding: 15px;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
-            background-color: var(--card-bg);
+            transition: transform 0.2s;
+            background: transparent;
         }
 
         .option:hover {
-            border-color: var(--primary-color);
+            transform: translateY(-2px);
         }
 
         .option.correct {
-            background-color: var(--correct-color);
-            color: white;
+            background: var(--correct-color);
             border-color: var(--correct-color);
+            color: white;
         }
 
         .option.wrong {
-            background-color: var(--wrong-color);
-            color: white;
+            background: var(--wrong-color);
             border-color: var(--wrong-color);
+            color: white;
         }
 
-        .answer-text {
-            margin-top: 10px;
-            display: none;
-            color: var(--correct-color);
-            font-weight: bold;
-        }
-
-        .show-answer .answer-text {
-            display: block;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            padding: 0;
+        .bottom-spacer {
+            height: 120px;
+            width: 100%;
         }
 
         @media (max-width: 768px) {
             body {
-                grid-template-columns: 1fr;
+                padding: 10px;
+                padding-bottom: 80px;
             }
-
-            aside {
-                display: none;
+            
+            .control-btn {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .timer-controls {
+                padding: 8px 12px;
+            }
+            
+            .question-card {
+                padding: 15px;
+                margin: 0.5rem auto;
             }
         }
     </style>
 </head>
 <body data-theme="dark">
-    <header>
-        <h1 class="site-title">Kerala PSC Exam Simulator</h1>
-        <div class="site-subtitle">II Grade Overseer/Draftsman 2021 Exam Practice</div>
-        <div class="seo-text">
-            Practice with official 2021 Kerala PSC question papers for Overseer Grade II and Draftsman positions (Category No: 206/2020 & 324/2020). Real exam simulation with time tracking and performance analysis.
+    <div class="header">
+        <h1>Kerala PSC Exam Simulator</h1>
+        <div class="exam-meta" id="examMeta"></div>
+        <div class="controls-top">
+            <button class="text-btn" onclick="toggleAnswers()">Toggle Answers</button>
+            <button class="text-btn" onclick="resetTest()">Clear All</button>
         </div>
-    </header>
+    </div>
 
-    <aside>
-        <div class="sidebar-content">
-            <div class="timer" id="timer">00:00:00</div>
-            <div class="progress-summary">
-                <h3>Your Progress</h3>
-                <div id="progress-stats"></div>
-            </div>
+    <div class="controls">
+        <div class="timer-controls">
+            <div class="timer-display" id="timer">00:00:00</div>
+            <button class="control-btn" onclick="handleTimerControl()" id="timerBtn">▶️</button>
+            <button class="control-btn" onclick="resetTimer()">🔄</button>
         </div>
-    </aside>
+        <button class="control-btn" onclick="toggleTheme()">🌓</button>
+    </div>
 
-    <main>
-        <div class="container">
-            <div class="header-info">
-                <div id="category-number"></div>
-                <div id="question-set"></div>
-            </div>
-            
-            <div class="mode-buttons">
-                <button onclick="toggleAnswers()">Toggle All Answers</button>
-                <button onclick="resetQuiz()">Reset Exam</button>
-                <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
-            </div>
-            
-            <div id="quiz-container"></div>
-        </div>
-    </main>
-
-    <footer>
-        <div class="footer-content">
-            © 2023 Kerala PSC Exam Simulator | Practice Platform for II Grade Overseer/Draftsman | Not affiliated with Kerala Public Service Commission
-        </div>
-    </footer>
+    <div id="quiz-container"></div>
+    <div class="bottom-spacer"></div>
 
     <script>
-        // Embedded JSON Data
-        const demoData = {
-            "question_paper": {
-                "category_number": "065/2021",
-                "question_set": "A",
-                "name_of_post": "II GRADE OVERSEER/ DRAFTSMAN (CIVIL) in PWD/ Irrigation & OVERSEER GRADE II/ DRAFTSMAN GRADE II in LSGD Cat.No: 206/2020 & 324/2020",
-                "questions": [
-                    {
-                        "question_number": 1,
-                        "question_text": "The ratio of the number of days the canal has actually run to the number of days of irrigation period",
-                        "choices": {
-                            "A": "Time factor",
-                            "B": "Capacity factor",
-                            "C": "Outlet factor",
-                            "D": "Open discharge"
-                        },
-                        "correct_option": "A",
-                        "answer_text": "Time factor"
-                    },
-                    {
-                        "question_number": 2,
-                        "question_text": "The property of liquid by virtue of which liquid undergo a change in volume with the change in pressure is called",
-                        "choices": {
-                            "A": "Viscosity",
-                            "B": "Compressibility",
-                            "C": "Capillarity",
-                            "D": "Surface tension"
-                        },
-                        "correct_option": "B",
-                        "answer_text": "Compressibility"
-                    }
-                ]
-            }
-        };
+        // Exam Data (JSON Format)
+        const examData = {
+  "question_paper": {
+    "category_number": "065/2021",
+    "question_set": "A",
+    "name_of_post": "II GRADE OVERSEER/ DRAFTSMAN (CIVIL) in PWD/ Irrigation & OVERSEER GRADE II/ DRAFTSMAN GRADE II in LSGD Cat.No: 206/2020 & 324/2020",
+    "questions": [
+      {
+        "question_number": 1,
+        "question_text": "The ratio of the number of days the canal has actually run to the number of days of irrigation period",
+        "choices": {
+          "A": "Time factor",
+          "B": "Capacity factor",
+          "C": "Outlet factor",
+          "D": "Open discharge"
+        },
+        "correct_option": "A",
+        "answer_text": "Time factor"
+      },
+      {
+        "question_number": 2,
+        "question_text": "The property of liquid by virtue of which liquid undergo a change in volume with the change in pressure is called",
+        "choices": {
+          "A": "Viscosity",
+          "B": "Compressibility",
+          "C": "Capillarity",
+          "D": "Surface tension"
+        },
+        "correct_option": "B",
+        "answer_text": "Compressibility"
+      },
+      {
+        "question_number": 3,
+        "question_text": "To make out an estimate for a work which datas are necessary",
+        "choices": {
+          "A": "Drawing (Plan, Section etc.)",
+          "B": "Specifications",
+          "C": "Rates",
+          "D": "All of the above"
+        },
+        "correct_option": "D",
+        "answer_text": "All of the above"
+      },
+      {
+        "question_number": 4,
+        "question_text": "Maximum safe bearing capacity of hard rocks without defects and laminations",
+        "choices": {
+          "A": "330 t/m²",
+          "B": "330 kg/cm²",
+          "C": "250 t/m²",
+          "D": "350 t/m²"
+        },
+        "correct_option": "A",
+        "answer_text": "330 t/m²"
+      },
+      {
+        "question_number": 5,
+        "question_text": "The liquid medium used in oil paint",
+        "choices": {
+          "A": "Linseed oil",
+          "B": "Alcohol",
+          "C": "Thinner",
+          "D": "Turpentine oil"
+        },
+        "correct_option": "A",
+        "answer_text": "Linseed oil"
+      },
+      {
+        "question_number": 6,
+        "question_text": "The water content at which plants can no longer extracts sufficient water from the soil for its growth",
+        "choices": {
+          "A": "Available moisture",
+          "B": "Readily available moisture",
+          "C": "Field capacity",
+          "D": "Wilting co-efficient"
+        },
+        "correct_option": "D",
+        "answer_text": "Wilting co-efficient"
+      },
+      {
+        "question_number": 7,
+        "question_text": "It is an impermeable formation which neither contains water nor transmits any water",
+        "choices": {
+          "A": "Aquifer",
+          "B": "Aquiclude",
+          "C": "Aquifuge",
+          "D": "Aqueduct"
+        },
+        "correct_option": "C",
+        "answer_text": "Aquifuge"
+      },
+      {
+        "question_number": 8,
+        "question_text": "A fresh detailed estimate of the additional works in addition to the original estimate is",
+        "choices": {
+          "A": "Supplementary estimate",
+          "B": "Revised estimate",
+          "C": "Annual repair estimate",
+          "D": "Maintenance estimate"
+        },
+        "correct_option": "A",
+        "answer_text": "Supplementary estimate"
+      },
+      {
+        "question_number": 9,
+        "question_text": "Poise is the unit of viscosity in CGS system of units, therefore one poise is equal to",
+        "choices": {
+          "A": "1 Ns/m²",
+          "B": "0.1 Ns/m²",
+          "C": "10 Ns/m²",
+          "D": "100 Ns/m²"
+        },
+        "correct_option": "B",
+        "answer_text": "0.1 Ns/m²"
+      },
+      {
+        "question_number": 10,
+        "question_text": "For work charge establishment provided in the percentage of estimated cost is",
+        "choices": {
+          "A": "1% to 2%",
+          "B": "3% to 5%",
+          "C": "1% to 1%%",
+          "D": "20%"
+        },
+        "correct_option": "A",
+        "answer_text": "1% to 2%"
+      },
+      {
+        "question_number": 11,
+        "question_text": "According to Indian Standard Specifications, the full strength of concrete is achieved after",
+        "choices": {
+          "A": "7 days",
+          "B": "14 days",
+          "C": "28 days",
+          "D": "21 days"
+        },
+        "correct_option": "C",
+        "answer_text": "28 days"
+      },
+      {
+        "question_number": 12,
+        "question_text": "The expansion in Portland cement can be tested by",
+        "choices": {
+          "A": "Fineness test",
+          "B": "Soundness test",
+          "C": "Setting time test",
+          "D": "Consistency test"
+        },
+        "correct_option": "B",
+        "answer_text": "Soundness test"
+      },
+      {
+        "question_number": 13,
+        "question_text": "Hydraulic lime generates ______ heat as compared to fat lime.",
+        "choices": {
+          "A": "Same",
+          "B": "Less",
+          "C": "More",
+          "D": "Equal"
+        },
+        "correct_option": "B",
+        "answer_text": "Less"
+      },
+      {
+        "question_number": 14,
+        "question_text": "Unit of measurement of bending and binding of steel reinforcement in MKS system",
+        "choices": {
+          "A": "Kgm",
+          "B": "Tonne",
+          "C": "Quintel",
+          "D": "Metre"
+        },
+        "correct_option": "C",
+        "answer_text": "Quintel"
+      },
+      {
+        "question_number": 15,
+        "question_text": "Density of mild steel is equal to",
+        "choices": {
+          "A": "7850 kg/Cu.m",
+          "B": "7850 kg/m",
+          "C": "78.5 g/Cu.m",
+          "D": "78.5 kg/Cu.m"
+        },
+        "correct_option": "A",
+        "answer_text": "7850 kg/Cu.m"
+      },
+      {
+        "question_number": 16,
+        "question_text": "Find the approximate cost of a bridge of 3 spans, 50 metre each span @ 30,000 per running metre of span.",
+        "choices": {
+          "A": "₹ 30,000",
+          "B": "₹ 50 × 30,000",
+          "C": "3 × 50 × 30,000",
+          "D": "3 × 50"
+        },
+        "correct_option": "C",
+        "answer_text": "3 × 50 × 30,000"
+      },
+      {
+        "question_number": 17,
+        "question_text": "In a straight bar the length of one hook may be taken as",
+        "choices": {
+          "A": "18 D",
+          "B": "L + 18 D",
+          "C": "9 D",
+          "D": "L + 9 D"
+        },
+        "correct_option": "C",
+        "answer_text": "9 D"
+      },
+      {
+        "question_number": 18,
+        "question_text": "For loose soil, Rankine's formula is d = P/W [(1 - sin φ)/(1 + sin φ)]², where P is",
+        "choices": {
+          "A": "Minimum depth of foundation",
+          "B": "Load on soil in kg/m²",
+          "C": "Weight of soil",
+          "D": "Angle of repose"
+        },
+        "correct_option": "B",
+        "answer_text": "Load on soil in kg/m²"
+      },
+      {
+        "question_number": 19,
+        "question_text": "The rate of hydration and hydrolysis of cement depends upon its",
+        "choices": {
+          "A": "Soundness",
+          "B": "Fineness",
+          "C": "Setting time",
+          "D": "Tensile strength"
+        },
+        "correct_option": "B",
+        "answer_text": "Fineness"
+      },
+      {
+        "question_number": 20,
+        "question_text": "The lower end of a hip rafter is generally supported on a diagonal piece of wood which is laid across the corner of the wall. The diagonal piece is known as",
+        "choices": {
+          "A": "Dragon beam",
+          "B": "Dragon tie",
+          "C": "Angle tie",
+          "D": "All of the above"
+        },
+        "correct_option": "A",
+        "answer_text": "Dragon beam"
+      },
+      {
+        "question_number": 21,
+        "question_text": "Wall thickness of garden wall bond is",
+        "choices": {
+          "A": "30 cm",
+          "B": "10 cm",
+          "C": "20 cm",
+          "D": "15 cm"
+        },
+        "correct_option": "C",
+        "answer_text": "20 cm"
+      },
+      {
+        "question_number": 22,
+        "question_text": "In a vertical shore arranged in horizontal member and vertical members these are",
+        "choices": {
+          "A": "Needles and Dead shores",
+          "B": "Dog and Put log",
+          "C": "Dead shores and Needles",
+          "D": "Bracing and Transoms"
+        },
+        "correct_option": "A",
+        "answer_text": "Needles and Dead shores"
+      },
+      {
+        "question_number": 23,
+        "question_text": "Which test is performed to find out the presence of soluble matter in sample stone ?",
+        "choices": {
+          "A": "Crystallisation test",
+          "B": "Attrition test",
+          "C": "Smith’s test",
+          "D": "Acid test"
+        },
+        "correct_option": "C",
+        "answer_text": "Smith’s test"
+      },
+      {
+        "question_number": 24,
+        "question_text": "The tiles are burnt in typical kiln, known as",
+        "choices": {
+          "A": "Sialkote kiln",
+          "B": "Cupola furnace",
+          "C": "Hoffman’s kiln",
+          "D": "Clamps"
+        },
+        "correct_option": "C",
+        "answer_text": "Hoffman’s kiln"
+      },
+      {
+        "question_number": 25,
+        "question_text": "A piezometer is the simplest form of manometers used for measuring",
+        "choices": {
+          "A": "Moderate pressure of liquids",
+          "B": "Vacuum pressure",
+          "C": "High pressure of liquids",
+          "D": "Gauge pressure"
+        },
+        "correct_option": "A",
+        "answer_text": "Moderate pressure of liquids"
+      },
+      {
+        "question_number": 26,
+        "question_text": "The ratio of the inertia force to the surface tension force",
+        "choices": {
+          "A": "Reynold’s number",
+          "B": "Weber’s number",
+          "C": "Froude’s number",
+          "D": "Euler’s number"
+        },
+        "correct_option": "B",
+        "answer_text": "Weber’s number"
+      },
+      {
+        "question_number": 27,
+        "question_text": "The concrete as per BIS 456 – 1978 is designated in ______ grades namely M₁₅, M₂₀ etc.",
+        "choices": {
+          "A": "8",
+          "B": "5",
+          "C": "6",
+          "D": "7"
+        },
+        "correct_option": "D",
+        "answer_text": "7"
+      },
+      {
+        "question_number": 28,
+        "question_text": "Any structure constructed to regulate the discharge, full supply level or velocity in a canal is known as",
+        "choices": {
+          "A": "Regulation work",
+          "B": "Canal lining",
+          "C": "Canal design",
+          "D": "Cross drainage works"
+        },
+        "correct_option": "A",
+        "answer_text": "Regulation work"
+      },
+      {
+        "question_number": 29,
+        "question_text": "The total energy of a liquid particle in motion is equal to",
+        "choices": {
+          "A": "Kinetic Energy – (Pressure Energy + Potential Energy)",
+          "B": "Pressure Energy + Kinetic Energy + Potential Energy",
+          "C": "Potential Energy – (Kinetic Energy – Pressure Energy)",
+          "D": "Pressure Energy – (Kinetic Energy + Potential Energy)"
+        },
+        "correct_option": "B",
+        "answer_text": "Pressure Energy + Kinetic Energy + Potential Energy"
+      },
+      {
+        "question_number": 30,
+        "question_text": "The co-efficient of discharge for an external mouthpiece",
+        "choices": {
+          "A": "0.855",
+          "B": "0.755",
+          "C": "0.555",
+          "D": "0.655"
+        },
+        "correct_option": "A",
+        "answer_text": "0.855"
+      },
+      {
+        "question_number": 31,
+        "question_text": "Any hydraulic structure which supplies water to the off taking canal is called",
+        "choices": {
+          "A": "Storage head works",
+          "B": "Reservoir",
+          "C": "Head works",
+          "D": "Diversion head works"
+        },
+        "correct_option": "C",
+        "answer_text": "Head works"
+      },
+      {
+        "question_number": 32,
+        "question_text": "The hydraulic structure constructed across a river to store water on its upstream side",
+        "choices": {
+          "A": "Reservoir",
+          "B": "Head works",
+          "C": "Storage tanks",
+          "D": "Dams"
+        },
+        "correct_option": "D",
+        "answer_text": "Dams"
+      },
+      {
+        "question_number": 33,
+        "question_text": "The efficiency of power transmission through a pipe is (H – specific weight, hf – head loss due to friction in the pipe)",
+        "choices": {
+          "A": "(H - hf)/H",
+          "B": "(H + hf)/H",
+          "C": "H/(H - hf)",
+          "D": "H/(H + hf)"
+        },
+        "correct_option": "A",
+        "answer_text": "(H - hf)/H"
+      },
+      {
+        "question_number": 34,
+        "question_text": "The total cost of construction including all expenditure incurred from the beginning upto the end of completion of work is called",
+        "choices": {
+          "A": "Book value",
+          "B": "Capital cost",
+          "C": "Prime cost",
+          "D": "Approximate cost"
+        },
+        "correct_option": "B",
+        "answer_text": "Capital cost"
+      },
+      {
+        "question_number": 35,
+        "question_text": "A swing door is provided with special hinges known as",
+        "choices": {
+          "A": "Garnet hinge",
+          "B": "Rising butt hinge",
+          "C": "Counter flap hinge",
+          "D": "Double action spring hinge"
+        },
+        "correct_option": "D",
+        "answer_text": "Double action spring hinge"
+      },
+      {
+        "question_number": 36,
+        "question_text": "The major problems of upper floors are",
+        "choices": {
+          "A": "Strength",
+          "B": "Stability",
+          "C": "Both (A) and (B)",
+          "D": "Dampness"
+        },
+        "correct_option": "C",
+        "answer_text": "Both (A) and (B)"
+      },
+      {
+        "question_number": 37,
+        "question_text": "In a public building, the stair should be located near ______ of the building.",
+        "choices": {
+          "A": "Corner",
+          "B": "End",
+          "C": "Inside",
+          "D": "Entrance"
+        },
+        "correct_option": "D",
+        "answer_text": "Entrance"
+      },
+      {
+        "question_number": 38,
+        "question_text": "If tempering is properly carried out, the good brick earth can be rolled without breaking in small threads of ______ diameter.",
+        "choices": {
+          "A": "5 mm",
+          "B": "3 mm",
+          "C": "7 mm",
+          "D": "2 mm"
+        },
+        "correct_option": "B",
+        "answer_text": "3 mm"
+      },
+      {
+        "question_number": 39,
+        "question_text": "The determination of rate per unit of particular item of work, from the cost of quantities of materials, the cost of labourers and other miscellaneous petty expenses require for its completion is known as the",
+        "choices": {
+          "A": "Rate",
+          "B": "Schedule of rates",
+          "C": "Analysis of rates",
+          "D": "Cost"
+        },
+        "correct_option": "C",
+        "answer_text": "Analysis of rates"
+      },
+      {
+        "question_number": 40,
+        "question_text": "Painting upto 15 cm in width or in girth and not in conjunction with similar works shall be measured in",
+        "choices": {
+          "A": "cm²",
+          "B": "m²",
+          "C": "m",
+          "D": "m³"
+        },
+        "correct_option": "C",
+        "answer_text": "m"
+      },
+      {
+        "question_number": 41,
+        "question_text": "The co-efficient or multiplying factor of fully glazed or gauged doors is",
+        "choices": {
+          "A": "0.5 for each side",
+          "B": "1/8 of each side",
+          "C": "1 for each side",
+          "D": "3/4 for each side"
+        },
+        "correct_option": "C",
+        "answer_text": "1 for each side"
+      },
+      {
+        "question_number": 42,
+        "question_text": "In which type of CD works, the canal water and the drainage water are permitted to intermingle with each other?",
+        "choices": {
+          "A": "Super passage",
+          "B": "Canal syphon",
+          "C": "Aqueduct",
+          "D": "Level crossing"
+        },
+        "correct_option": "D",
+        "answer_text": "Level crossing"
+      },
+      {
+        "question_number": 43,
+        "question_text": "Which should give a clear picture or idea of the whole project or work?",
+        "choices": {
+          "A": "Estimate",
+          "B": "Specification",
+          "C": "Report",
+          "D": "Plan"
+        },
+        "correct_option": "C",
+        "answer_text": "Report"
+      },
+      {
+        "question_number": 44,
+        "question_text": "The carpet area of an office building is ______ of plinth area.",
+        "choices": {
+          "A": "50% to 90%",
+          "B": "90%",
+          "C": "45%",
+          "D": "60% to 75%"
+        },
+        "correct_option": "D",
+        "answer_text": "60% to 75%"
+      },
+      {
+        "question_number": 45,
+        "question_text": "In a building height is less than 10 m, the front open space width for building with front street",
+        "choices": {
+          "A": "Minimum 3 m",
+          "B": "Maximum 3 m",
+          "C": "Minimum 7 m",
+          "D": "Minimum 7.5 m"
+        },
+        "correct_option": "A",
+        "answer_text": "Minimum 3 m"
+      },
+      {
+        "question_number": 46,
+        "question_text": "The value at the end of the utility period without being dismantled is called",
+        "choices": {
+          "A": "Scrap value",
+          "B": "Salvage value",
+          "C": "Market value",
+          "D": "Book value"
+        },
+        "correct_option": "B",
+        "answer_text": "Salvage value"
+      },
+      {
+        "question_number": 47,
+        "question_text": "The person who takes the loans is known as",
+        "choices": {
+          "A": "Mortgager",
+          "B": "Mortgagee",
+          "C": "Freehold",
+          "D": "Lessor"
+        },
+        "correct_option": "B",
+        "answer_text": "Mortgagee"
+      },
+      {
+        "question_number": 48,
+        "question_text": "Unit of measurement of reinforced brick work in MKS system",
+        "choices": {
+          "A": "Sq.m",
+          "B": "m",
+          "C": "Cu.m",
+          "D": "Per number"
+        },
+        "correct_option": "C",
+        "answer_text": "Cu.m"
+      },
+      {
+        "question_number": 49,
+        "question_text": "The cost under item of work is calculated from quantities already computed at workable rate and the total cost is worked out in a prescribed form is called",
+        "choices": {
+          "A": "Detailed estimate",
+          "B": "Abstract estimate",
+          "C": "Both (A) and (B)",
+          "D": "None of the above"
+        },
+        "correct_option": "B",
+        "answer_text": "Abstract estimate"
+      },
+      {
+        "question_number": 50,
+        "question_text": "If street width is above or equal to 12 m, the height of the building should not be more than",
+        "choices": {
+          "A": "24 m",
+          "B": "12 m",
+          "C": "8 m",
+          "D": "16 m"
+        },
+        "correct_option": "A",
+        "answer_text": "24 m"
+      },
+      {
+        "question_number": 51,
+        "question_text": "The face of the pointing is kept vertical and it is pressed inside the wall surface by a suitable tool to a depth of about 5 mm or more is called",
+        "choices": {
+          "A": "Recessed pointing",
+          "B": "Flush pointing",
+          "C": "Tuck pointing",
+          "D": "Struck pointing"
+        },
+        "correct_option": "A",
+        "answer_text": "Recessed pointing"
+      },
+      {
+        "question_number": 52,
+        "question_text": "In which term is used to refer the effect derived from space of a room, i.e. its length, width and height ?",
+        "choices": {
+          "A": "Prospect",
+          "B": "Aspect",
+          "C": "Roominess",
+          "D": "Orientation"
+        },
+        "correct_option": "C",
+        "answer_text": "Roominess"
+      },
+      {
+        "question_number": 53,
+        "question_text": "The coping between apex and skew corbel in case of a gable wall is known as",
+        "choices": {
+          "A": "Stoolings",
+          "B": "Springer",
+          "C": "Finial",
+          "D": "Kneeler"
+        },
+        "correct_option": "D",
+        "answer_text": "Kneeler"
+      },
+      {
+        "question_number": 54,
+        "question_text": "One m³ of brick earth is about",
+        "choices": {
+          "A": "1800 kg",
+          "B": "2200 kg",
+          "C": "1200 kg",
+          "D": "1500 kg"
+        },
+        "correct_option": "A",
+        "answer_text": "1800 kg"
+      },
+      {
+        "question_number": 55,
+        "question_text": "The perpendicular distance between the intrados and extrados of an arch is called",
+        "choices": {
+          "A": "Depth of an arch",
+          "B": "Pitch of an arch",
+          "C": "Thickness of an arch",
+          "D": "Width of an arch"
+        },
+        "correct_option": "A",
+        "answer_text": "Depth of an arch"
+      },
+      {
+        "question_number": 56,
+        "question_text": "T-square are designated by its",
+        "choices": {
+          "A": "Breadth",
+          "B": "Overall length",
+          "C": "Blade length",
+          "D": "Width of head"
+        },
+        "correct_option": "B",
+        "answer_text": "Overall length"
+      },
+      {
+        "question_number": 57,
+        "question_text": "What is the minimum width of border on left side of A₀ and A₁ drawing sheet ?",
+        "choices": {
+          "A": "26 mm",
+          "B": "24 mm",
+          "C": "22 mm",
+          "D": "20 mm"
+        },
+        "correct_option": "D",
+        "answer_text": "20 mm"
+      },
+      {
+        "question_number": 58,
+        "question_text": "Inner details of an object not visible from outside are represented by",
+        "choices": {
+          "A": "Visible outlines",
+          "B": "Dimension lines",
+          "C": "Dashed lines",
+          "D": "Centre lines"
+        },
+        "correct_option": "C",
+        "answer_text": "Dashed lines"
+      },
+      {
+        "question_number": 59,
+        "question_text": "How the dimensions can be read in aligned system of dimension technique ?",
+        "choices": {
+          "A": "Left hand edge of drawing sheet",
+          "B": "Right hand edge of drawing sheet",
+          "C": "Top to bottom",
+          "D": "All of the above"
+        },
+        "correct_option": "D",
+        "answer_text": "All of the above"
+      },
+      {
+        "question_number": 60,
+        "question_text": "The length of arrow head is generally",
+        "choices": {
+          "A": "Same as width",
+          "B": "Greater than width",
+          "C": "3 times its width",
+          "D": "Two times its width"
+        },
+        "correct_option": "C",
+        "answer_text": "3 times its width"
+      },
+      {
+        "question_number": 61,
+        "question_text": "Which type of scale is used when representative fraction of a scale is greater than unit ?",
+        "choices": {
+          "A": "Reducing scale",
+          "B": "Minimum scale",
+          "C": "Enlarging scale",
+          "D": "Maximum scale"
+        },
+        "correct_option": "C",
+        "answer_text": "Enlarging scale"
+      },
+      {
+        "question_number": 62,
+        "question_text": "Where the rear view is placed in first angle projection ?",
+        "choices": {
+          "A": "Right side of right side view",
+          "B": "Bottom of elevation",
+          "C": "Left side of right side view",
+          "D": "Top of elevation"
+        },
+        "correct_option": "C",
+        "answer_text": "Left side of right side view"
+      },
+      {
+        "question_number": 63,
+        "question_text": "Where the plan is placed in third angle projection ?",
+        "choices": {
+          "A": "Below elevation",
+          "B": "Above elevation",
+          "C": "Left of elevation",
+          "D": "Right of elevation"
+        },
+        "correct_option": "A",
+        "answer_text": "Below elevation"
+      },
+      {
+        "question_number": 64,
+        "question_text": "While cutting, if the plane is at an angle and it cuts all generators then the conic formed is called as",
+        "choices": {
+          "A": "Circle",
+          "B": "Ellipse",
+          "C": "Parabola",
+          "D": "Hyperbola"
+        },
+        "correct_option": "B",
+        "answer_text": "Ellipse"
+      },
+      {
+        "question_number": 65,
+        "question_text": "Which one is not belong to quadrilaterals ?",
+        "choices": {
+          "A": "Square",
+          "B": "Rectangle",
+          "C": "Rhombus",
+          "D": "Triangle"
+        },
+        "correct_option": "D",
+        "answer_text": "Triangle"
+      },
+      {
+        "question_number": 66,
+        "question_text": "In a chain two consecutive links are connected by means of",
+        "choices": {
+          "A": "Rivetted joint",
+          "B": "Welded joint",
+          "C": "Three rings",
+          "D": "Two rings"
+        },
+        "correct_option": "D",
+        "answer_text": "Two rings"
+      },
+      {
+        "question_number": 67,
+        "question_text": "The length of a line measured with a 20 m chain is 634.4 m. The chain is 5 cm too long. The true length of the line is",
+        "choices": {
+          "A": "635.99 m",
+          "B": "636.10 m",
+          "C": "636.20 m",
+          "D": "634.99 m"
+        },
+        "correct_option": "A",
+        "answer_text": "635.99 m"
+      },
+      {
+        "question_number": 68,
+        "question_text": "In prismatic compass 90° is marked on the graduated ring at",
+        "choices": {
+          "A": "North end",
+          "B": "South end",
+          "C": "East end",
+          "D": "West end"
+        },
+        "correct_option": "B",
+        "answer_text": "South end"
+      },
+      {
+        "question_number": 69,
+        "question_text": "The direction of true meridian through a point can be established by",
+        "choices": {
+          "A": "Astronomical observation",
+          "B": "Theodolite",
+          "C": "Magnetic compass",
+          "D": "Box-sextant"
+        },
+        "correct_option": "A",
+        "answer_text": "Astronomical observation"
+      },
+      {
+        "question_number": 70,
+        "question_text": "Find the angle between the line OA and OB, if their respective bearings are 126° 00' and 300° 15'.",
+        "choices": {
+          "A": "174° 15'",
+          "B": "185° 45'",
+          "C": "173° 45'",
+          "D": "147° 15'"
+        },
+        "correct_option": "C",
+        "answer_text": "173° 45'"
+      },
+      {
+        "question_number": 71,
+        "question_text": "The much suitable plane table surveying on hilly country where it is difficult to measure the horizontal distance",
+        "choices": {
+          "A": "Radiation",
+          "B": "Intersection",
+          "C": "Traversing",
+          "D": "Resection"
+        },
+        "correct_option": "B",
+        "answer_text": "Intersection"
+      },
+      {
+        "question_number": 72,
+        "question_text": "In plane tabling, the straight lines, angles and triangles are constructed by",
+        "choices": {
+          "A": "Protractor",
+          "B": "Divider",
+          "C": "Graphical method",
+          "D": "Planimeter"
+        },
+        "correct_option": "C",
+        "answer_text": "Graphical method"
+      },
+      {
+        "question_number": 73,
+        "question_text": "The number of fundamental lines for dumpy level is",
+        "choices": {
+          "A": "2",
+          "B": "3",
+          "C": "4",
+          "D": "5"
+        },
+        "correct_option": "B",
+        "answer_text": "3"
+      },
+      {
+        "question_number": 74,
+        "question_text": "The Backsight reading on B.M. of R.L. 500 m is 2.685 m. If foresight reading on a point is 1.345 m, the reduced level of the point is",
+        "choices": {
+          "A": "501.340 m",
+          "B": "501.43 m",
+          "C": "501.435 m",
+          "D": "504.030 m"
+        },
+        "correct_option": "A",
+        "answer_text": "501.340 m"
+      },
+      {
+        "question_number": 75,
+        "question_text": "The permissible closing error for rough levelling is ______ where ‘E’ the error in millimeters and ‘k’ the distance in kilometers.",
+        "choices": {
+          "A": "E = ±96√k",
+          "B": "E = ±64√k",
+          "C": "E = ±36√k",
+          "D": "E = ±24√k"
+        },
+        "correct_option": "A",
+        "answer_text": "E = ±96√k"
+      },
+      {
+        "question_number": 76,
+        "question_text": "The contour interval is inversely proportional to",
+        "choices": {
+          "A": "Scale of the map",
+          "B": "Fund available",
+          "C": "Purpose of map",
+          "D": "All of the above"
+        },
+        "correct_option": "D",
+        "answer_text": "All of the above"
+      },
+      {
+        "question_number": 77,
+        "question_text": "In a theodolite the line of collimation is",
+        "choices": {
+          "A": "Parallel to the axis of plate level",
+          "B": "Parallel to the vertical axis",
+          "C": "Perpendicular to the trunnion axis",
+          "D": "Parallel to the horizontal axis"
+        },
+        "correct_option": "C",
+        "answer_text": "Perpendicular to the trunnion axis"
+      },
+      {
+        "question_number": 78,
+        "question_text": "For railways and highway works, the angle measured for the setting out work is",
+        "choices": {
+          "A": "Included angle",
+          "B": "Exterior angle",
+          "C": "Deflection angle",
+          "D": "Horizontal angle"
+        },
+        "correct_option": "C",
+        "answer_text": "Deflection angle"
+      },
+      {
+        "question_number": 79,
+        "question_text": "What is the use of optical plummet in total station ?",
+        "choices": {
+          "A": "Focussing",
+          "B": "Orientation",
+          "C": "Precise levelling",
+          "D": "Precise centering"
+        },
+        "correct_option": "D",
+        "answer_text": "Precise centering"
+      },
+      {
+        "question_number": 80,
+        "question_text": "Who developed the GPS ?",
+        "choices": {
+          "A": "USA",
+          "B": "India",
+          "C": "Russia",
+          "D": "Italy"
+        },
+        "correct_option": "A",
+        "answer_text": "USA"
+      },
+      {
+        "question_number": 81,
+        "question_text": "Auto CAD is a",
+        "choices": {
+          "A": "Drafting software",
+          "B": "Hardware",
+          "C": "Input device",
+          "D": "Antivirus software"
+        },
+        "correct_option": "A",
+        "answer_text": "Drafting software"
+      },
+      {
+        "question_number": 82,
+        "question_text": "Which mode is allowed the user to draw 90° straight line ?",
+        "choices": {
+          "A": "Osnap",
+          "B": "Ortho",
+          "C": "Linear",
+          "D": "Polar"
+        },
+        "correct_option": "B",
+        "answer_text": "Ortho"
+      },
+      {
+        "question_number": 83,
+        "question_text": "Which of the following file extensions cannot open in autocad ?",
+        "choices": {
+          "A": "dwg",
+          "B": "dxf",
+          "C": "dot",
+          "D": "dws"
+        },
+        "correct_option": "C",
+        "answer_text": "dot"
+      },
+      {
+        "question_number": 84,
+        "question_text": "Which shortcut key does the work of ortho ?",
+        "choices": {
+          "A": "F6",
+          "B": "F7",
+          "C": "F8",
+          "D": "F9"
+        },
+        "correct_option": "C",
+        "answer_text": "F8"
+      },
+      {
+        "question_number": 85,
+        "question_text": "______ command allows to shrink or enlarge the already existing drawing about a base point.",
+        "choices": {
+          "A": "Scale",
+          "B": "Stretch",
+          "C": "Mirror",
+          "D": "Explode"
+        },
+        "correct_option": "A",
+        "answer_text": "Scale"
+      },
+      {
+        "question_number": 86,
+        "question_text": "The drawing area can be defined by using ______ command.",
+        "choices": {
+          "A": "Layers",
+          "B": "Limits",
+          "C": "Dimension",
+          "D": "Hatch"
+        },
+        "correct_option": "B",
+        "answer_text": "Limits"
+      },
+      {
+        "question_number": 87,
+        "question_text": "The shortcut key for copy is",
+        "choices": {
+          "A": "Ctrl + C",
+          "B": "Ctrl + Z",
+          "C": "Ctrl + V",
+          "D": "Ctrl + d"
+        },
+        "correct_option": "A",
+        "answer_text": "Ctrl + C"
+      },
+      {
+        "question_number": 88,
+        "question_text": "The printing characteristic ‘dpi’ stands for",
+        "choices": {
+          "A": "Degree of printing",
+          "B": "Dot printing index",
+          "C": "Disc printing index",
+          "D": "Dots per inch"
+        },
+        "correct_option": "D",
+        "answer_text": "Dots per inch"
+      },
+      {
+        "question_number": 89,
+        "question_text": "What is the value of one Horse Power (HP) in Metric system ?",
+        "choices": {
+          "A": "750 watts",
+          "B": "746 watts",
+          "C": "735.5 watts",
+          "D": "735 watts"
+        },
+        "correct_option": "C",
+        "answer_text": "735.5 watts"
+      },
+      {
+        "question_number": 90,
+        "question_text": "Which is equivalent to one Pascal ?",
+        "choices": {
+          "A": "1N/mm²",
+          "B": "1N/cm²",
+          "C": "1N/dm²",
+          "D": "1N/m²"
+        },
+        "correct_option": "D",
+        "answer_text": "1N/m²"
+      },
+      {
+        "question_number": 91,
+        "question_text": "Kinetic energy K.E. =",
+        "choices": {
+          "A": "mV²",
+          "B": "½mV²",
+          "C": "mV",
+          "D": "mgh"
+        },
+        "correct_option": "B",
+        "answer_text": "½mV²"
+      },
+      {
+        "question_number": 92,
+        "question_text": "The surface area of a sphere is 36π cm² and then the volume of the sphere is",
+        "choices": {
+          "A": "12π cm³",
+          "B": "18π cm³",
+          "C": "72π cm³",
+          "D": "36π cm³"
+        },
+        "correct_option": "D",
+        "answer_text": "36π cm³"
+      },
+      {
+        "question_number": 93,
+        "question_text": "Find the volume of cube having a length of 60 mm.",
+        "choices": {
+          "A": "216 cm³",
+          "B": "260 cm³",
+          "C": "261 cm³",
+          "D": "206 cm³"
+        },
+        "correct_option": "A",
+        "answer_text": "216 cm³"
+      },
+      {
+        "question_number": 94,
+        "question_text": "The area of a square is 625. Its perimeter is",
+        "choices": {
+          "A": "25",
+          "B": "100",
+          "C": "50",
+          "D": "625"
+        },
+        "correct_option": "B",
+        "answer_text": "100"
+      },
+      {
+        "question_number": 95,
+        "question_text": "A rectangular punch has a height of 18 mm and its area is 630 mm². Calculate the length.",
+        "choices": {
+          "A": "50 mm",
+          "B": "45 mm",
+          "C": "40 mm",
+          "D": "35 mm"
+        },
+        "correct_option": "D",
+        "answer_text": "35 mm"
+      },
+      {
+        "question_number": 96,
+        "question_text": "The ratio between the ultimate stress and the working stress is termed as",
+        "choices": {
+          "A": "Shear stress",
+          "B": "Tensile stress",
+          "C": "Factor of safety",
+          "D": "Compressive stress"
+        },
+        "correct_option": "C",
+        "answer_text": "Factor of safety"
+      },
+      {
+        "question_number": 97,
+        "question_text": "A car moving with a velocity of 50 km/H is brought to rest in 45 second the retardation (R) is",
+        "choices": {
+          "A": "0.59 m/s²",
+          "B": "0.48 m/s²",
+          "C": "0.30 m/s²",
+          "D": "0.28 m/s²"
+        },
+        "correct_option": "C",
+        "answer_text": "0.30 m/s²"
+      },
+      {
+        "question_number": 98,
+        "question_text": "The rate of change of displacement of a body is called",
+        "choices": {
+          "A": "Velocity",
+          "B": "Acceleration",
+          "C": "Momentum",
+          "D": "Force"
+        },
+        "correct_option": "A",
+        "answer_text": "Velocity"
+      },
+      {
+        "question_number": 99,
+        "question_text": "The ratio between MA and VR is called",
+        "choices": {
+          "A": "Flexibility",
+          "B": "Efficiency",
+          "C": "Diode",
+          "D": "Lever"
+        },
+        "correct_option": "B",
+        "answer_text": "Efficiency"
+      },
+      {
+        "question_number": 100,
+        "question_text": "Which type of friction is known as limiting friction ?",
+        "choices": {
+          "A": "Sliding friction",
+          "B": "Solid friction",
+          "C": "Static friction",
+          "D": "Rolling friction"
+        },
+        "correct_option": "C",
+        "answer_text": "Static friction"
+      }
+    ]
+  }
+}
 
         // Application State
-        let showAllAnswers = false;
-        let examStartTime = Date.now();
         let timerInterval;
-        const COOKIE_NAME = 'pscExamData_v2';
-        const COOKIE_EXPIRY_DAYS = 30;
+        let examDuration = 0;
+        let isTimerRunning = false;
+        let startTime = 0;
+        let showAnswers = false;
 
         // Initialization
-        function loadQuiz() {
-            renderHeader(demoData.question_paper);
-            renderQuestions(demoData.question_paper.questions);
-            loadProgress();
-            startTimer();
-            updateProgressStats();
+        function initializeExam() {
+            renderExamMeta();
+            renderQuestions();
+            updateTimerDisplay();
         }
 
-        // Header Rendering
-        function renderHeader(questionPaper) {
-            document.getElementById('category-number').textContent = 
-                `Category Number: ${questionPaper.category_number}`;
-            document.getElementById('question-set').textContent = 
-                `Question Set: ${questionPaper.question_set}`;
+        // Render Functions
+        function renderExamMeta() {
+            const meta = examData.question_paper;
+            document.getElementById('examMeta').innerHTML = `
+                <div>Category: ${meta.category_number}</div>
+                <div>Question Set: ${meta.question_set}</div>
+                <div>Post: ${meta.name_of_post}</div>
+                <div>Answer Sheet: ${meta.answer_sheet_code}</div>
+            `;
         }
 
-        // Question Rendering
-        function renderQuestions(questions) {
+        function renderQuestions() {
             const container = document.getElementById('quiz-container');
-            container.innerHTML = questions.map(question => `
+            container.innerHTML = examData.question_paper.questions.map(question => `
                 <div class="question-card">
                     <div class="question-number">Question ${question.question_number}</div>
                     <div class="question-text">${question.question_text}</div>
                     <div class="options-container">${
                         Object.entries(question.choices).map(([key, value]) => `
                             <div class="option" 
-                                data-correct="${key === question.correct_option}"
-                                data-question="${question.question_number}"
-                                onclick="handleAnswer(this, '${key}', '${question.correct_option}')">
+                                onclick="handleAnswer(this, '${key}', '${question.correct_option}')"
+                                data-answer="${key === question.correct_option}">
                                 ${key}: ${value}
                             </div>`
                         ).join('')
                     }</div>
-                    <div class="answer-text">Correct Answer: ${question.correct_option} - ${question.answer_text}</div>
                 </div>`
             ).join('');
+            container.innerHTML += '<div class="bottom-spacer"></div>';
         }
 
         // Answer Handling
-        function handleAnswer(optionElement, selectedOption, correctOption) {
-            if (optionElement.classList.contains('correct') || 
-                optionElement.classList.contains('wrong')) return;
-
-            const questionNumber = parseInt(optionElement.dataset.question);
-            const isCorrect = selectedOption === correctOption;
-
-            // Visual Feedback
-            optionElement.classList.add(isCorrect ? 'correct' : 'wrong');
+        function handleAnswer(option, selected, correct) {
+            if (option.classList.contains('correct') || option.classList.contains('wrong')) return;
+            
+            const isCorrect = selected === correct;
+            option.classList.add(isCorrect ? 'correct' : 'wrong');
+            
             if (!isCorrect) {
-                const correctElement = optionElement.parentNode.querySelector(`[data-correct="true"]`);
-                correctElement.classList.add('correct');
+                const correctOption = option.parentNode.querySelector(`[data-answer="true"]`);
+                correctOption.classList.add('correct');
             }
 
-            // Confetti Effect
             if (isCorrect) {
-                party.confetti(optionElement, {
-                    count: 40,
-                    spread: 15,
-                    size: 1.5
-                });
-            }
-
-            saveProgress();
-            updateProgressStats();
-        }
-
-        // Progress Tracking
-        function getAnswerData() {
-            const answers = {};
-            document.querySelectorAll('.option').forEach(option => {
-                if (option.classList.contains('correct') || option.classList.contains('wrong')) {
-                    const questionNumber = parseInt(option.dataset.question);
-                    answers[questionNumber] = option.textContent.split(':')[0].trim();
-                }
-            });
-            return answers;
-        }
-
-        // Cookie Management
-        function saveProgress() {
-            const progress = {
-                answers: getAnswerData(),
-                timeSpent: Math.floor((Date.now() - examStartTime) / 1000),
-                theme: document.body.dataset.theme
-            };
-            document.cookie = `${COOKIE_NAME}=${encodeURIComponent(JSON.stringify(progress))}; 
-                max-age=${COOKIE_EXPIRY_DAYS * 86400}; path=/; SameSite=Lax`;
-        }
-
-        function loadProgress() {
-            const cookieData = document.cookie
-                .split('; ')
-                .find(row => row.startsWith(`${COOKIE_NAME}=`))
-                ?.split('=')[1];
-
-            if (cookieData) {
-                try {
-                    const progress = JSON.parse(decodeURIComponent(cookieData));
-                    
-                    // Restore theme
-                    if (progress.theme) document.body.dataset.theme = progress.theme;
-                    
-                    // Restore timer
-                    if (progress.timeSpent) {
-                        examStartTime = Date.now() - (progress.timeSpent * 1000);
-                    }
-
-                    // Restore answers
-                    if (progress.answers) {
-                        Object.entries(progress.answers).forEach(([questionNumber, answer]) => {
-                            const options = document.querySelectorAll(`[data-question="${questionNumber}"]`);
-                            options.forEach(option => {
-                                const optionKey = option.textContent.split(':')[0].trim();
-                                if (optionKey === answer) {
-                                    const isCorrect = option.dataset.correct === 'true';
-                                    option.classList.add(isCorrect ? 'correct' : 'wrong');
-                                    if (!isCorrect) {
-                                        const correctElement = option.parentNode.querySelector(`[data-correct="true"]`);
-                                        correctElement.classList.add('correct');
-                                    }
-                                }
-                            });
-                        });
-                    }
-                } catch(e) {
-                    console.error('Error loading progress:', e);
-                }
+                party.confetti(option, { count: 30, spread: 15 });
             }
         }
 
         // Timer Functions
+        function handleTimerControl() {
+            isTimerRunning ? pauseTimer() : startTimer();
+        }
+
         function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                startTime = Date.now() - (examDuration * 1000);
+                timerInterval = setInterval(updateTimer, 1000);
+                document.getElementById('timerBtn').textContent = '⏸️';
+            }
+        }
+
+        function pauseTimer() {
+            isTimerRunning = false;
             clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                const elapsed = Date.now() - examStartTime;
-                const hours = Math.floor(elapsed / 3600000);
-                const minutes = Math.floor((elapsed % 3600000) / 60000);
-                const seconds = Math.floor((elapsed % 60000) / 1000);
-                document.getElementById('timer').textContent = 
-                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                saveProgress();
-                updateProgressStats();
-            }, 1000);
+            document.getElementById('timerBtn').textContent = '▶️';
         }
 
-        function updateProgressStats() {
-            const totalQuestions = demoData.question_paper.questions.length;
-            const answered = document.querySelectorAll('.correct, .wrong').length;
-            const correct = document.querySelectorAll('.correct').length;
-            document.getElementById('progress-stats').innerHTML = `
-                Answered: ${answered}/${totalQuestions}<br>
-                Correct: ${correct}<br>
-                Score: ${Math.round((correct/totalQuestions)*100)}%
-            `;
+        function resetTimer() {
+            pauseTimer();
+            examDuration = 0;
+            updateTimerDisplay();
         }
 
-        // UI Controls
+        function updateTimer() {
+            examDuration = Math.floor((Date.now() - startTime) / 1000);
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const pad = n => String(n).padStart(2, '0');
+            const hours = pad(Math.floor(examDuration / 3600));
+            const minutes = pad(Math.floor((examDuration % 3600) / 60));
+            const seconds = pad(examDuration % 60);
+            document.getElementById('timer').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Controls
         function toggleAnswers() {
-            if (!confirm('This will reveal all answers. Are you sure?')) return;
-            showAllAnswers = !showAllAnswers;
-            document.querySelectorAll('.question-card').forEach(card => {
-                card.classList.toggle('show-answer', showAllAnswers);
-                card.querySelectorAll('.option').forEach(opt => {
-                    opt.classList.remove('correct', 'wrong');
-                    if (showAllAnswers && opt.dataset.correct === 'true') {
-                        opt.classList.add('correct');
-                    }
-                });
+            showAnswers = !showAnswers;
+            document.querySelectorAll('.option').forEach(option => {
+                if (showAnswers && option.dataset.answer === "true") {
+                    option.classList.add('correct');
+                } else if (!showAnswers) {
+                    option.classList.remove('correct', 'wrong');
+                }
             });
-            saveProgress();
         }
 
-        function resetQuiz() {
-            if (!confirm('Are you sure you want to reset all progress?')) return;
-            document.cookie = `${COOKIE_NAME}=; max-age=0; path=/`;
-            location.reload();
+        function resetTest() {
+            if (confirm("Reset all progress?")) {
+                resetTimer();
+                showAnswers = false;
+                document.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('correct', 'wrong');
+                });
+            }
         }
 
         function toggleTheme() {
-            const body = document.body;
-            body.dataset.theme = body.dataset.theme === 'dark' ? 'light' : 'dark';
-            saveProgress();
+            document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
         }
 
-        // Event Listeners
-        window.addEventListener('beforeunload', (e) => {
-            saveProgress();
-        });
-
         // Initialize
-        loadQuiz();
+        initializeExam();
     </script>
 </body>
 </html>
