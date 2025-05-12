@@ -10,6 +10,7 @@
             margin: 0;
             padding: 20px;
             background-color: #f0f0f0;
+            line-height: 1.6;
         }
 
         .container {
@@ -33,6 +34,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: monospace;
+            resize: vertical;
         }
 
         button {
@@ -43,10 +45,28 @@
             border-radius: 4px;
             cursor: pointer;
             margin: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
         }
 
         button:hover {
             background-color: #45a049;
+        }
+
+        button.secondary {
+            background-color: #2196F3;
+        }
+
+        button.secondary:hover {
+            background-color: #0b7dda;
+        }
+
+        button.download {
+            background-color: #ff9800;
+        }
+
+        button.download:hover {
+            background-color: #e68a00;
         }
 
         .question-editor {
@@ -54,15 +74,76 @@
             padding: 15px;
             margin: 10px 0;
             border-radius: 4px;
+            background-color: #f9f9f9;
         }
 
         .choices {
             margin: 10px 0;
+            padding-left: 20px;
         }
 
         select {
             padding: 5px;
             margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .metadata {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .metadata-item {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .metadata-item strong {
+            color: #2E7D32;
+        }
+
+        .output-group {
+            margin-bottom: 20px;
+        }
+
+        .output-group h3 {
+            margin-top: 0;
+            color: #2E7D32;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
+        .status-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
         }
 
         @media (max-width: 600px) {
@@ -74,43 +155,109 @@
                 width: 100%;
                 margin: 5px 0;
             }
+
+            .button-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <h1>Question Paper Editor</h1>
+        
         <div class="section" id="inputSection">
             <h2>Input JSON</h2>
+            <div id="metadataDisplay" class="metadata hidden"></div>
             <textarea id="jsonInput" placeholder="Paste your JSON here..."></textarea>
-            <button onclick="handleEdit()">Edit</button>
+            <button onclick="handleEdit()">Edit Questions</button>
         </div>
 
-        <div class="section" id="editorSection" style="display: none;">
+        <div class="section hidden" id="editorSection">
             <h2>Edit Questions</h2>
             <div id="editorContainer"></div>
-            <button onclick="generateCorrectedJSON()">Generate</button>
+            <div class="button-group">
+                <button onclick="generateCorrectedJSON()">Generate Corrected JSON</button>
+                <button class="secondary" onclick="backToInput()">Back to Input</button>
+            </div>
         </div>
 
-        <div class="section" id="resultSection" style="display: none;">
-            <h2>Final Output</h2>
-            <textarea id="output" readonly></textarea>
-            <button onclick="copyToClipboard()">Copy Code</button>
+        <div class="section hidden" id="resultSection">
+            <h2>Final Outputs</h2>
+            <div id="statusMessage" class="status-message"></div>
+            
+            <div class="output-group">
+                <h3>JSON Output</h3>
+                <textarea id="outputJson" readonly></textarea>
+                <div class="button-group">
+                    <button onclick="copyToClipboard('outputJson', 'JSON')">Copy JSON</button>
+                </div>
+            </div>
+            
+            <div class="output-group">
+                <h3>HTML Output</h3>
+                <div class="button-group">
+                    <button class="secondary" onclick="fetchAndReplaceHtml()">Fetch & Replace HTML Template</button>
+                </div>
+                <textarea id="outputHtml" readonly></textarea>
+                <div class="button-group">
+                    <button onclick="copyToClipboard('outputHtml', 'HTML')">Copy HTML</button>
+                    <button class="download" onclick="downloadHtml()">Download HTML</button>
+                    <button class="secondary" onclick="backToInput()">Start Over</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         let originalData = null;
+        let correctedJSON = null;
+
+        function showStatus(message, isError = false) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            statusElement.className = `status-message ${isError ? 'error' : 'success'}`;
+            statusElement.style.display = 'block';
+            
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 5000);
+        }
 
         function handleEdit() {
-            const jsonInput = document.getElementById('jsonInput').value;
+            const jsonInput = document.getElementById('jsonInput').value.trim();
+            
+            if (!jsonInput) {
+                showStatus('Please paste your JSON content first!', true);
+                return;
+            }
+
             try {
                 originalData = JSON.parse(jsonInput);
+                
+                if (!originalData.question_paper || !originalData.question_paper.questions) {
+                    throw new Error('Invalid JSON structure: missing question_paper or questions');
+                }
+                
+                displayMetadata(originalData.question_paper);
                 buildEditorUI(originalData.question_paper.questions);
-                document.getElementById('editorSection').style.display = 'block';
-                document.getElementById('inputSection').style.display = 'none';
+                
+                document.getElementById('editorSection').classList.remove('hidden');
+                document.getElementById('inputSection').classList.add('hidden');
             } catch (e) {
-                alert('Invalid JSON: ' + e.message);
+                showStatus('Invalid JSON: ' + e.message, true);
             }
+        }
+
+        function displayMetadata(questionPaper) {
+            const metadataDiv = document.getElementById('metadataDisplay');
+            metadataDiv.innerHTML = `
+                <div class="metadata-item"><strong>Category Number:</strong> ${questionPaper.category_number || 'N/A'}</div>
+                <div class="metadata-item"><strong>Question Set:</strong> ${questionPaper.question_set || 'N/A'}</div>
+                <div class="metadata-item"><strong>Name of Post:</strong> ${questionPaper.name_of_post || 'N/A'}</div>
+                <div class="metadata-item"><strong>Date of Test:</strong> ${questionPaper.date_of_test || 'N/A'}</div>
+            `;
+            metadataDiv.classList.remove('hidden');
         }
 
         function buildEditorUI(questions) {
@@ -123,17 +270,17 @@
 
                 questionDiv.innerHTML = `
                     <h3>Question ${question.question_number}</h3>
-                    <p>${question.question_text}</p>
+                    <p><strong>Question:</strong> ${question.question_text}</p>
                     <div class="choices">
                         ${Object.entries(question.choices).map(([key, value]) => `
-                            <div>${key}: ${value}</div>
+                            <div><strong>${key}:</strong> ${value}</div>
                         `).join('')}
                     </div>
-                    <label>Correct Answer:
-                        <select class="correct-option">
+                    <label><strong>Correct Answer:</strong>
+                        <select class="correct-option" data-question-index="${index}">
                             ${['A', 'B', 'C', 'D', 'X'].map(opt => `
                                 <option value="${opt}" ${opt === question.correct_option ? 'selected' : ''}>
-                                    ${opt}
+                                    ${opt}${opt === 'X' ? ' (Mark as invalid)' : ''}
                                 </option>
                             `).join('')}
                         </select>
@@ -144,16 +291,17 @@
             });
         }
 
-        async function generateCorrectedJSON() {
+        function generateCorrectedJSON() {
             const editorQuestions = document.querySelectorAll('.question-editor');
             const newQuestions = [];
 
-            editorQuestions.forEach((questionDiv, index) => {
+            editorQuestions.forEach((questionDiv) => {
                 const select = questionDiv.querySelector('.correct-option');
                 const selectedOption = select.value;
+                const questionIndex = parseInt(select.dataset.questionIndex);
 
                 if (selectedOption !== 'X') {
-                    const originalQuestion = originalData.question_paper.questions[index];
+                    const originalQuestion = originalData.question_paper.questions[questionIndex];
                     newQuestions.push({
                         ...originalQuestion,
                         correct_option: selectedOption
@@ -162,31 +310,105 @@
             });
 
             originalData.question_paper.questions = newQuestions;
-            const correctedJSON = JSON.stringify(originalData, null, 2);
+            correctedJSON = JSON.stringify(originalData, null, 2);
+            
+            document.getElementById('outputJson').value = correctedJSON;
+            document.getElementById('resultSection').classList.remove('hidden');
+            document.getElementById('editorSection').classList.add('hidden');
+            
+            showStatus('JSON successfully generated! You can now fetch the HTML template.');
+        }
+
+        async function fetchAndReplaceHtml() {
+            if (!correctedJSON) {
+                showStatus('Please generate JSON first!', true);
+                return;
+            }
 
             try {
-                const response = await fetch('https://raw.githubusercontent.com/developeranaz/developeranaz.github.io/refs/heads/gh-pages/webapps/quiz/KPSC/civil/065_2021/index.html');
-                const templateText = await response.text();
-                const finalCode = templateText.replace('PASTE_YOUR_JSON', correctedJSON);
+                showStatus('Fetching HTML template...');
                 
-                const output = document.getElementById('output');
-                output.value = finalCode;
-                document.getElementById('resultSection').style.display = 'block';
-                document.getElementById('editorSection').style.display = 'none';
+                const response = await fetch('https://raw.githubusercontent.com/developeranaz/developeranaz.github.io/refs/heads/gh-pages/webapps/quiz/KPSC/civil/065_2021/index.html');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const templateHtml = await response.text();
+                const finalHtml = templateHtml.replace('PASTE_YOUR_JSON', correctedJSON);
+                
+                document.getElementById('outputHtml').value = finalHtml;
+                showStatus('HTML template successfully fetched and updated!');
             } catch (error) {
-                alert('Error fetching template: ' + error.message);
+                showStatus('Error fetching HTML template: ' + error.message, true);
+                console.error('Fetch error:', error);
             }
         }
 
-        async function copyToClipboard() {
-            const output = document.getElementById('output');
+        async function copyToClipboard(elementId, type) {
+            const output = document.getElementById(elementId);
+            
+            if (!output.value) {
+                showStatus(`No ${type} content to copy!`, true);
+                return;
+            }
+
             try {
                 await navigator.clipboard.writeText(output.value);
-                alert('Copied to clipboard!');
+                showStatus(`${type} copied to clipboard!`);
             } catch (err) {
-                alert('Failed to copy: ' + err);
+                showStatus(`Failed to copy ${type}: ${err}`, true);
+                console.error('Copy error:', err);
             }
         }
+
+        function downloadHtml() {
+            const htmlContent = document.getElementById('outputHtml').value;
+            if (!htmlContent) {
+                showStatus('No HTML content to download!', true);
+                return;
+            }
+
+            try {
+                // Get the filename from category_number or use a default
+                let filename = 'question_paper.html';
+                if (originalData && originalData.question_paper && originalData.question_paper.category_number) {
+                    // Clean the category number to make it filesystem-safe
+                    filename = originalData.question_paper.category_number
+                        .replace(/[\/,]/g, '_')  // Replace slashes and commas with underscores
+                        .replace(/\s+/g, '')      // Remove spaces
+                        .trim() + '.html';
+                }
+
+                // Create download link
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus(`HTML downloaded as ${filename}`);
+            } catch (err) {
+                showStatus('Error downloading HTML: ' + err.message, true);
+                console.error('Download error:', err);
+            }
+        }
+
+        function backToInput() {
+            document.getElementById('inputSection').classList.remove('hidden');
+            document.getElementById('editorSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('jsonInput').focus();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // You can preload sample JSON here if desired
+            // document.getElementById('jsonInput').value = `...sample JSON...`;
+        });
     </script>
 </body>
 </html>
