@@ -3,220 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz JSON Corrector</title>
+    <title>JSON Question Editor</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
-        .input-section {
-            background: white;
+        .section {
+            background-color: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         textarea {
             width: 100%;
-            height: 200px;
-            margin: 10px 0;
+            height: 300px;
             padding: 10px;
+            margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 4px;
-            box-sizing: border-box;
+            font-family: monospace;
         }
 
         button {
             background-color: #4CAF50;
             color: white;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
             margin: 5px;
-            width: 200px;
         }
 
         button:hover {
             background-color: #45a049;
         }
 
-        .editor {
-            display: none;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .question-card {
-            margin: 15px 0;
+        .question-editor {
+            border: 1px solid #ddd;
             padding: 15px;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            background-color: #fff;
+            margin: 10px 0;
+            border-radius: 4px;
         }
 
-        .question-number {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1a73e8;
-            margin-bottom: 10px;
-        }
-
-        .question-text {
-            margin-bottom: 15px;
-            color: #333;
-            line-height: 1.5;
+        .choices {
+            margin: 10px 0;
         }
 
         select {
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            width: 100px;
-            font-size: 16px;
+            padding: 5px;
+            margin: 5px 0;
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 768px) {
+        @media (max-width: 600px) {
+            textarea {
+                height: 200px;
+            }
+            
             button {
                 width: 100%;
-                padding: 15px;
-            }
-            
-            select {
-                width: 100%;
-            }
-            
-            .container {
-                padding: 10px;
-            }
-            
-            .question-card {
-                padding: 10px;
+                margin: 5px 0;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="input-section">
-            <h2>Paste JSON Here</h2>
+        <div class="section" id="inputSection">
+            <h2>Input JSON</h2>
             <textarea id="jsonInput" placeholder="Paste your JSON here..."></textarea>
-            <div class="action-buttons">
-                <button onclick="loadEditor()">Open Editor</button>
-            </div>
+            <button onclick="handleEdit()">Edit</button>
         </div>
 
-        <div class="editor" id="editor">
-            <div id="editorContent"></div>
-            <div class="action-buttons">
-                <button onclick="saveCorrections()" id="saveBtn">Save Corrections</button>
-                <button onclick="copyToClipboard()" id="copyBtn" disabled>Copy to Clipboard</button>
-                <button onclick="downloadJSON()" id="downloadBtn" disabled>Download JSON</button>
-            </div>
+        <div class="section" id="editorSection" style="display: none;">
+            <h2>Edit Questions</h2>
+            <div id="editorContainer"></div>
+            <button onclick="generateCorrectedJSON()">Generate</button>
+        </div>
+
+        <div class="section" id="resultSection" style="display: none;">
+            <h2>Final Output</h2>
+            <textarea id="output" readonly></textarea>
+            <button onclick="copyToClipboard()">Copy Code</button>
         </div>
     </div>
 
     <script>
         let originalData = null;
-        let correctedData = null;
 
-        function loadEditor() {
+        function handleEdit() {
+            const jsonInput = document.getElementById('jsonInput').value;
             try {
-                const json = document.getElementById('jsonInput').value;
-                originalData = JSON.parse(json);
-                renderEditor();
-                document.querySelector('.input-section').style.display = 'none';
-                document.getElementById('editor').style.display = 'block';
+                originalData = JSON.parse(jsonInput);
+                buildEditorUI(originalData.question_paper.questions);
+                document.getElementById('editorSection').style.display = 'block';
+                document.getElementById('inputSection').style.display = 'none';
             } catch (e) {
-                alert('Invalid JSON format! Please check your input.');
+                alert('Invalid JSON: ' + e.message);
             }
         }
 
-        function renderEditor() {
-            const editorContent = document.getElementById('editorContent');
-            editorContent.innerHTML = '';
+        function buildEditorUI(questions) {
+            const editorContainer = document.getElementById('editorContainer');
+            editorContainer.innerHTML = '';
 
-            originalData.question_paper.questions.forEach(question => {
-                const card = document.createElement('div');
-                card.className = 'question-card';
-                
-                card.innerHTML = `
-                    <div class="question-number">Question ${question.question_number}</div>
-                    <div class="question-text">${question.question_text}</div>
-                    <select class="answer-select" data-qnum="${question.question_number}">
-                        ${['A', 'B', 'C', 'D', 'X'].map(opt => `
-                            <option value="${opt}" ${question.correct_option === opt ? 'selected' : ''}>
-                                ${opt}
-                            </option>
+            questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-editor';
+
+                questionDiv.innerHTML = `
+                    <h3>Question ${question.question_number}</h3>
+                    <p>${question.question_text}</p>
+                    <div class="choices">
+                        ${Object.entries(question.choices).map(([key, value]) => `
+                            <div>${key}: ${value}</div>
                         `).join('')}
-                    </select>
+                    </div>
+                    <label>Correct Answer:
+                        <select class="correct-option">
+                            ${['A', 'B', 'C', 'D', 'X'].map(opt => `
+                                <option value="${opt}" ${opt === question.correct_option ? 'selected' : ''}>
+                                    ${opt}
+                                </option>
+                            `).join('')}
+                        </select>
+                    </label>
                 `;
 
-                editorContent.appendChild(card);
+                editorContainer.appendChild(questionDiv);
             });
         }
 
-        function saveCorrections() {
-            correctedData = JSON.parse(JSON.stringify(originalData));
-            
-            document.querySelectorAll('.answer-select').forEach(select => {
-                const qnum = parseInt(select.dataset.qnum);
-                const newValue = select.value;
-                
-                const question = correctedData.question_paper.questions.find(
-                    q => q.question_number === qnum
-                );
-                
-                if (question) {
-                    question.correct_option = newValue;
+        async function generateCorrectedJSON() {
+            const editorQuestions = document.querySelectorAll('.question-editor');
+            const newQuestions = [];
+
+            editorQuestions.forEach((questionDiv, index) => {
+                const select = questionDiv.querySelector('.correct-option');
+                const selectedOption = select.value;
+
+                if (selectedOption !== 'X') {
+                    const originalQuestion = originalData.question_paper.questions[index];
+                    newQuestions.push({
+                        ...originalQuestion,
+                        correct_option: selectedOption
+                    });
                 }
             });
 
-            document.getElementById('copyBtn').disabled = false;
-            document.getElementById('downloadBtn').disabled = false;
-            alert('Corrections saved! Now you can copy or download the JSON.');
+            originalData.question_paper.questions = newQuestions;
+            const correctedJSON = JSON.stringify(originalData, null, 2);
+
+            try {
+                const response = await fetch('https://raw.githubusercontent.com/developeranaz/developeranaz.github.io/refs/heads/gh-pages/webapps/quiz/KPSC/civil/065_2021/index.html');
+                const templateText = await response.text();
+                const finalCode = templateText.replace('PASTE_YOUR_JSON', correctedJSON);
+                
+                const output = document.getElementById('output');
+                output.value = finalCode;
+                document.getElementById('resultSection').style.display = 'block';
+                document.getElementById('editorSection').style.display = 'none';
+            } catch (error) {
+                alert('Error fetching template: ' + error.message);
+            }
         }
 
-        function copyToClipboard() {
-            const dataStr = JSON.stringify(correctedData, null, 2);
-            navigator.clipboard.writeText(dataStr).then(() => {
-                alert('JSON copied to clipboard!');
-            }).catch(err => {
-                alert('Failed to copy to clipboard. Please try again.');
-            });
-        }
-
-        function downloadJSON() {
-            const dataStr = JSON.stringify(correctedData, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `corrected-quiz-${Date.now()}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+        async function copyToClipboard() {
+            const output = document.getElementById('output');
+            try {
+                await navigator.clipboard.writeText(output.value);
+                alert('Copied to clipboard!');
+            } catch (err) {
+                alert('Failed to copy: ' + err);
+            }
         }
     </script>
 </body>
