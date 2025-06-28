@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/developeranaz/developeranaz.github.io/refs/heads/gh-pages/webapps/gofile.io/17470597399662.ico">
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GoFile Code Generator</title>
+  <title>GoFile Index Code Generator</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+<details>
+  <summary>Gofile.io Cloudflare Worker Index</summary>
+  <p>This web app indexes all files and folders from Gofile.io using Cloudflare Workers. It supports multi-threaded downloading, pause/resume features, improved stability, and increased speed. It's perfect for fast and reliable file management online. Use beta theme for Private/shared links </p>
+</details>
   <style>
     :root {
-      --primary: #2962ff;
-      --secondary: #00c853;
-      --background: #f8f9fa;
-      --text: #212529;
+      --primary: #00ffd5;
+      --secondary: #7b61ff;
+      --background: #0a0a12;
+      --surface: #1a1a24;
+      --text: #e0e0ff;
+      --border: rgba(255, 255, 255, 0.1);
     }
 
     * {
@@ -20,56 +30,85 @@
     }
 
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       line-height: 1.6;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background: var(--background);
       color: var(--text);
       padding: 2rem 1rem;
       min-height: 100vh;
+      position: relative;
+      padding-bottom: 80px;
     }
 
     .container {
       max-width: 800px;
       margin: 0 auto;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      padding: 2rem;
-      backdrop-filter: blur(10px);
+      background: linear-gradient(145deg, rgba(26,26,36,0.8) 0%, rgba(16,16,24,0.9) 100%);
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s ease;
     }
 
     h2 {
       color: var(--primary);
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       font-weight: 700;
       text-align: center;
-      font-size: 2.2rem;
+      font-size: 2.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
     }
 
     .input-group {
-      margin: 1.5rem 0;
+      margin: 2rem 0;
       position: relative;
     }
 
-    input, textarea {
-      width: 100%;
-      padding: 1rem 1.2rem;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+      opacity: 0.9;
     }
 
-    input:focus, textarea:focus {
+    input, textarea, select {
+      width: 100%;
+      padding: 1.2rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      color: var(--text);
+      transition: all 0.3s ease;
+      appearance: none;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e0e0ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1em;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: rgba(224, 224, 255, 0.4);
+    }
+
+    input:focus, textarea:focus, select:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(41, 98, 255, 0.2);
+      box-shadow: 0 0 0 4px rgba(0, 255, 213, 0.15);
     }
 
     .email-group {
       display: flex;
-      gap: 10px;
-      margin-bottom: 1.5rem;
+      gap: 1rem;
+      margin-bottom: 2rem;
     }
 
     .email-input {
@@ -77,56 +116,61 @@
     }
 
     button {
-      padding: 1rem 1.5rem;
+      padding: 1.2rem 2rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      color: #000;
+      position: relative;
+      overflow: hidden;
     }
 
-    .send-btn {
-      background: var(--primary);
-      color: white;
-    }
-
-    .send-btn:hover {
-      background: #2041c7;
+    button:hover {
+      opacity: 0.9;
       transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: scale(0.98);
     }
 
     .generate-btn {
-      background: var(--primary);
-      color: white;
       width: 100%;
+      margin-top: 1.5rem;
     }
 
-    .generate-btn:hover {
-      background: #2041c7;
-      transform: translateY(-1px);
+    .theme-selector {
+      margin: 1.5rem 0;
     }
 
     .code-container {
       position: relative;
-      margin-top: 1.5rem;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      background: #f8f9fa;
+      margin-top: 2rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.4s ease;
+    }
+
+    .code-container.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .code-actions {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: 1rem;
+      right: 1rem;
       display: flex;
-      gap: 8px;
+      gap: 0.8rem;
       opacity: 0;
-      transition: opacity 0.2s ease;
-      z-index: 2;
+      transition: opacity 0.3s ease;
     }
 
     .code-container:hover .code-actions {
@@ -134,17 +178,16 @@
     }
 
     .code-action {
-      width: 34px;
-      height: 34px;
+      width: 38px;
+      height: 38px;
       border: none;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.95);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
     }
 
     .code-action:hover {
@@ -152,159 +195,255 @@
       transform: scale(1.1);
     }
 
-    .code-action i {
-      font-size: 15px;
-      color: #666;
-    }
-
-    .code-action:hover i {
-      color: white;
-    }
-
     #codeOutput {
       width: 100%;
       height: 300px;
-      padding: 1.2rem;
-      padding-top: 3rem;
+      padding: 1.5rem;
+      padding-top: 4rem;
       border: none;
       background: transparent;
-      font-family: 'Courier New', monospace;
+      font-family: 'Fira Code', monospace;
       font-size: 0.9rem;
-      line-height: 1.5;
+      line-height: 1.6;
       resize: vertical;
+      color: var(--text);
     }
 
     .copy-notification {
       position: fixed;
-      bottom: 20px;
+      bottom: -50px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--secondary);
       color: white;
-      padding: 8px 16px;
-      border-radius: 4px;
+      padding: 12px 24px;
+      border-radius: 8px;
       font-size: 14px;
       opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .copy-notification.show {
       opacity: 1;
-      visibility: visible;
+      bottom: 30px;
     }
 
     .alert {
       position: fixed;
-      top: 20px;
+      top: -100px;
       left: 50%;
       transform: translateX(-50%);
-      padding: 1rem 2rem;
-      border-radius: 8px;
+      padding: 1.2rem 2.4rem;
+      border-radius: 12px;
       color: white;
       font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 1rem;
       opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 1000;
       max-width: 90%;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      background: var(--surface);
+      border: 1px solid var(--border);
     }
 
     .alert.show {
       opacity: 1;
-      visibility: visible;
+      top: 30px;
     }
 
     .alert-success {
-      background-color: #00c853;
+      border-left: 4px solid var(--primary);
     }
 
     .alert-error {
-      background-color: #dc3545;
-    }
-
-    .alert-icon {
-      font-size: 1.25rem;
+      border-left: 4px solid #ff4d4d;
     }
 
     .account-popup {
-      display: none;
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--secondary);
-      color: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      bottom: -100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 400px;
+      background: var(--surface);
+      color: var(--text);
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
       z-index: 1001;
-      max-width: 300px;
-      font-size: 0.8rem;
+      border: 1px solid var(--border);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .account-popup.visible {
+      bottom: 2rem;
+      opacity: 1;
+      visibility: visible;
     }
 
     .popup-content h3 {
-      margin: 0 0 0.5rem 0;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+      color: var(--primary);
     }
 
-    .popup-content p {
-      margin: 0.25rem 0;
+    .popup-note {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin: 1rem 0;
+    }
+
+    .popup-credits {
+      font-size: 0.85rem;
+      opacity: 0.7;
+      margin-top: 1rem;
+    }
+
+    .popup-credits a {
+      color: var(--primary);
+      text-decoration: none;
     }
 
     .close-popup-btn {
-      background: white;
-      color: var(--secondary);
+      background: var(--primary);
+      color: #000;
       border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      margin-top: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      margin-top: 1rem;
       cursor: pointer;
-      font-weight: 600;
+      transition: all 0.2s ease;
     }
 
-    .close-popup-btn:hover {
-      opacity: 0.9;
+    footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      padding: 1.5rem;
+      color: rgba(224, 224, 255, 0.6);
+      font-size: 0.9rem;
     }
 
-    @media (max-width: 480px) {
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
       .container {
         padding: 1.5rem;
       }
+      
       h2 {
-        font-size: 1.8rem;
+        font-size: 2rem;
       }
+      
       .email-group {
         flex-direction: column;
       }
+
+      body {
+        padding-bottom: 100px;
+      }
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(0);
+      animation: ripple 600ms linear;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2><i class="fas fa-code"></i> GoFile Code Generator</h2>
+    <h2><i class="fas fa-code"></i> GoFile Index CodeGen</h2>
 
     <div class="email-group">
       <input type="email" id="emailInput" class="email-input" placeholder="Enter your email address" />
-      <button class="send-btn" onclick="sendLoginLink()">
+      <button class="send-btn" onclick="sendLoginLink(event)">
         <i class="fas fa-paper-plane"></i> Send Login Link
       </button>
     </div>
 
+     <p style="margin-top: 20px;">
+      Don't know how to use? <a href="https://github.com/developeranaz/gofile-to-cloudflare-index" target="_blank">See instructions</a>.
+    </p>
     <div class="input-group">
+      <label for="tokenInput">Authentication Token</label>
       <input type="text" id="tokenInput" placeholder="Paste token or login URL here" />
     </div>
 
-    <button class="generate-btn" onclick="generateCode()">
+    <div class="input-group theme-selector">
+      <label for="themeSelect">Code Template</label>
+      <select id="themeSelect">
+        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/index.js">Light Theme</option>
+        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/lite-http-server.js">Simple HTML Server Theme</option>
+        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/blue-white.js">Dark Theme</option>
+	<option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/beta(shared_link_support).js">Beta- Shared/public link Support</option>
+      </select>
+    </div>
+
+    <button class="generate-btn" onclick="generateCode(event)">
       <i class="fas fa-download"></i> Generate Code
     </button>
 
+
+    <!-- start ads - box -->
+
+    <style>
+  .ad-box {
+    margin: 20px auto;
+    padding: 12px;
+    max-width: 100%;
+    background: #f9f9f9;
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+    overflow-x: auto;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  .ad-box iframe {
+    width: 100% !important;
+    max-width: 728px;
+    height: 90px !important;
+    border: none;
+    display: block;
+    margin: 0 auto;
+  }
+</style>
+
+<div class="ad-box">
+  <script type="text/javascript">
+    atOptions = {
+      'key' : 'cfdd26285d2be07540494f6205a5954a',
+      'format' : 'iframe',
+      'height' : 90,
+      'width' : 728,
+      'params' : {}
+    };
+    document.write('<scr' + 'ipt src="https://www.profitabledisplaynetwork.com/cfdd26285d2be07540494f6205a5954a/invoke.js"></scr' + 'ipt>');
+  </script>
+</div>
+
+        <!-- end ads -  box -->
+    
     <div id="outputSection" style="display: none;">
       <div class="code-container">
         <div class="code-actions">
@@ -329,29 +468,65 @@
   <div id="accountPopup" class="account-popup">
     <div class="popup-content">
       <h3><i class="fas fa-check-circle"></i> Login Succeeded</h3>
-      <p><small>Email: <span id="popupEmail"></span></small></p>
-      <p><small>Tier: <span id="popupTier"></span></small></p>
-      <p><small>Created: <span id="popupCreateTime"></span></small></p>
-      <p><small>Root Folder: <span id="popupRootFolder"></span></small></p>
-      <p><small>Folders: <span id="popupFolders"></span>, Files: <span id="popupFiles"></span></small></p>
-      <p><small>Thank you for using GofileIndex!</small></p>
+      <p>Email: <span id="popupEmail"></span></p>
+      <p>Tier: <span id="popupTier"></span></p>
+      <p>Created: <span id="popupCreateTime"></span></p>
+      <p>Root Folder: <span id="popupRootFolder"></span></p>
+      <p>Folders: <span id="popupFolders"></span>, Files: <span id="popupFiles"></span></p>
+      <p class="popup-note">Thanks for using Go File Index! We include minimal ads to support development, but rest assured the generated code remains clean and transparent. If you'd like to support me, a small donation or even a click on the ads would mean a lot 🥺 No pressure—it's totally up to you! </p>
+      <p class="popup-credits">Developed by <a href="https://github.com/developeranaz">developeranaz</a><br>
+        Report issues: <a href="https://github.com/developeranaz/gofile-Index">GitHub</a></p>
+    <!-- ads - popup-ing box starts -->
+          <script type="text/javascript">
+	atOptions = {
+		'key' : '456831897108255b1704a6daa2b31f0f',
+		'format' : 'iframe',
+		'height' : 50,
+		'width' : 320,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/456831897108255b1704a6daa2b31f0f/invoke.js"></script>
+          <!-- ads - popup-ing box ends -->
       <button class="close-popup-btn" onclick="closeAccountPopup()">OK</button>
     </div>
   </div>
+    <!-- start ads -end big -->
+
+  <script async="async" data-cfasync="false" src="//pl26571730.profitableratecpm.com/0b1d5e89c8f8d874b4d5b9ab51f861a8/invoke.js"></script>
+<div id="container-0b1d5e89c8f8d874b4d5b9ab51f861a8"></div>
+    <!-- end ads -end big -->
+  <footer>
+    <div>© 2025 GoFile Code Generator</div>
+    <div>Developed by <a href="https://github.com/developeranaz">developeranaz</a></div>
+    <div>Telegram: <a href="https://t.me/gitdeveloperanaz">@gitdeveloperanaz</a></div>
+  </footer>
 
   <script>
+    function createRipple(event) {
+      const btn = event.currentTarget;
+      const circle = document.createElement("div");
+      circle.className = "ripple";
+      const rect = btn.getBoundingClientRect();
+      circle.style.width = circle.style.height = Math.max(rect.width, rect.height) + "px";
+      circle.style.left = event.clientX - rect.left - rect.width/2 + "px";
+      circle.style.top = event.clientY - rect.top - rect.height/2 + "px";
+      btn.appendChild(circle);
+      setTimeout(() => circle.remove(), 600);
+    }
+
     function showAlert(message, isSuccess) {
       const alertEl = document.getElementById('alert');
       const icon = alertEl.querySelector('.alert-icon');
-      alertEl.className = 'alert';
-      alertEl.classList.add(isSuccess ? 'alert-success' : 'alert-error');
+      alertEl.className = 'alert ' + (isSuccess ? 'alert-success' : 'alert-error');
       icon.className = 'alert-icon ' + (isSuccess ? 'fas fa-check-circle' : 'fas fa-times-circle');
       document.getElementById('alertMessage').textContent = message;
       alertEl.classList.add('show');
       setTimeout(() => alertEl.classList.remove('show'), 3000);
     }
 
-    async function sendLoginLink() {
+    async function sendLoginLink(e) {
+      createRipple(e);
       const email = document.getElementById('emailInput').value.trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         showAlert("Please enter a valid email address", false);
@@ -377,10 +552,15 @@
     }
 
     function formatTimestamp(timestamp) {
-      return new Date(timestamp * 1000).toLocaleDateString();
+      return new Date(timestamp * 1000).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
     }
 
-    async function generateCode() {
+    async function generateCode(e) {
+      createRipple(e);
       const input = document.getElementById('tokenInput').value.trim();
       const token = (input.match(/[A-Za-z0-9]{32,}/) || [])[0];
       if (!token) {
@@ -399,7 +579,8 @@
         }
 
         const { rootFolder, email, tier, createTime, statsCurrent } = accountData.data;
-        const codeResponse = await fetch("https://gist.githubusercontent.com/developeranaz/20f5f549c251dcec49c3d9722c5b48be/raw/worker.js");
+        const selectedTheme = document.getElementById('themeSelect').value;
+        const codeResponse = await fetch(selectedTheme);
         const code = await codeResponse.text();
 
         const modifiedCode = code
@@ -407,6 +588,7 @@
           .replace(/THEROOTFOLDERID/g, rootFolder);
 
         document.getElementById('codeOutput').value = modifiedCode;
+        document.querySelector('.code-container').classList.add('visible');
         document.getElementById('outputSection').style.display = 'block';
 
         document.getElementById('popupEmail').textContent = email;
@@ -415,14 +597,14 @@
         document.getElementById('popupRootFolder').textContent = rootFolder;
         document.getElementById('popupFolders').textContent = statsCurrent.folderCount;
         document.getElementById('popupFiles').textContent = statsCurrent.fileCount;
-        document.getElementById('accountPopup').style.display = 'block';
+        document.getElementById('accountPopup').classList.add('visible');
       } catch (err) {
         showAlert("Error: " + err.message, false);
       }
     }
 
     function closeAccountPopup() {
-      document.getElementById('accountPopup').style.display = 'none';
+      document.getElementById('accountPopup').classList.remove('visible');
     }
 
     function copyCode() {
