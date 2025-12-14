@@ -656,12 +656,12 @@
       btn.disabled = true;
       
       let remaining = seconds;
-      timerText.textContent = `Please wait ${remaining} seconds before sending another link`;
+      timerText.textContent = `Please wait ${remaining} seconds before sending another link. If not found, check your mail's spam folder`;
       
       currentTimer = setInterval(() => {
         remaining--;
         if (remaining > 0) {
-          timerText.textContent = `Please wait ${remaining} seconds before sending another link`;
+          timerText.textContent = `Please wait ${remaining} seconds before sending another link. If not found, check your mail's spam folder`;
         } else {
           clearInterval(currentTimer);
           btn.disabled = false;
