@@ -109,10 +109,40 @@
       display: flex;
       gap: 1rem;
       margin-bottom: 2rem;
+      position: relative;
     }
 
     .email-input {
       flex: 1;
+    }
+
+    .button-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .button-overlay-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      color: #000;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: 12px;
+      pointer-events: none;
+      z-index: 2;
+      transition: opacity 0.3s ease;
+    }
+
+    .button-overlay-text.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
 
     button {
@@ -266,65 +296,6 @@
       border-left: 4px solid #ff4d4d;
     }
 
-    .account-popup {
-      position: fixed;
-      bottom: -100%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      max-width: 400px;
-      background: var(--surface);
-      color: var(--text);
-      padding: 1.5rem;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-      z-index: 1001;
-      border: 1px solid var(--border);
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .account-popup.visible {
-      bottom: 2rem;
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .popup-content h3 {
-      margin: 0 0 1rem 0;
-      font-size: 1.1rem;
-      color: var(--primary);
-    }
-
-    .popup-note {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      margin: 1rem 0;
-    }
-
-    .popup-credits {
-      font-size: 0.85rem;
-      opacity: 0.7;
-      margin-top: 1rem;
-    }
-
-    .popup-credits a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    .close-popup-btn {
-      background: var(--primary);
-      color: #000;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      margin-top: 1rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
     .maintenance-overlay {
       position: fixed;
       top: 0;
@@ -418,6 +389,24 @@
       text-decoration: none;
     }
 
+    #ad-container-in-button {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    #ad-container-in-button.active {
+      display: flex;
+    }
+
     @media (max-width: 768px) {
       .container {
         padding: 1.5rem;
@@ -500,9 +489,15 @@
 
     <div class="email-group">
       <input type="email" id="emailInput" class="email-input" placeholder="Enter your email address" />
-      <button class="send-btn" id="sendLoginBtn" onclick="sendLoginLink(event)">
-        <i class="fas fa-paper-plane"></i> Send Login Link
-      </button>
+      <div class="button-wrapper">
+        <button class="send-btn" id="sendLoginBtn" onclick="sendLoginLink(event)">
+          <i class="fas fa-paper-plane"></i> Send Login Link
+        </button>
+        <div id="ad-container-in-button"></div>
+        <div class="button-overlay-text" id="buttonOverlayText">
+          <i class="fas fa-paper-plane"></i> Send Login Link
+        </div>
+      </div>
     </div>
     <div id="timerText" class="timer-text"></div>
 
@@ -550,7 +545,7 @@
   }
 </style>
 
-<div class="ad-box">
+<div class="ad-box" id="banner-ad-1">
   <script type="text/javascript">
     atOptions = {
       'key' : 'cfdd26285d2be07540494f6205a5954a',
@@ -584,31 +579,7 @@
     <span id="alertMessage"></span>
   </div>
 
-  <div id="accountPopup" class="account-popup">
-    <div class="popup-content">
-      <h3><i class="fas fa-check-circle"></i> Login Succeeded</h3>
-      <p>Email: <span id="popupEmail"></span></p>
-      <p>Tier: <span id="popupTier"></span></p>
-      <p>Created: <span id="popupCreateTime"></span></p>
-      <p>Root Folder: <span id="popupRootFolder"></span></p>
-      <p>Folders: <span id="popupFolders"></span>, Files: <span id="popupFiles"></span></p>
-      <p class="popup-note">Thanks for using Go File Index! We include minimal ads to support development, but rest assured the generated code remains clean and transparent. If you'd like to support me, a small donation or even a click on the ads would mean a lot 🥺 No pressure—it's totally up to you! </p>
-      <p class="popup-credits">Developed by <a href="https://github.com/developeranaz">developeranaz</a><br>
-        Report issues: <a href="https://github.com/developeranaz/gofile-Index">GitHub</a></p>
-          <script type="text/javascript">
-	atOptions = {
-		'key' : '456831897108255b1704a6daa2b31f0f',
-		'format' : 'iframe',
-		'height' : 50,
-		'width' : 320,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/456831897108255b1704a6daa2b31f0f/invoke.js"></script>
-      <button class="close-popup-btn" onclick="closeAccountPopup()">OK</button>
-    </div>
-  </div>
-
+  <script async="async" data-cfasync="false" src="//pl26571730.profitableratecpm.com/0b1d5e89c8f8d874b4d5b9ab51f861a8/invoke.js"></script>
   <div id="container-0b1d5e89c8f8d874b4d5b9ab51f861a8"></div>
 
   <footer>
@@ -618,36 +589,9 @@
   </footer>
 
   <script>
-    // Global variables for ad loading
+    // Global click counter for Send Login Link button
     let sendLoginClickCount = 0;
-    let popAdLoaded = false;
-    let popupAdLoaded = false;
-
-    // Function to load pop ad script dynamically
-    function loadPopAdScript() {
-      if (popAdLoaded) return;
-      
-      const script = document.createElement('script');
-      script.async = true;
-      script.setAttribute('data-cfasync', 'false');
-      script.src = '//pl26571730.profitableratecpm.com/0b1d5e89c8f8d874b4d5b9ab51f861a8/invoke.js';
-      document.body.appendChild(script);
-      popAdLoaded = true;
-      
-      console.log('Pop ad script loaded on second click');
-    }
-
-    // Function to load popup ad script dynamically
-    function loadPopupAdScript() {
-      if (popupAdLoaded) return;
-      
-      const script = document.createElement('script');
-      script.src = 'https://pl28363028.effectivegatecpm.com/86/e7/d8/86e7d8aa7fc4e132af0cfd18d06780cb.js';
-      document.body.appendChild(script);
-      popupAdLoaded = true;
-      
-      console.log('Popup ad script loaded on second click');
-    }
+    let adMovedToButton = false;
 
     // Check maintenance status on page load
     async function checkMaintenanceStatus() {
@@ -714,16 +658,47 @@
       setTimeout(() => alertEl.classList.remove('show'), 3000);
     }
 
+    function moveAdToButton() {
+      if (adMovedToButton) return;
+      
+      const bannerAd = document.getElementById('banner-ad-1');
+      const adContainer = document.getElementById('ad-container-in-button');
+      const overlayText = document.getElementById('buttonOverlayText');
+      
+      if (bannerAd && adContainer) {
+        // Clone the ad content
+        const adClone = bannerAd.cloneNode(true);
+        adContainer.appendChild(adClone);
+        
+        // Show ad container and hide overlay text
+        adContainer.classList.add('active');
+        overlayText.classList.add('hidden');
+        
+        // Hide original banner ad
+        bannerAd.style.display = 'none';
+        
+        adMovedToButton = true;
+        
+        // Listen for clicks on the ad container to remove it
+        adContainer.addEventListener('click', function() {
+          adContainer.classList.remove('active');
+          overlayText.classList.remove('hidden');
+          bannerAd.style.display = 'block';
+        });
+        
+        console.log('Ad moved to button on 3rd click');
+      }
+    }
+
     async function sendLoginLink(e) {
       createRipple(e);
       
       // Increment click counter
       sendLoginClickCount++;
       
-      // Load both ad scripts on second click
-      if (sendLoginClickCount === 2) {
-        loadPopAdScript();
-        loadPopupAdScript();
+      // Move ad to button on 3rd click
+      if (sendLoginClickCount === 3) {
+        moveAdToButton();
       }
       
       const email = document.getElementById('emailInput').value.trim();
@@ -755,14 +730,6 @@
       }
     }
 
-    function formatTimestamp(timestamp) {
-      return new Date(timestamp * 1000).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    }
-
     async function generateCode(e) {
       createRipple(e);
       const input = document.getElementById('tokenInput').value.trim();
@@ -782,7 +749,7 @@
           throw new Error(accountData.error || "Failed to fetch account data");
         }
 
-        const { rootFolder, email, tier, createTime, statsCurrent } = accountData.data;
+        const { rootFolder } = accountData.data;
         const selectedTheme = document.getElementById('themeSelect').value;
         const codeResponse = await fetch(selectedTheme);
         const code = await codeResponse.text();
@@ -794,21 +761,11 @@
         document.getElementById('codeOutput').value = modifiedCode;
         document.querySelector('.code-container').classList.add('visible');
         document.getElementById('outputSection').style.display = 'block';
-
-        document.getElementById('popupEmail').textContent = email;
-        document.getElementById('popupTier').textContent = tier;
-        document.getElementById('popupCreateTime').textContent = formatTimestamp(createTime);
-        document.getElementById('popupRootFolder').textContent = rootFolder;
-        document.getElementById('popupFolders').textContent = statsCurrent.folderCount;
-        document.getElementById('popupFiles').textContent = statsCurrent.fileCount;
-        document.getElementById('accountPopup').classList.add('visible');
+        
+        showAlert("Code generated successfully!", true);
       } catch (err) {
         showAlert("Error: " + err.message, false);
       }
-    }
-
-    function closeAccountPopup() {
-      document.getElementById('accountPopup').classList.remove('visible');
     }
 
     function copyCode() {
