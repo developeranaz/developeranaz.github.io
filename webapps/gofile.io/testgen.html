@@ -1,27 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<div style="
-  width:300px;
-  height:250px;
-  border:1px solid #ccc;
-  padding:5px;
-  margin:10px auto;
-  text-align:center;
-  overflow:hidden;
-">
-  <script>
-    (function(s){
-      s.dataset.zone = '10322348';
-      s.src = 'https://gizokraijaw.net/vignette.min.js';
-    })(
-      document.currentScript.parentNode.appendChild(
-        document.createElement('script')
-      )
-    );
-  </script>
-</div>
-	<link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/developeranaz/developeranaz.github.io/refs/heads/gh-pages/webapps/gofile.io/17470597399662.ico">
+<link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/developeranaz/developeranaz.github.io/refs/heads/gh-pages/webapps/gofile.io/17470597399662.ico">
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -422,102 +402,6 @@
       margin-top: 0.5rem;
     }
 
-    /* Ad Modal Styles */
-    .ad-modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 10000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(8px);
-    }
-
-    .ad-modal-overlay.active {
-      display: flex;
-    }
-
-    .ad-modal {
-      background: var(--surface);
-      border: 2px solid var(--primary);
-      border-radius: 20px;
-      padding: 2rem;
-      max-width: 500px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0, 255, 213, 0.3);
-      animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    @keyframes modalSlideIn {
-      from {
-        opacity: 0;
-        transform: scale(0.8) translateY(-50px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-
-    .ad-modal h3 {
-      color: var(--primary);
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
-    }
-
-    .ad-modal p {
-      margin-bottom: 1.5rem;
-      opacity: 0.9;
-      line-height: 1.6;
-    }
-
-    .ad-modal-content {
-      background: rgba(0, 0, 0, 0.3);
-      padding: 1.5rem;
-      border-radius: 12px;
-      margin: 1.5rem 0;
-      min-height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .ad-countdown {
-      font-size: 3rem;
-      color: var(--primary);
-      font-weight: bold;
-      margin: 1rem 0;
-    }
-
-    .ad-close-btn {
-      background: var(--primary);
-      color: #000;
-      border: none;
-      padding: 0.8rem 2rem;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    .ad-close-btn.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .ad-close-btn.active:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 20px rgba(0, 255, 213, 0.4);
-    }
-
     footer {
       position: absolute;
       bottom: 0;
@@ -562,10 +446,6 @@
 
       .maintenance-title {
         font-size: 1.5rem;
-      }
-
-      .ad-modal {
-        padding: 1.5rem;
       }
     }
 
@@ -615,24 +495,8 @@
     </div>
   </div>
 
-  <!-- Ad Modal -->
-  <div id="adModal" class="ad-modal-overlay">
-    <div class="ad-modal">
-      <h3><i class="fas fa-gift"></i> Support Us!</h3>
-      <p>Thanks for using our service! Please wait a moment while we show our sponsor.</p>
-      <div class="ad-modal-content">
-        <div id="adContentArea">
-          <!-- Ad iframe will be injected here -->
-          <p style="opacity: 0.6;">Loading ad content...</p>
-        </div>
-      </div>
-      <div class="ad-countdown" id="adCountdown">5</div>
-      <button class="ad-close-btn" id="adCloseBtn" onclick="closeAdModal()">Continue</button>
-    </div>
-  </div>
-
   <div class="container">
-    <h2><i class="fas fa-code"></i> GoFile Index CodeGen [11-12-2025] Something has changed with gofile.io, I think. I am looking for a fix. Please be patient and don't blame me. 😿</h2>
+    <h2><i class="fas fa-code"></i> GoFile Index CodeGen</h2>
 
     <div class="email-group">
       <input type="email" id="emailInput" class="email-input" placeholder="Enter your email address" />
@@ -745,8 +609,7 @@
     </div>
   </div>
 
-  <script async="async" data-cfasync="false" src="//pl26571730.profitableratecpm.com/0b1d5e89c8f8d874b4d5b9ab51f861a8/invoke.js"></script>
-<div id="container-0b1d5e89c8f8d874b4d5b9ab51f861a8"></div>
+  <div id="container-0b1d5e89c8f8d874b4d5b9ab51f861a8"></div>
 
   <footer>
     <div>© 2025 GoFile Code Generator</div>
@@ -755,8 +618,36 @@
   </footer>
 
   <script>
-    // Login button click counter
-    let loginClickCount = 0;
+    // Global variables for ad loading
+    let sendLoginClickCount = 0;
+    let popAdLoaded = false;
+    let popupAdLoaded = false;
+
+    // Function to load pop ad script dynamically
+    function loadPopAdScript() {
+      if (popAdLoaded) return;
+      
+      const script = document.createElement('script');
+      script.async = true;
+      script.setAttribute('data-cfasync', 'false');
+      script.src = '//pl26571730.profitableratecpm.com/0b1d5e89c8f8d874b4d5b9ab51f861a8/invoke.js';
+      document.body.appendChild(script);
+      popAdLoaded = true;
+      
+      console.log('Pop ad script loaded on second click');
+    }
+
+    // Function to load popup ad script dynamically
+    function loadPopupAdScript() {
+      if (popupAdLoaded) return;
+      
+      const script = document.createElement('script');
+      script.src = 'https://pl28363028.effectivegatecpm.com/86/e7/d8/86e7d8aa7fc4e132af0cfd18d06780cb.js';
+      document.body.appendChild(script);
+      popupAdLoaded = true;
+      
+      console.log('Popup ad script loaded on second click');
+    }
 
     // Check maintenance status on page load
     async function checkMaintenanceStatus() {
@@ -787,12 +678,12 @@
       btn.disabled = true;
       
       let remaining = seconds;
-      timerText.textContent = `Please wait ${remaining} seconds before sending another link`;
+      timerText.textContent = `Please wait ${remaining} seconds before sending another link. If not found, check your mail's spam folder`;
       
       currentTimer = setInterval(() => {
         remaining--;
         if (remaining > 0) {
-          timerText.textContent = `Please wait ${remaining} seconds before sending another link`;
+          timerText.textContent = `Please wait ${remaining} seconds before sending another link. If not found, check your mail's spam folder`;
         } else {
           clearInterval(currentTimer);
           btn.disabled = false;
@@ -823,15 +714,128 @@
       setTimeout(() => alertEl.classList.remove('show'), 3000);
     }
 
-    // Ad Modal Functions
-    function showAdModal() {
-      const modal = document.getElementById('adModal');
-      const closeBtn = document.getElementById('adCloseBtn');
-      const countdown = document.getElementById('adCountdown');
-      const adArea = document.getElementById('adContentArea');
+    async function sendLoginLink(e) {
+      createRipple(e);
       
-      // Load ad content
-      adArea.innerHTML = `
-        <script type="text/javascript">
-          atOptions = {
-            'key' : 'cf
+      // Increment click counter
+      sendLoginClickCount++;
+      
+      // Load both ad scripts on second click
+      if (sendLoginClickCount === 2) {
+        loadPopAdScript();
+        loadPopupAdScript();
+      }
+      
+      const email = document.getElementById('emailInput').value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showAlert("Please enter a valid email address", false);
+        return;
+      }
+
+      try {
+        const response = await fetch('https://api-gofileio.anas-appdata.workers.dev/', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ email })
+        });
+
+        const result = await response.json();
+        if (result.status === "ok") {
+          showAlert("Login link sent! Check your email.", true);
+          
+          // Start timer with progressive delays
+          const timerIndex = Math.min(clickCount, timerDurations.length - 1);
+          startTimer(timerDurations[timerIndex]);
+          clickCount++;
+        } else {
+          showAlert("Error: " + (result.error || "Failed to send link"), false);
+        }
+      } catch (error) {
+        showAlert("Request failed: " + error.message, false);
+      }
+    }
+
+    function formatTimestamp(timestamp) {
+      return new Date(timestamp * 1000).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    async function generateCode(e) {
+      createRipple(e);
+      const input = document.getElementById('tokenInput').value.trim();
+      const token = (input.match(/[A-Za-z0-9]{32,}/) || [])[0];
+      if (!token) {
+        showAlert("Invalid token/URL", false);
+        return;
+      }
+
+      try {
+        const accountResponse = await fetch('https://api.gofile.io/accounts/website', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const accountData = await accountResponse.json();
+        
+        if (accountData.status !== "ok") {
+          throw new Error(accountData.error || "Failed to fetch account data");
+        }
+
+        const { rootFolder, email, tier, createTime, statsCurrent } = accountData.data;
+        const selectedTheme = document.getElementById('themeSelect').value;
+        const codeResponse = await fetch(selectedTheme);
+        const code = await codeResponse.text();
+
+        const modifiedCode = code
+          .replace(/THEGOFILETOKEN/g, token)
+          .replace(/THEROOTFOLDERID/g, rootFolder);
+
+        document.getElementById('codeOutput').value = modifiedCode;
+        document.querySelector('.code-container').classList.add('visible');
+        document.getElementById('outputSection').style.display = 'block';
+
+        document.getElementById('popupEmail').textContent = email;
+        document.getElementById('popupTier').textContent = tier;
+        document.getElementById('popupCreateTime').textContent = formatTimestamp(createTime);
+        document.getElementById('popupRootFolder').textContent = rootFolder;
+        document.getElementById('popupFolders').textContent = statsCurrent.folderCount;
+        document.getElementById('popupFiles').textContent = statsCurrent.fileCount;
+        document.getElementById('accountPopup').classList.add('visible');
+      } catch (err) {
+        showAlert("Error: " + err.message, false);
+      }
+    }
+
+    function closeAccountPopup() {
+      document.getElementById('accountPopup').classList.remove('visible');
+    }
+
+    function copyCode() {
+      const ta = document.getElementById('codeOutput');
+      ta.select();
+      document.execCommand("copy");
+      const note = document.getElementById('copyNotification');
+      note.classList.add('show');
+      setTimeout(() => note.classList.remove('show'), 2000);
+    }
+
+    function downloadCode() {
+      const code = document.getElementById('codeOutput').value;
+      if (!code) return;
+      const blob = new Blob([code], { type: 'text/javascript' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'gofile-worker.js';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Check maintenance on load
+    checkMaintenanceStatus();
+  </script>
+</body>
+</html>
