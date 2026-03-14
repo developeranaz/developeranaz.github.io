@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kodi Addon + GoFile Worker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Minimal dark theme */
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --primary: #2f81f7;
+            --secondary: #8957e5;
+            --success: #3fb950;
+            --error: #f85149;
+            --red: #f85149;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 2rem 1rem;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+        h2 { font-size: 2rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; color: var(--primary); }
+        .form-group { margin-bottom: 1.5rem; position: relative; }
+        .label-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 0.3rem;
+        }
+        .label-row label { font-weight: 600; margin: 0; }
+        .red-asterisk { color: var(--red); }
+        .helper-link {
+            color: var(--primary); text-decoration: none; cursor: pointer;
+            border-bottom: 1px dashed var(--primary); font-size: 0.9rem;
+        }
+        input, select, textarea {
+            width: 100%; padding: 0.8rem 1rem; background: var(--bg);
+            border: 1px solid var(--border); border-radius: 8px;
+            color: var(--text); font-size: 1rem;
+        }
+        input:focus, select:focus { outline: none; border-color: var(--primary); }
+        .inline-flex { display: flex; align-items: center; gap: 0.5rem; }
+        .inline-flex input { flex: 1; }
+        button, .btn {
+            padding: 0.8rem 1.5rem; background: var(--primary); color: white;
+            border: none; border-radius: 8px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .icon-btn {
+            background: transparent; border: 1px solid var(--border);
+            padding: 0.6rem 1rem; border-radius: 8px; color: var(--text);
+        }
+        .icon-btn:hover { background: var(--border); }
+        .version-row { display: flex; gap: 1rem; }
+        .version-row div { flex: 1; }
+        .status { margin-top: 1rem; padding: 0.8rem; background: var(--bg); border-radius: 8px; }
+        .error { color: var(--error); }
+        .success { color: var(--success); }
+
+        /* Worker generator (hidden by default) */
+        .worker-generator {
+            margin-bottom: 1rem; padding: 1rem; background: var(--bg);
+            border-radius: 8px; border: 1px solid var(--border);
+            display: none;
+        }
+        .worker-generator.visible { display: block; }
+        .code-container {
+            position: relative; margin-top: 1.5rem; border: 1px solid var(--border);
+            border-radius: 8px; background: var(--surface);
+        }
+        .code-actions {
+            position: absolute; top: 0.5rem; right: 0.5rem; display: flex; gap: 0.5rem;
+        }
+        .code-action {
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 6px; width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text);
+        }
+        .code-action:hover { background: var(--border); }
+        #codeOutput {
+            width: 100%; height: 250px; padding: 1rem; padding-top: 3rem;
+            background: transparent; border: none; font-family: monospace;
+            resize: vertical; color: var(--text);
+        }
+        .alert {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            padding: 1rem 2rem; border-radius: 8px; background: var(--surface);
+            border-left: 4px solid var(--primary); opacity: 0;
+            transition: all 0.4s; z-index: 1000;
+        }
+        .alert.show { opacity: 1; top: 30px; }
+        .timer-text { font-size: 0.8rem; color: #8b949e; margin-top: 0.5rem; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2><i class="fas fa-puzzle-piece"></i> Kodi Addon Generator</h2>
+
+        <!-- APPNAME -->
+        <div class="form-group">
+            <label>APPNAME *</label>
+            <input type="text" id="appname" placeholder="e.g. MyGofileAddon">
+        </div>
+
+        <!-- INDEXURL group with integrated worker generator -->
+        <div class="form-group" id="indexurl-group">
+            <!-- Hidden worker generator (appears above label when toggled) -->
+            <div id="workerGenerator" class="worker-generator">
+                <h3 style="margin-bottom:1rem; color:var(--primary); font-size:1.2rem;"><i class="fas fa-cloud"></i> GoFile Worker Creator</h3>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>Email</label>
+                    <div class="inline-flex">
+                        <input type="email" id="gofileEmail" placeholder="your@email.com">
+                        <button id="sendLoginBtn"><i class="fas fa-paper-plane"></i> Send</button>
+                    </div>
+                    <div id="timerText" class="timer-text"></div>
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>Token or Login URL</label>
+                    <input type="text" id="tokenInput" placeholder="Paste token or URL">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>Theme</label>
+                    <select id="themeSelect">
+                        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/public_shared_dark.js">Dark Theme (Best)</option>
+                        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/terminal_dark.js">Dark Terminal</option>
+                        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/index.js">Light Theme</option>
+                        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/lite-http-server.js">Simple HTML Server</option>
+                        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/beta(shared_link_support).js">Beta - Shared Link</option>
+                    </select>
+                </div>
+                <button id="generateWorkerBtn" style="width:100%;"><i class="fas fa-code"></i> Generate Worker Code</button>
+
+                <div id="outputSection" style="display:none; margin-top:1rem;">
+                    <div class="code-container">
+                        <div class="code-actions">
+                            <button class="code-action" onclick="gofile_copyCode()" title="Copy"><i class="far fa-copy"></i></button>
+                            <button class="code-action" onclick="gofile_downloadCode()" title="Download"><i class="fas fa-download"></i></button>
+                        </div>
+                        <textarea id="codeOutput" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Label row with red asterisk and "Create one" link -->
+            <div class="label-row">
+                <label>INDEXURL <span class="red-asterisk">*</span></label>
+                <span class="helper-link" id="toggleWorkerLink">Don't have a worker? Create one</span>
+            </div>
+
+            <!-- INDEXURL input -->
+            <input type="url" id="indexurl" placeholder="https://your-worker.workers.dev/">
+        </div>
+
+        <!-- PACKAGENAME with refresh button -->
+        <div class="form-group">
+            <label>PACKAGENAME</label>
+            <div class="inline-flex">
+                <input type="text" id="packagename" placeholder="auto-filled from domain">
+                <button class="icon-btn" id="resetPackageBtn" title="Reset to domain"><i class="fas fa-sync-alt"></i></button>
+            </div>
+            <small>Editable – click ↻ to restore domain from INDEXURL</small>
+        </div>
+
+        <!-- VERSION triple input -->
+        <div class="form-group">
+            <label>THEVERSION (major.minor.patch)</label>
+            <div class="version-row">
+                <div><input type="number" id="major" min="0" value="1" step="1" placeholder="Major"></div>
+                <div><input type="number" id="minor" min="0" value="0" step="1" placeholder="Minor"></div>
+                <div><input type="number" id="patch" min="0" value="0" step="1" placeholder="Patch"></div>
+            </div>
+        </div>
+
+        <button id="generateKodiBtn" style="width:100%;"><i class="fas fa-download"></i> Generate Kodi Addon</button>
+        <div id="kodiStatus" class="status"></div>
+    </div>
+
+    <!-- Floating alert -->
+    <div id="alert" class="alert"><span id="alertMessage"></span></div>
+    <div class="copy-notification" id="copyNotification" style="position:fixed; bottom:-50px; left:50%; transform:translateX(-50%); background:var(--primary); color:white; padding:0.8rem 1.5rem; border-radius:8px; opacity:0; transition:0.4s;">Copied!</div>
+
+    <script>
+        // ========== Kodi Addon Core ==========
+        const BASE_RAW_ADDON = 'https://raw.githubusercontent.com/developeranaz/gofile-Index-Kodi-addon/refs/heads/main/addon/';
+        const ADDON_FILES = [
+            'LICENSE.txt', 'addon.py', 'addon.xml', 'fanart.jpg', 'icon.png',
+            'resources/__init__.py', 'resources/settings.xml'
+        ];
+
+        function getHostnameFromUrl(url) {
+            try { return new URL(url).hostname; } catch { return ''; }
+        }
+        function sanitizeForId(name) {
+            return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        }
+        function normalizeUrl(url) {
+            if (!url) return '';
+            url = url.trim();
+            if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+            return url;
+        }
+        function getVersion() {
+            return `${document.getElementById('major').value || '0'}.${document.getElementById('minor').value || '0'}.${document.getElementById('patch').value || '0'}`;
+        }
+        function getTimestamp() {
+            const n = new Date();
+            return `${n.getFullYear()}${String(n.getMonth()+1).padStart(2,'0')}${String(n.getDate()).padStart(2,'0')}_${String(n.getHours()).padStart(2,'0')}${String(n.getMinutes()).padStart(2,'0')}${String(n.getSeconds()).padStart(2,'0')}`;
+        }
+        function isTextFile(f) {
+            return ['.py','.xml','.txt','.md','.ini','.json','.css','.html','.js'].includes(f.slice(f.lastIndexOf('.')));
+        }
+
+        function updatePackageFromIndex() {
+            const indexUrl = document.getElementById('indexurl').value;
+            document.getElementById('packagename').value = getHostnameFromUrl(indexUrl);
+        }
+        document.getElementById('resetPackageBtn').addEventListener('click', updatePackageFromIndex);
+
+        // Auto-fill packagename only if empty
+        document.getElementById('indexurl').addEventListener('input', function() {
+            if (!document.getElementById('packagename').value.trim()) {
+                updatePackageFromIndex();
+            }
+        });
+
+        document.getElementById('generateKodiBtn').addEventListener('click', async function() {
+            const status = document.getElementById('kodiStatus');
+            status.innerHTML = 'Starting...';
+            const appname = document.getElementById('appname').value.trim();
+            const indexurlRaw = document.getElementById('indexurl').value.trim();
+            let packagename = document.getElementById('packagename').value.trim();
+            const version = getVersion();
+            const timestamp = getTimestamp();
+
+            if (!appname || !indexurlRaw) {
+                status.innerHTML = '<span class="error">❌ APPNAME and INDEXURL required.</span>';
+                return;
+            }
+            if (!packagename) packagename = getHostnameFromUrl(indexurlRaw);
+            const indexurl = normalizeUrl(indexurlRaw);
+            const addonId = 'plugin.video.' + sanitizeForId(appname);
+
+            const zip = new JSZip();
+            const topFolder = zip.folder(addonId);
+
+            status.innerHTML = 'Fetching files...';
+            for (const file of ADDON_FILES) {
+                const url = BASE_RAW_ADDON + file;
+                try {
+                    const resp = await fetch(url);
+                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                    if (isTextFile(file)) {
+                        let content = await resp.text();
+                        content = content.replace(/APPNAME/g, appname)
+                                         .replace(/INDEXURL/g, indexurl)
+                                         .replace(/PACKAGENAME/g, packagename)
+                                         .replace(/THEVERSION/g, version);
+                        if (file === 'addon.xml') content = content.replace(/id=""/, `id="${addonId}"`);
+                        else if (file === 'settings.xml') content = content.replace(/default="[^"]*"/, `default="${indexurl}"`);
+                        else if (file === 'addon.py') content = content.replace(/'https:\/\/go\.sundaran\.workers\.dev\/'/, `'${indexurl}'`);
+                        topFolder.file(file, content);
+                    } else {
+                        topFolder.file(file, await resp.blob());
+                    }
+                } catch (err) {
+                    status.innerHTML = `<span class="error">❌ Error fetching ${file}: ${err.message}</span>`;
+                    return;
+                }
+            }
+
+            status.innerHTML = 'Generating ZIP...';
+            const blob = await zip.generateAsync({ type: 'blob' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${addonId}-${version}-${timestamp}.zip`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            status.innerHTML = '<span class="success">✅ Addon generated and downloaded!</span>';
+        });
+
+        // ========== GoFile Worker Generator ==========
+        let clickCount = 0;
+        const timerDurations = [30, 30, 60, 120, 300];
+        let currentTimer = null;
+
+        function startTimer(seconds) {
+            const btn = document.getElementById('sendLoginBtn');
+            const timerText = document.getElementById('timerText');
+            btn.disabled = true;
+            let remaining = seconds;
+            timerText.textContent = `Wait ${remaining}s (check spam)`;
+            currentTimer = setInterval(() => {
+                remaining--;
+                if (remaining > 0) timerText.textContent = `Wait ${remaining}s`;
+                else {
+                    clearInterval(currentTimer);
+                    btn.disabled = false;
+                    timerText.textContent = '';
+                }
+            }, 1000);
+        }
+
+        function showAlert(msg, isSuccess) {
+            const alertEl = document.getElementById('alert');
+            alertEl.style.borderLeftColor = isSuccess ? 'var(--success)' : 'var(--error)';
+            document.getElementById('alertMessage').textContent = msg;
+            alertEl.classList.add('show');
+            setTimeout(() => alertEl.classList.remove('show'), 3000);
+        }
+
+        document.getElementById('sendLoginBtn').addEventListener('click', async function(e) {
+            const email = document.getElementById('gofileEmail').value.trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showAlert("Valid email required", false); return;
+            }
+            try {
+                const resp = await fetch('https://api-gofileio.anas-appdata.workers.dev/', {
+                    method: 'POST', headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ email })
+                });
+                const result = await resp.json();
+                if (result.status === "ok") {
+                    showAlert("Login link sent!", true);
+                    const idx = Math.min(clickCount, timerDurations.length-1);
+                    startTimer(timerDurations[idx]);
+                    clickCount++;
+                } else {
+                    showAlert("Error: " + (result.error || "Failed"), false);
+                }
+            } catch (err) {
+                showAlert("Request failed: " + err.message, false);
+            }
+        });
+
+        document.getElementById('generateWorkerBtn').addEventListener('click', async function(e) {
+            const input = document.getElementById('tokenInput').value.trim();
+            const token = (input.match(/[A-Za-z0-9]{32,}/) || [])[0];
+            if (!token) { showAlert("Invalid token/URL", false); return; }
+
+            try {
+                const accResp = await fetch('https://api.gofile.io/accounts/website', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const accData = await accResp.json();
+                if (accData.status !== "ok") throw new Error(accData.error || "Failed to fetch account");
+
+                const { rootFolder } = accData.data;
+                const theme = document.getElementById('themeSelect').value;
+                const codeResp = await fetch(theme);
+                const code = await codeResp.text();
+                const modified = code.replace(/THEGOFILETOKEN/g, token).replace(/THEROOTFOLDERID/g, rootFolder);
+
+                document.getElementById('codeOutput').value = modified;
+                document.getElementById('outputSection').style.display = 'block';
+                showAlert("Worker code generated!", true);
+            } catch (err) {
+                showAlert("Error: " + err.message, false);
+            }
+        });
+
+        window.gofile_copyCode = function() {
+            const ta = document.getElementById('codeOutput');
+            ta.select();
+            document.execCommand('copy');
+            const note = document.getElementById('copyNotification');
+            note.style.opacity = '1';
+            note.style.bottom = '30px';
+            setTimeout(() => {
+                note.style.opacity = '0';
+                note.style.bottom = '-50px';
+            }, 2000);
+        };
+        window.gofile_downloadCode = function() {
+            const code = document.getElementById('codeOutput').value;
+            if (!code) return;
+            const blob = new Blob([code], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'gofile-worker.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+
+        // Toggle worker generator when clicking "Create one"
+        document.getElementById('toggleWorkerLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            const gen = document.getElementById('workerGenerator');
+            gen.classList.toggle('visible');
+        });
+    </script>
+</body>
+</html>
