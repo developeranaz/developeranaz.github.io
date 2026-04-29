@@ -2,13 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Search in New Tab</title>
+    <title>Endless Search Tabs</title>
 </head>
 <body>
-    <p>Opening search in a new tab…</p>
+    <p>Opening Bing searches in new tabs every 5–8 seconds…</p>
+    <p id="counter" style="color:gray;"></p>
+
     <script>
-        if (!sessionStorage.getItem('opened')) {
-            sessionStorage.setItem('opened', '1');
+        // Prevent multiple loops if the page is reloaded
+        if (sessionStorage.getItem('loopActive')) {
+            document.body.innerHTML += '<p style="color:red">Loop already running in this session. Close this tab.</p>';
+        } else {
+            sessionStorage.setItem('loopActive', '1');
 
             const keywords = [
                 'javascript', 'python', 'algorithm', 'database', 'cloud',
@@ -18,13 +23,31 @@
                 'network', 'cryptography', 'compiler', 'debugging', 'performance'
             ];
 
-            const count = Math.floor(Math.random() * 3) + 3; // 3, 4, or 5
-            const shuffled = keywords.sort(() => Math.random() - 0.5);
-            const selected = shuffled.slice(0, count);
-            const query = selected.join(' ');
+            let tabCount = 0;
+            const counterEl = document.getElementById('counter');
 
-            const url = 'https://www.bing.com/search?q=' + encodeURIComponent(query);
-            window.open(url, '_blank');
+            function openSearchTab() {
+                // Pick 3–5 random keywords
+                const count = Math.floor(Math.random() * 3) + 3; // 3, 4, or 5
+                const shuffled = keywords.sort(() => Math.random() - 0.5);
+                const selected = shuffled.slice(0, count);
+                const query = selected.join(' ');
+                const url = 'https://www.bing.com/search?q=' + encodeURIComponent(query);
+
+                // Open in new tab
+                window.open(url, '_blank');
+
+                // Update counter
+                tabCount++;
+                counterEl.textContent = `Tabs opened: ${tabCount}`;
+
+                // Schedule next opening after 5–8 seconds
+                const delay = Math.floor(Math.random() * 3001) + 5000; // 5000–8000 ms
+                setTimeout(openSearchTab, delay);
+            }
+
+            // Start the loop immediately (or after a short initial delay if preferred)
+            openSearchTab();
         }
     </script>
 </body>
