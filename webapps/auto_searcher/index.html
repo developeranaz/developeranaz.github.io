@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Search Redirect</title>
+    <title>Search in New Tab</title>
 </head>
 <body>
-    <p>Redirecting…</p>
+    <p>Opening search in a new tab…</p>
     <script>
-        if (!sessionStorage.getItem('redirected')) {
-            sessionStorage.setItem('redirected', '1');
+        if (!sessionStorage.getItem('opened')) {
+            sessionStorage.setItem('opened', '1');
 
             const keywords = [
                 'javascript', 'python', 'algorithm', 'database', 'cloud',
@@ -23,8 +23,8 @@
             const selected = shuffled.slice(0, count);
             const query = selected.join(' ');
 
-            window.location.href =
-                'https://www.bing.com/search?q=' + encodeURIComponent(query);
+            const url = 'https://www.bing.com/search?q=' + encodeURIComponent(query);
+            window.open(url, '_blank');
         }
     </script>
 </body>
