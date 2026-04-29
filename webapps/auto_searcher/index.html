@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Redirect</title>
+</head>
+<body>
+    <p>Redirecting…</p>
+    <script>
+        if (!sessionStorage.getItem('redirected')) {
+            sessionStorage.setItem('redirected', '1');
+
+            const keywords = [
+                'javascript', 'python', 'algorithm', 'database', 'cloud',
+                'security', 'machine learning', 'design', 'framework', 'api',
+                'testing', 'deployment', 'container', 'microservice', 'frontend',
+                'backend', 'mobile', 'analytics', 'optimization', 'architecture',
+                'network', 'cryptography', 'compiler', 'debugging', 'performance'
+            ];
+
+            const count = Math.floor(Math.random() * 3) + 3; // 3, 4, or 5
+            const shuffled = keywords.sort(() => Math.random() - 0.5);
+            const selected = shuffled.slice(0, count);
+            const query = selected.join(' ');
+
+            window.location.href =
+                'https://www.bing.com/search?q=' + encodeURIComponent(query);
+        }
+    </script>
+</body>
+</html>
