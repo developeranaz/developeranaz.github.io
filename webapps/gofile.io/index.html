@@ -726,7 +726,7 @@ function acknowledgeNotice() {
     // Check maintenance status on page load
     async function checkMaintenanceStatus() {
       try {
-        const response = await fetch('https://raw.githubusercontent.com/developeranaz/developeranaz.github.io/refs/heads/gh-pages/webapps/gofile.io/maintenance.log');
+        const response = await fetch('https://raw.githubusercontent.com/developeranaz/developeranaz.github.io/refs/heads/main/webapps/gofile.io/maintenance.log');
         const text = await response.text();
         const status = text.trim().toUpperCase();
         
