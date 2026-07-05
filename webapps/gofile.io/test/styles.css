@@ -1,0 +1,703 @@
+/* ================================================================
+   GLOBAL DESIGN TOKENS
+   ================================================================ */
+:root {
+  --primary:    #00ffd5;
+  --secondary:  #7b61ff;
+  --background: #0a0a12;
+  --surface:    #1a1a24;
+  --text:       #e0e0ff;
+  --border:     rgba(255, 255, 255, 0.1);
+  --warning:    #ff9500;
+  --error:      #ff4d4d;
+}
+
+/* ================================================================
+   RESET & BASE
+   ================================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+  background: var(--background);
+  color: var(--text);
+  padding: 2rem 1rem;
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 80px;
+}
+
+/* ================================================================
+   IMPORTANT NOTICE OVERLAY
+   ================================================================ */
+#important-notice {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.notice-box {
+  background: #fff;
+  border: 2px solid red;
+  padding: 16px;
+  width: 92%;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+}
+
+.notice-box h2 {
+  color: green;
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.notice-box p {
+  color: green;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.notice-box button {
+  margin-top: 15px;
+  padding: 12px 20px;
+  background: green;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  border-radius: 4px;
+}
+
+/* ================================================================
+   MAIN CONTAINER
+   ================================================================ */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: linear-gradient(145deg, rgba(26, 26, 36, 0.8) 0%, rgba(16, 16, 24, 0.9) 100%);
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  transition: transform 0.3s ease;
+}
+
+/* ================================================================
+   TYPOGRAPHY
+   ================================================================ */
+h2 {
+  color: var(--primary);
+  margin-bottom: 2rem;
+  font-weight: 700;
+  text-align: center;
+  font-size: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* ================================================================
+   FORM ELEMENTS
+   ================================================================ */
+.input-group {
+  margin: 2rem 0;
+  position: relative;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+  opacity: 0.9;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 1.2rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 1rem;
+  color: var(--text);
+  transition: all 0.3s ease;
+  appearance: none;
+}
+
+select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e0e0ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(224, 224, 255, 0.4);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 255, 213, 0.15);
+}
+
+/* ================================================================
+   EMAIL ROW  (input + button / penalty container side-by-side)
+   ================================================================ */
+.email-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: stretch;  /* penalty container matches button height */
+}
+
+.email-input {
+  flex: 1;
+}
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+button {
+  padding: 1.2rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  color: #000;
+  position: relative;
+  overflow: hidden;
+}
+
+button:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.generate-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+/* ================================================================
+   RIPPLE EFFECT
+   ================================================================ */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0);
+  animation: ripple 600ms linear;
+  pointer-events: none;
+}
+
+/* ================================================================
+   AD PENALTY CONTAINER
+   — Replaces the "Send Login Link" button when the click limit is
+     exceeded. Lives in the same flex slot as the button.
+   ================================================================ */
+.ad-penalty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 2px dashed var(--warning);
+  border-radius: 12px;
+  background: rgba(255, 149, 0, 0.06);
+  /* flex-shrink: 0 keeps it from collapsing on narrow screens */
+  flex-shrink: 0;
+  max-width: 340px;
+  text-align: center;
+  animation: penaltyFadeIn 0.35s ease;
+}
+
+@keyframes penaltyFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.penalty-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--warning);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* The ad link itself — inherits no button styles */
+.penalty-ad-link {
+  display: block;
+  border-radius: 6px;
+  overflow: hidden;
+  line-height: 0;       /* removes inline-block gap under the ad */
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.penalty-ad-link:hover {
+  opacity: 0.88;
+  transform: scale(1.02);
+}
+
+.ad-unlock-info {
+  font-size: 0.8rem;
+  color: var(--primary);
+  min-height: 1.1em;    /* prevents layout jump when text appears */
+  transition: color 0.3s ease;
+}
+
+.ad-unlock-info.unlocking {
+  color: var(--warning);
+}
+
+.ad-unlock-info.unlocked {
+  color: var(--primary);
+}
+
+/* ================================================================
+   TIMER TEXT (below email row)
+   ================================================================ */
+.timer-text {
+  font-size: 0.85rem;
+  color: rgba(224, 224, 255, 0.6);
+  margin-top: 0.5rem;
+}
+
+/* ================================================================
+   DUMMY AD PLACEHOLDERS  (replace with real Adsterra code)
+   ================================================================ */
+.dummy-ad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: rgba(224, 224, 255, 0.45);
+  font-size: 0.75rem;
+  font-family: monospace;
+  letter-spacing: 0.03em;
+  padding: 0.4rem;
+}
+
+/* penalty ad: fixed 320×50 */
+.dummy-ad--penalty {
+  width: 320px;
+  height: 50px;
+}
+
+/* popup ad: fixed 320×50 */
+.dummy-ad--popup {
+  width: 320px;
+  height: 50px;
+}
+
+/* native banner: fluid width, subtle height */
+.dummy-ad--native {
+  width: 100%;
+  height: 60px;
+}
+
+/* ================================================================
+   BANNER ADS  (slots 1 & 2 — responsive 728×90 / 320×50)
+   ================================================================ */
+.banner-ad {
+  text-align: center;
+  margin: 1.5rem auto;
+}
+
+.banner-ad--top {
+  margin-top: 0;       /* sits snug below the heading */
+  margin-bottom: 1.5rem;
+}
+
+.banner-ad--mid {
+  margin-top: 1.5rem;
+}
+
+/* Make the banner ad itself responsive */
+.banner-ad iframe,
+.banner-ad > * {
+  max-width: 728px;
+  width: 100%;
+  margin: 0 auto;
+  display: block;
+}
+
+/* ================================================================
+   POPUP AD  (slot 3 — 320×50 inside success popup)
+   ================================================================ */
+.popup-ad {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+/* ================================================================
+   NATIVE BANNER AD  (slot 4 — footer)
+   ================================================================ */
+.native-banner-ad {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* ================================================================
+   THEME SELECTOR
+   ================================================================ */
+.theme-selector {
+  margin: 1.5rem 0;
+}
+
+/* ================================================================
+   CODE OUTPUT SECTION
+   ================================================================ */
+.code-container {
+  position: relative;
+  margin-top: 2rem;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s ease;
+}
+
+.code-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.code-actions {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.code-container:hover .code-actions {
+  opacity: 1;
+}
+
+.code-action {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.code-action:hover {
+  background: var(--primary);
+  transform: scale(1.1);
+}
+
+#codeOutput {
+  width: 100%;
+  height: 300px;
+  padding: 1.5rem;
+  padding-top: 4rem;
+  border: none;
+  background: transparent;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  resize: vertical;
+  color: var(--text);
+}
+
+/* ================================================================
+   COPY NOTIFICATION
+   ================================================================ */
+.copy-notification {
+  position: fixed;
+  bottom: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--secondary);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.copy-notification.show {
+  opacity: 1;
+  bottom: 30px;
+}
+
+/* ================================================================
+   FLOATING ALERT (top of screen)
+   ================================================================ */
+.alert {
+  position: fixed;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1.2rem 2.4rem;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+  max-width: 90%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.alert.show {
+  opacity: 1;
+  top: 30px;
+}
+
+.alert-success { border-left: 4px solid var(--primary); }
+.alert-error   { border-left: 4px solid var(--error); }
+
+/* ================================================================
+   ACCOUNT SUCCESS POPUP (bottom sheet)
+   ================================================================ */
+.account-popup {
+  position: fixed;
+  bottom: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  border: 1px solid var(--border);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.account-popup.visible {
+  bottom: 2rem;
+  opacity: 1;
+  visibility: visible;
+}
+
+.popup-content h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+
+.popup-note {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin: 1rem 0;
+}
+
+.popup-credits {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin-top: 1rem;
+}
+
+.popup-credits a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.close-popup-btn {
+  background: var(--primary);
+  color: #000;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* ================================================================
+   MAINTENANCE OVERLAY
+   ================================================================ */
+.maintenance-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 18, 0.98);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.maintenance-overlay.active {
+  display: flex;
+}
+
+.maintenance-content {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 24px;
+  padding: 3rem;
+  max-width: 600px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.maintenance-icon {
+  font-size: 5rem;
+  color: var(--warning);
+  margin-bottom: 1.5rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+.maintenance-title {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.maintenance-message {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  line-height: 1.8;
+}
+
+.maintenance-contact {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-top: 2rem;
+}
+
+.maintenance-contact h4 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.maintenance-contact a {
+  color: var(--secondary);
+  text-decoration: none;
+  display: inline-block;
+  margin: 0.5rem;
+}
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 1.5rem;
+  color: rgba(224, 224, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+footer a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+/* ================================================================
+   RESPONSIVE — MOBILE  (≤ 768 px)
+   ================================================================ */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  /* Stack input and button/penalty vertically on small screens */
+  .email-group {
+    flex-direction: column;
+  }
+
+  /* Full-width penalty container on mobile */
+  .ad-penalty-container {
+    max-width: 100%;
+  }
+
+  body {
+    padding-bottom: 100px;
+  }
+
+  .maintenance-content {
+    padding: 2rem;
+    margin: 1rem;
+  }
+
+  .maintenance-icon  { font-size: 3.5rem; }
+  .maintenance-title { font-size: 1.5rem; }
+
+  /* Responsive banner: cap at 320 px wide on mobile */
+  .banner-ad iframe,
+  .banner-ad > * {
+    max-width: 320px;
+  }
+}
