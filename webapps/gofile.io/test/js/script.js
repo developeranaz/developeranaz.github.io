@@ -2,12 +2,12 @@
    script.js — GoFile Index Code Generator
    ================================================================
    Sections:
-     1. AD PENALTY SYSTEM  ← new feature
+     1. AD PENALTY SYSTEM
      2. NOTICE / MAINTENANCE
-     3. SEND LOGIN LINK + RATE-LIMIT TIMER
+     3. SEND LOGIN LINK + COOLDOWN TIMER
      4. CODE GENERATION
      5. COPY / DOWNLOAD HELPERS
-     6. POPUP HELPERS
+     6. POPUP / ALERT HELPERS
      7. INIT
    ================================================================ */
 
@@ -16,39 +16,31 @@
 /* ================================================================
    1. AD PENALTY SYSTEM
    ────────────────────────────────────────────────────────────────
-   Purpose: When a user clicks "Send Login Link" more than
-   AD_PENALTY_CONFIG.threshold times within the rolling window,
-   the button is hidden and replaced by an Adsterra ad link.
-   The user must click that link (opening it in a new tab) before
-   a short countdown completes and the button is restored.
+   Tracks clicks on the "Send Login Link" button in a rolling
+   time window. When the threshold is exceeded the button is hidden
+   and replaced by the penalty container (a 320×50 ad + a Smartlink
+   unlock button). Only this one button is affected.
 
-   Only the email send button is affected. The timer-based
-   cooldown that already exists (startTimer) continues to work
-   independently — the ad penalty is an additional, separate check.
+   Config:
+     threshold   – max clicks allowed within the window (exclusive)
+     windowMs    – rolling window in milliseconds
+     unlockDelaySec – seconds to wait after the user clicks the
+                      Smartlink before the button is restored
    ================================================================ */
 
 const AD_PENALTY_CONFIG = {
-  threshold:    3,            // clicks allowed within the window
-  windowMs:     2 * 60_000,  // rolling window: 2 minutes
-  unlockDelaySec: 12,         // seconds the user must wait after clicking the ad
+  threshold:      3,          // 4th click triggers the penalty
+  windowMs:       2 * 60_000, // rolling 2-minute window
+  unlockDelaySec: 12,         // countdown after Smartlink click
 };
 
-/** Timestamps (ms) of the most recent threshold+1 send-button clicks. */
-let _penaltyClickTimestamps = [];
+let _penaltyClickTimestamps = []; // timestamps of recent clicks
+let _penaltyActive          = false;
+let _unlockCountdownId      = null;
 
-/** True while the penalty UI is shown and the button is locked. */
-let _penaltyActive = false;
-
-/** Interval handle for the unlock countdown. */
-let _unlockCountdownId = null;
-
-/**
- * Record a click and return true if the penalty should now activate.
- * Uses a rolling window: only clicks within the last windowMs ms count.
- */
+/** Record a click; return true if the penalty should now trigger. */
 function _recordClickAndCheckPenalty() {
   const now = Date.now();
-  // Discard timestamps outside the rolling window
   _penaltyClickTimestamps = _penaltyClickTimestamps.filter(
     (t) => now - t < AD_PENALTY_CONFIG.windowMs
   );
@@ -56,43 +48,39 @@ function _recordClickAndCheckPenalty() {
   return _penaltyClickTimestamps.length > AD_PENALTY_CONFIG.threshold;
 }
 
-/** Hide the send button and show the ad-penalty container. */
+/** Hide the send button; show the penalty container. */
 function _showAdPenalty() {
   _penaltyActive = true;
-  document.getElementById('sendLoginBtn').style.display       = 'none';
-  document.getElementById('adPenaltyContainer').style.display = 'flex';
-  _setUnlockInfo('Click the ad above to unlock the send button.', '');
+  document.getElementById('sendLoginBtn').style.display        = 'none';
+  document.getElementById('adPenaltyContainer').style.display  = 'flex';
+  _setUnlockInfo('View the ad above, then click "Unlock" below.', '');
 }
 
-/** Restore the send button and hide the penalty container. */
+/** Restore the send button; hide the penalty container. */
 function _hideAdPenalty() {
   _penaltyActive = false;
-  document.getElementById('adPenaltyContainer').style.display = 'none';
-  document.getElementById('sendLoginBtn').style.display        = '';
-  // Give the user a fresh window — remove the oldest clicks so they
-  // are back below the threshold (keep the most recent 2 as context).
+  document.getElementById('adPenaltyContainer').style.display  = 'none';
+  document.getElementById('sendLoginBtn').style.display         = '';
+  // Prune oldest timestamps so user gets a fresh window
   _penaltyClickTimestamps = _penaltyClickTimestamps.slice(-2);
   _setUnlockInfo('', '');
 }
 
-/**
- * Update the small status line inside the penalty container.
- * @param {string} text    - message to display
- * @param {string} cssClass - 'unlocking' | 'unlocked' | '' (default colour)
- */
+/** Update the small status line inside the penalty container. */
 function _setUnlockInfo(text, cssClass) {
-  const el = document.getElementById('adUnlockInfo');
+  const el   = document.getElementById('adUnlockInfo');
   el.textContent = text;
   el.className   = 'ad-unlock-info' + (cssClass ? ` ${cssClass}` : '');
 }
 
 /**
- * Called when the user clicks the penalty ad link.
- * Starts a short countdown; once it reaches zero the button is restored.
- * Exported to global scope so the onclick attribute in HTML can call it.
+ * Called when the user clicks the Smartlink unlock button.
+ * Opens the Smartlink (handled by the href), then starts a
+ * countdown. When it reaches zero the send button is restored.
+ * Exposed globally so the onclick attribute in HTML can call it.
  */
 function onAdClicked() {
-  // Prevent double-triggering if the user clicks the link again mid-countdown
+  // Prevent double-start if user clicks again mid-countdown
   if (_unlockCountdownId !== null) return;
 
   let remaining = AD_PENALTY_CONFIG.unlockDelaySec;
@@ -106,8 +94,7 @@ function onAdClicked() {
       clearInterval(_unlockCountdownId);
       _unlockCountdownId = null;
       _setUnlockInfo('Unlocked! You can send again.', 'unlocked');
-      // Brief pause so the user sees the "Unlocked!" message
-      setTimeout(_hideAdPenalty, 800);
+      setTimeout(_hideAdPenalty, 900);
     }
   }, 1_000);
 }
@@ -117,13 +104,11 @@ function onAdClicked() {
    2. NOTICE / MAINTENANCE
    ================================================================ */
 
-/** Dismiss the important-notice overlay and restore page scrolling. */
 function acknowledgeNotice() {
   document.getElementById('important-notice').style.display = 'none';
   document.body.style.overflow = '';
 }
 
-/** Fetch the maintenance flag from GitHub and show the overlay if TRUE. */
 async function checkMaintenanceStatus() {
   try {
     const res  = await fetch(
@@ -135,32 +120,29 @@ async function checkMaintenanceStatus() {
       return true;
     }
   } catch {
-    // Silently fail — do not block the UI if the check can't reach GitHub
+    // Silently ignore — never block the UI for a failed status check
   }
   return false;
 }
 
 
 /* ================================================================
-   3. SEND LOGIN LINK + RATE-LIMIT TIMER
+   3. SEND LOGIN LINK + COOLDOWN TIMER
+   ────────────────────────────────────────────────────────────────
+   Progressive cooldown after each successful send.
+   Runs independently of the ad-penalty check.
    ================================================================ */
 
-/** Progressive cooldown durations (seconds) for repeated sends. */
-const TIMER_DURATIONS = [30, 30, 60, 120, 300];
-let _sendClickCount = 0;
+const TIMER_DURATIONS = [30, 30, 60, 120, 300]; // seconds
+let _sendClickCount  = 0;
 let _cooldownTimerId = null;
 
-/**
- * Start the button's cooldown timer after a successful send.
- * This is separate from the ad-penalty check and runs concurrently.
- * @param {number} seconds
- */
 function startTimer(seconds) {
   const btn       = document.getElementById('sendLoginBtn');
   const timerText = document.getElementById('timerText');
 
-  btn.disabled     = true;
-  let remaining    = seconds;
+  btn.disabled = true;
+  let remaining = seconds;
   timerText.textContent =
     `Please wait ${remaining}s before sending again. Check spam if not received.`;
 
@@ -178,18 +160,13 @@ function startTimer(seconds) {
   }, 1_000);
 }
 
-/**
- * Handle "Send Login Link" click.
- * Checks the ad penalty first; if not triggered, proceeds with the API call.
- * @param {MouseEvent} e
- */
 async function sendLoginLink(e) {
   createRipple(e);
 
-  // ── Ad-penalty check ─────────────────────────────────────────
+  // ── Ad-penalty check (runs before anything else) ─────────────
   if (_recordClickAndCheckPenalty()) {
     _showAdPenalty();
-    return; // Do NOT make the API call
+    return; // Do NOT fire the API call
   }
   // ─────────────────────────────────────────────────────────────
 
@@ -205,13 +182,12 @@ async function sendLoginLink(e) {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ email }),
     });
-
     const result = await response.json();
 
     if (result.status === 'ok') {
       showAlert('Login link sent! Check your email.', true);
-      const timerIndex = Math.min(_sendClickCount, TIMER_DURATIONS.length - 1);
-      startTimer(TIMER_DURATIONS[timerIndex]);
+      const idx = Math.min(_sendClickCount, TIMER_DURATIONS.length - 1);
+      startTimer(TIMER_DURATIONS[idx]);
       _sendClickCount += 1;
     } else {
       showAlert('Error: ' + (result.error || 'Failed to send link'), false);
@@ -226,56 +202,45 @@ async function sendLoginLink(e) {
    4. CODE GENERATION
    ================================================================ */
 
-/** Format a Unix timestamp (seconds) to a readable date string. */
 function formatTimestamp(timestamp) {
   return new Date(timestamp * 1000).toLocaleDateString('en-US', {
-    year:  'numeric',
-    month: 'short',
-    day:   'numeric',
+    year: 'numeric', month: 'short', day: 'numeric',
   });
 }
 
-/**
- * Validate the token, fetch account info and the chosen worker template,
- * inject credentials, and display the ready-to-deploy code.
- * @param {MouseEvent} e
- */
 async function generateCode(e) {
   createRipple(e);
 
   const input = document.getElementById('tokenInput').value.trim();
   const token = (input.match(/[A-Za-z0-9]{32,}/) || [])[0];
-
   if (!token) {
     showAlert('Invalid token / URL', false);
     return;
   }
 
   try {
-    const accountResponse = await fetch('https://api.gofile.io/accounts/website', {
+    const accountRes  = await fetch('https://api.gofile.io/accounts/website', {
       headers: { Authorization: `Bearer ${token}` },
     });
-    const accountData = await accountResponse.json();
-
+    const accountData = await accountRes.json();
     if (accountData.status !== 'ok') {
       throw new Error(accountData.error || 'Failed to fetch account data');
     }
 
     const { rootFolder, email, tier, createTime, statsCurrent } = accountData.data;
 
-    const selectedTheme = document.getElementById('themeSelect').value;
-    const codeResponse  = await fetch(selectedTheme);
-    const code          = await codeResponse.text();
+    const themeUrl  = document.getElementById('themeSelect').value;
+    const codeRes   = await fetch(themeUrl);
+    const code      = await codeRes.text();
 
-    const modifiedCode = code
-      .replace(/THEGOFILETOKEN/g,   token)
-      .replace(/THEROOTFOLDERID/g,  rootFolder);
+    const modified = code
+      .replace(/THEGOFILETOKEN/g,  token)
+      .replace(/THEROOTFOLDERID/g, rootFolder);
 
-    document.getElementById('codeOutput').value = modifiedCode;
+    document.getElementById('codeOutput').value = modified;
     document.querySelector('.code-container').classList.add('visible');
     document.getElementById('outputSection').style.display = 'block';
 
-    // Populate success popup
     document.getElementById('popupEmail').textContent      = email;
     document.getElementById('popupTier').textContent       = tier;
     document.getElementById('popupCreateTime').textContent = formatTimestamp(createTime);
@@ -309,8 +274,7 @@ function downloadCode() {
   const blob = new Blob([code], { type: 'text/javascript' });
   const url  = URL.createObjectURL(blob);
   const a    = Object.assign(document.createElement('a'), {
-    href:     url,
-    download: 'gofile-worker.js',
+    href: url, download: 'gofile-worker.js',
   });
   document.body.appendChild(a);
   a.click();
@@ -327,34 +291,22 @@ function closeAccountPopup() {
   document.getElementById('accountPopup').classList.remove('visible');
 }
 
-/**
- * Show a floating alert at the top of the viewport.
- * @param {string}  message
- * @param {boolean} isSuccess
- */
 function showAlert(message, isSuccess) {
   const alertEl = document.getElementById('alert');
   const icon    = alertEl.querySelector('.alert-icon');
-
-  alertEl.className  = 'alert ' + (isSuccess ? 'alert-success' : 'alert-error');
-  icon.className     = 'alert-icon fas ' + (isSuccess ? 'fa-check-circle' : 'fa-times-circle');
+  alertEl.className = 'alert ' + (isSuccess ? 'alert-success' : 'alert-error');
+  icon.className    = 'alert-icon fas ' + (isSuccess ? 'fa-check-circle' : 'fa-times-circle');
   document.getElementById('alertMessage').textContent = message;
-
   alertEl.classList.add('show');
   setTimeout(() => alertEl.classList.remove('show'), 3_000);
 }
 
-/**
- * Append a CSS ripple element to the clicked button.
- * @param {MouseEvent} event
- */
 function createRipple(event) {
   const btn    = event.currentTarget;
   const circle = document.createElement('div');
   const rect   = btn.getBoundingClientRect();
-
-  circle.className  = 'ripple';
-  const size        = Math.max(rect.width, rect.height);
+  const size   = Math.max(rect.width, rect.height);
+  circle.className     = 'ripple';
   circle.style.cssText = `
     width:  ${size}px;
     height: ${size}px;
@@ -370,8 +322,8 @@ function createRipple(event) {
    7. INIT
    ================================================================ */
 
-// Prevent background scrolling until the notice is acknowledged
+// Block background scroll until the notice is dismissed
 document.body.style.overflow = 'hidden';
 
-// Run the maintenance check as soon as the script is parsed
+// Check maintenance flag immediately
 checkMaintenanceStatus();
