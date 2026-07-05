@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/developeranaz/developeranaz.github.io/refs/heads/gh-pages/webapps/gofile.io/17470597399662.ico">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>GoFile Index Code Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       IMPORTANT NOTICE OVERLAY
+       ============================================================ -->
+  <div id="important-notice">
+    <div class="notice-box">
+      <h2>⚠️ Important Notice</h2>
+      <p>
+        Gofile.io may change its hash system, which can temporarily affect this index.
+        Support will be updated as needed. Cloudflare Worker redeployment may be required if changes occur.
+        <br><br>
+        Currently, use <b>"Dark Theme (Best – Superior Working)"</b>. It is the latest tested and working version.
+        Other themes may or may not work.
+      </p>
+      <button onclick="acknowledgeNotice()">OK, I Understand</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MAINTENANCE OVERLAY
+       ============================================================ -->
+  <div id="maintenanceOverlay" class="maintenance-overlay">
+    <div class="maintenance-content">
+      <div class="maintenance-icon"><i class="fas fa-tools"></i></div>
+      <h1 class="maintenance-title">Under Maintenance</h1>
+      <div class="maintenance-message">
+        <p><strong>Oops! We're currently performing some upgrades.</strong></p>
+        <p>The system is temporarily unavailable due to maintenance work. This could be caused by server issues,
+           API updates, or system optimization.</p>
+        <p>We apologize for any inconvenience. Please check back soon!</p>
+      </div>
+      <div class="maintenance-contact">
+        <h4><i class="fas fa-user-circle"></i> Need Help?</h4>
+        <p>Contact the developer:</p>
+        <div>
+          <a href="https://github.com/developeranaz" target="_blank">
+            <i class="fab fa-github"></i> GitHub: developeranaz
+          </a>
+        </div>
+        <div>
+          <a href="https://t.me/gitdeveloperanaz" target="_blank">
+            <i class="fab fa-telegram"></i> Telegram: @gitdeveloperanaz
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MAIN CONTAINER
+       ============================================================ -->
+  <div class="container">
+    <h2><i class="fas fa-code"></i> GoFile Index CodeGen</h2>
+
+    <!-- ── AD SLOT 1: TOP BANNER ──────────────────────────────────
+         Placement: directly below title, above email form.
+         Desktop: 728×90 | Mobile: 320×50
+         Replace the <div class="dummy-ad"> block with your Adsterra
+         banner script tag.
+    ──────────────────────────────────────────────────────────── -->
+    <div class="banner-ad banner-ad--top">
+      <!-- ↓↓ REPLACE THIS BLOCK WITH ADSTERRA 728×90 / 320×50 CODE ↓↓ -->
+      <div class="dummy-ad">[ ADSTERRA TOP BANNER · 728×90 desktop / 320×50 mobile ]</div>
+      <!-- ↑↑ END ADSTERRA TOP BANNER ↑↑ -->
+    </div>
+
+    <!-- ── EMAIL + SEND BUTTON ROW ───────────────────────────────
+         The ad-penalty container lives here alongside the button
+         so it occupies the same flex slot when the button is hidden.
+    ──────────────────────────────────────────────────────────── -->
+    <div class="email-group" id="emailGroup">
+      <input type="email" id="emailInput" class="email-input"
+             placeholder="Enter your email address" />
+
+      <!-- Normal send button (hidden when ad-penalty is active) -->
+      <button class="send-btn" id="sendLoginBtn" onclick="sendLoginLink(event)">
+        <i class="fas fa-paper-plane"></i> Send Login Link
+      </button>
+
+      <!-- ── AD PENALTY CONTAINER ────────────────────────────────
+           Shown only when the user exceeds AD_PENALTY_CONFIG.threshold
+           clicks within AD_PENALTY_CONFIG.windowMs milliseconds.
+           Replace the dummy-ad block with your Adsterra penalty ad.
+      ──────────────────────────────────────────────────────────── -->
+      <div id="adPenaltyContainer" class="ad-penalty-container" style="display:none;" aria-live="polite">
+        <span class="penalty-label">
+          <i class="fas fa-lock"></i> Too many requests — click the ad to unlock
+        </span>
+        <!-- ↓↓ REPLACE THIS <a> HREF AND THE DUMMY AD WITH ADSTERRA 320×50 PENALTY CODE ↓↓ -->
+        <a href="https://www.adsterra.com"
+           target="_blank"
+           rel="noopener noreferrer"
+           id="penaltyAdLink"
+           class="penalty-ad-link"
+           onclick="onAdClicked()">
+          <div class="dummy-ad dummy-ad--penalty">
+            [ ADSTERRA PENALTY AD · 320×50 — CLICK TO UNLOCK ]
+          </div>
+        </a>
+        <!-- ↑↑ END ADSTERRA PENALTY AD ↑↑ -->
+        <small id="adUnlockInfo" class="ad-unlock-info"></small>
+      </div>
+    </div>
+
+    <div id="timerText" class="timer-text"></div>
+
+    <p style="margin-top: 20px;">
+      Don't know how to use?
+      <a href="https://github.com/developeranaz/gofile-to-cloudflare-index" target="_blank">See instructions</a>.
+    </p>
+
+    <!-- ── TOKEN INPUT ───────────────────────────────────────────── -->
+    <div class="input-group">
+      <label for="tokenInput">Authentication Token</label>
+      <input type="text" id="tokenInput" placeholder="Paste token or login URL here" />
+    </div>
+
+    <!-- ── THEME / TEMPLATE SELECTOR ────────────────────────────── -->
+    <div class="input-group theme-selector">
+      <label for="themeSelect">Code Template</label>
+      <select id="themeSelect">
+        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/public_shared_dark.js">
+          Dark Theme (BEST SUPERIOR WORKING)
+        </option>
+        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/lite-http-server.js">
+          Simple HTML Server Theme (Working with minimal support)
+        </option>
+        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/terminal_dark.js">
+          Dark Terminal Theme (Not WORKING)
+        </option>
+        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/index.js">
+          Light Theme (Not WORKING)
+        </option>
+        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/beta(shared_link_support).js">
+          Beta – Shared / Public Link Support
+        </option>
+      </select>
+    </div>
+
+    <!-- ── GENERATE BUTTON ──────────────────────────────────────── -->
+    <button class="generate-btn" onclick="generateCode(event)">
+      <i class="fas fa-download"></i> Generate Code
+    </button>
+
+    <!-- ── AD SLOT 2: MID BANNER ──────────────────────────────────
+         Placement: below "Generate Code" button — users pause here.
+         Desktop: 728×90 | Mobile: 320×50
+         Replace the dummy-ad block with your Adsterra banner script.
+    ──────────────────────────────────────────────────────────── -->
+    <div class="banner-ad banner-ad--mid">
+      <!-- ↓↓ REPLACE THIS BLOCK WITH ADSTERRA 728×90 / 320×50 CODE ↓↓ -->
+      <div class="dummy-ad">[ ADSTERRA MID BANNER · 728×90 desktop / 320×50 mobile ]</div>
+      <!-- ↑↑ END ADSTERRA MID BANNER ↑↑ -->
+    </div>
+
+    <!-- ── CODE OUTPUT ───────────────────────────────────────────── -->
+    <div id="outputSection" style="display: none;">
+      <div class="code-container">
+        <div class="code-actions">
+          <button class="code-action" onclick="copyCode()" title="Copy code">
+            <i class="far fa-copy"></i>
+          </button>
+          <button class="code-action" onclick="downloadCode()" title="Download code">
+            <i class="fas fa-download"></i>
+          </button>
+        </div>
+        <textarea id="codeOutput" readonly></textarea>
+      </div>
+      <div class="copy-notification" id="copyNotification">Copied to clipboard!</div>
+    </div>
+  </div><!-- /.container -->
+
+  <!-- ============================================================
+       FLOATING ALERT
+       ============================================================ -->
+  <div id="alert" class="alert">
+    <i class="alert-icon"></i>
+    <span id="alertMessage"></span>
+  </div>
+
+  <!-- ============================================================
+       ACCOUNT SUCCESS POPUP
+       ============================================================ -->
+  <div id="accountPopup" class="account-popup">
+    <div class="popup-content">
+      <h3><i class="fas fa-check-circle"></i> Login Succeeded</h3>
+      <p>Email: <span id="popupEmail"></span></p>
+      <p>Tier: <span id="popupTier"></span></p>
+      <p>Created: <span id="popupCreateTime"></span></p>
+      <p>Root Folder: <span id="popupRootFolder"></span></p>
+      <p>Folders: <span id="popupFolders"></span>, Files: <span id="popupFiles"></span></p>
+      <p class="popup-note">
+        Thanks for using Go File Index! We include minimal ads to support development, but the generated
+        code remains clean and transparent. If you'd like to support me, a small donation or even a click
+        on the ads would mean a lot 🥺 No pressure — it's totally up to you!
+      </p>
+      <p class="popup-credits">
+        Developed by <a href="https://github.com/developeranaz">developeranaz</a><br>
+        Report issues: <a href="https://github.com/developeranaz/gofile-Index">GitHub</a>
+      </p>
+
+      <!-- ── AD SLOT 3: POPUP BANNER ──────────────────────────────
+           Placement: inside the success popup.
+           Size: 320×50
+           Replace the dummy-ad block with your Adsterra script.
+      ──────────────────────────────────────────────────────────── -->
+      <div class="popup-ad">
+        <!-- ↓↓ REPLACE THIS BLOCK WITH ADSTERRA 320×50 CODE ↓↓ -->
+        <div class="dummy-ad dummy-ad--popup">[ ADSTERRA POPUP BANNER · 320×50 ]</div>
+        <!-- ↑↑ END ADSTERRA POPUP BANNER ↑↑ -->
+      </div>
+
+      <button class="close-popup-btn" onclick="closeAccountPopup()">OK</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer>
+    <!-- ── AD SLOT 4: NATIVE BANNER ───────────────────────────────
+         Placement: top of footer — replaces the old large container ad.
+         Use Adsterra's Native Banner format for a cleaner look.
+         Replace the dummy-ad block with your Adsterra native script.
+    ──────────────────────────────────────────────────────────── -->
+    <div class="native-banner-ad">
+      <!-- ↓↓ REPLACE THIS BLOCK WITH ADSTERRA NATIVE BANNER SCRIPT ↓↓ -->
+      <div class="dummy-ad dummy-ad--native">[ ADSTERRA NATIVE BANNER ]</div>
+      <!-- ↑↑ END ADSTERRA NATIVE BANNER ↑↑ -->
+    </div>
+
+    <div>© 2025 GoFile Code Generator</div>
+    <div>Developed by <a href="https://github.com/developeranaz">developeranaz</a></div>
+    <div>Telegram: <a href="https://t.me/gitdeveloperanaz">@gitdeveloperanaz</a></div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
