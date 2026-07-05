@@ -2,43 +2,107 @@
    script.js — GoFile Index Code Generator
    ================================================================
    Sections:
-     1. AD PENALTY SYSTEM
-     2. NOTICE / MAINTENANCE
-     3. SEND LOGIN LINK + COOLDOWN TIMER
-     4. CODE GENERATION
-     5. COPY / DOWNLOAD HELPERS
-     6. POPUP / ALERT HELPERS
-     7. INIT
+     1. AD RENDERING (isolated iframes — fixes duplicate ads)
+     2. AD PENALTY SYSTEM
+     3. NOTICE / MAINTENANCE
+     4. SEND LOGIN LINK + COOLDOWN TIMER
+     5. CODE GENERATION
+     6. COPY / DOWNLOAD HELPERS
+     7. POPUP / ALERT HELPERS
+     8. INIT
    ================================================================ */
 
 'use strict';
 
 /* ================================================================
-   1. AD PENALTY SYSTEM
+   1. AD RENDERING — ISOLATED IFRAMES
    ────────────────────────────────────────────────────────────────
-   Tracks clicks on the "Send Login Link" button in a rolling
-   time window. When the threshold is exceeded the button is hidden
-   and replaced by the penalty container (a 320×50 ad + a Smartlink
-   unlock button). Only this one button is affected.
+   PROBLEM this solves: all Adsterra banner scripts read the SAME
+   global `atOptions` variable. When two banners load on one page,
+   whichever invoke.js runs last reads the last-written config —
+   result: the same ad (e.g. 300×250) rendered twice, and mobile
+   layout blowups.
 
-   Config:
-     threshold   – max clicks allowed within the window (exclusive)
-     windowMs    – rolling window in milliseconds
-     unlockDelaySec – seconds to wait after the user clicks the
-                      Smartlink before the button is restored
+   FIX: each banner gets its own <iframe srcdoc="..."> — a separate
+   JS context, so each atOptions is private. Each iframe has a hard
+   width/height, so ads can NEVER overflow or cover the page.
+   ================================================================ */
+
+const AD_UNITS = {
+  '728x90': {
+    key: 'cfdd26285d2be07540494f6205a5954a',
+    width: 728, height: 90,
+  },
+  '300x250': {
+    key: '30303a6a547002e2316ff549bfa6bdb3',
+    width: 300, height: 250,
+  },
+  '320x50': {
+    key: '456831897108255b1704a6daa2b31f0f',
+    width: 320, height: 50,
+  },
+};
+
+/**
+ * Build a fully isolated ad iframe for one Adsterra banner unit.
+ * @param {{key:string,width:number,height:number}} unit
+ * @returns {HTMLIFrameElement}
+ */
+function _buildAdIframe(unit) {
+  const iframe = document.createElement('iframe');
+  iframe.width       = unit.width;
+  iframe.height      = unit.height;
+  iframe.scrolling   = 'no';
+  iframe.frameBorder = '0';
+  iframe.style.cssText =
+    `width:${unit.width}px;height:${unit.height}px;max-width:100%;` +
+    'border:0;overflow:hidden;display:block;margin:0 auto;';
+  iframe.srcdoc = `<!DOCTYPE html><html><head><style>
+      html,body{margin:0;padding:0;overflow:hidden;background:transparent}
+    </style></head><body>
+    <script>atOptions={'key':'${unit.key}','format':'iframe','height':${unit.height},'width':${unit.width},'params':{}};<\/script>
+    <script src="https://amoralstern.com/${unit.key}/invoke.js"><\/script>
+    </body></html>`;
+  return iframe;
+}
+
+/**
+ * Fill every element that has a data-ad attribute with its
+ * isolated ad iframe. Skips slots that are hidden (display:none
+ * via CSS — e.g. the top 728×90 on mobile) so no impression is
+ * wasted and nothing renders off-layout.
+ * Each slot is filled exactly ONCE (guarded by data-ad-loaded).
+ */
+function renderAdSlots(root = document) {
+  root.querySelectorAll('[data-ad]').forEach((slot) => {
+    if (slot.dataset.adLoaded === '1') return;               // already filled
+    if (getComputedStyle(slot).display === 'none') return;   // hidden slot (mobile)
+    const unit = AD_UNITS[slot.dataset.ad];
+    if (!unit) return;
+    slot.appendChild(_buildAdIframe(unit));
+    slot.dataset.adLoaded = '1';
+  });
+}
+
+
+/* ================================================================
+   2. AD PENALTY SYSTEM
+   ────────────────────────────────────────────────────────────────
+   Rolling-window click tracker on the "Send Login Link" button.
+   Exceed the threshold → button replaced by penalty container
+   (320×50 ad + Smartlink unlock button + countdown).
+   Only this one button is affected.
    ================================================================ */
 
 const AD_PENALTY_CONFIG = {
-  threshold:      3,          // 4th click triggers the penalty
+  threshold:      3,          // 4th click inside the window triggers penalty
   windowMs:       2 * 60_000, // rolling 2-minute window
   unlockDelaySec: 12,         // countdown after Smartlink click
 };
 
-let _penaltyClickTimestamps = []; // timestamps of recent clicks
-let _penaltyActive          = false;
+let _penaltyClickTimestamps = [];
 let _unlockCountdownId      = null;
 
-/** Record a click; return true if the penalty should now trigger. */
 function _recordClickAndCheckPenalty() {
   const now = Date.now();
   _penaltyClickTimestamps = _penaltyClickTimestamps.filter(
@@ -48,40 +112,30 @@ function _recordClickAndCheckPenalty() {
   return _penaltyClickTimestamps.length > AD_PENALTY_CONFIG.threshold;
 }
 
-/** Hide the send button; show the penalty container. */
 function _showAdPenalty() {
-  _penaltyActive = true;
-  document.getElementById('sendLoginBtn').style.display        = 'none';
-  document.getElementById('adPenaltyContainer').style.display  = 'flex';
-  _setUnlockInfo('View the ad above, then click "Unlock" below.', '');
+  document.getElementById('sendLoginBtn').style.display       = 'none';
+  const container = document.getElementById('adPenaltyContainer');
+  container.style.display = 'flex';
+  renderAdSlots(container);   // lazy-load the penalty ad only when shown
+  _setUnlockInfo('View the ad, then click "Unlock" below.', '');
 }
 
-/** Restore the send button; hide the penalty container. */
 function _hideAdPenalty() {
-  _penaltyActive = false;
-  document.getElementById('adPenaltyContainer').style.display  = 'none';
-  document.getElementById('sendLoginBtn').style.display         = '';
-  // Prune oldest timestamps so user gets a fresh window
-  _penaltyClickTimestamps = _penaltyClickTimestamps.slice(-2);
+  document.getElementById('adPenaltyContainer').style.display = 'none';
+  document.getElementById('sendLoginBtn').style.display        = '';
+  _penaltyClickTimestamps = _penaltyClickTimestamps.slice(-2); // fresh window
   _setUnlockInfo('', '');
 }
 
-/** Update the small status line inside the penalty container. */
 function _setUnlockInfo(text, cssClass) {
-  const el   = document.getElementById('adUnlockInfo');
+  const el = document.getElementById('adUnlockInfo');
   el.textContent = text;
   el.className   = 'ad-unlock-info' + (cssClass ? ` ${cssClass}` : '');
 }
 
-/**
- * Called when the user clicks the Smartlink unlock button.
- * Opens the Smartlink (handled by the href), then starts a
- * countdown. When it reaches zero the send button is restored.
- * Exposed globally so the onclick attribute in HTML can call it.
- */
+/** Smartlink unlock click → countdown → restore button. (global for HTML onclick) */
 function onAdClicked() {
-  // Prevent double-start if user clicks again mid-countdown
-  if (_unlockCountdownId !== null) return;
+  if (_unlockCountdownId !== null) return; // already counting
 
   let remaining = AD_PENALTY_CONFIG.unlockDelaySec;
   _setUnlockInfo(`Unlocking in ${remaining}s…`, 'unlocking');
@@ -101,7 +155,7 @@ function onAdClicked() {
 
 
 /* ================================================================
-   2. NOTICE / MAINTENANCE
+   3. NOTICE / MAINTENANCE
    ================================================================ */
 
 function acknowledgeNotice() {
@@ -119,21 +173,16 @@ async function checkMaintenanceStatus() {
       document.getElementById('maintenanceOverlay').classList.add('active');
       return true;
     }
-  } catch {
-    // Silently ignore — never block the UI for a failed status check
-  }
+  } catch { /* never block the UI on a failed status check */ }
   return false;
 }
 
 
 /* ================================================================
-   3. SEND LOGIN LINK + COOLDOWN TIMER
-   ────────────────────────────────────────────────────────────────
-   Progressive cooldown after each successful send.
-   Runs independently of the ad-penalty check.
+   4. SEND LOGIN LINK + COOLDOWN TIMER
    ================================================================ */
 
-const TIMER_DURATIONS = [30, 30, 60, 120, 300]; // seconds
+const TIMER_DURATIONS = [30, 30, 60, 120, 300]; // progressive cooldown (s)
 let _sendClickCount  = 0;
 let _cooldownTimerId = null;
 
@@ -141,7 +190,7 @@ function startTimer(seconds) {
   const btn       = document.getElementById('sendLoginBtn');
   const timerText = document.getElementById('timerText');
 
-  btn.disabled = true;
+  btn.disabled  = true;
   let remaining = seconds;
   timerText.textContent =
     `Please wait ${remaining}s before sending again. Check spam if not received.`;
@@ -163,12 +212,11 @@ function startTimer(seconds) {
 async function sendLoginLink(e) {
   createRipple(e);
 
-  // ── Ad-penalty check (runs before anything else) ─────────────
+  // ── Ad-penalty check (before anything else) ──────────────────
   if (_recordClickAndCheckPenalty()) {
     _showAdPenalty();
     return; // Do NOT fire the API call
   }
-  // ─────────────────────────────────────────────────────────────
 
   const email = document.getElementById('emailInput').value.trim();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -199,7 +247,7 @@ async function sendLoginLink(e) {
 
 
 /* ================================================================
-   4. CODE GENERATION
+   5. CODE GENERATION
    ================================================================ */
 
 function formatTimestamp(timestamp) {
@@ -229,9 +277,9 @@ async function generateCode(e) {
 
     const { rootFolder, email, tier, createTime, statsCurrent } = accountData.data;
 
-    const themeUrl  = document.getElementById('themeSelect').value;
-    const codeRes   = await fetch(themeUrl);
-    const code      = await codeRes.text();
+    const themeUrl = document.getElementById('themeSelect').value;
+    const codeRes  = await fetch(themeUrl);
+    const code     = await codeRes.text();
 
     const modified = code
       .replace(/THEGOFILETOKEN/g,  token)
@@ -247,7 +295,10 @@ async function generateCode(e) {
     document.getElementById('popupRootFolder').textContent = rootFolder;
     document.getElementById('popupFolders').textContent    = statsCurrent.folderCount;
     document.getElementById('popupFiles').textContent      = statsCurrent.fileCount;
-    document.getElementById('accountPopup').classList.add('visible');
+
+    const popup = document.getElementById('accountPopup');
+    popup.classList.add('visible');
+    renderAdSlots(popup);   // lazy-load the popup ad only when shown
 
   } catch (err) {
     showAlert('Error: ' + err.message, false);
@@ -256,7 +307,7 @@ async function generateCode(e) {
 
 
 /* ================================================================
-   5. COPY / DOWNLOAD HELPERS
+   6. COPY / DOWNLOAD HELPERS
    ================================================================ */
 
 function copyCode() {
@@ -284,7 +335,7 @@ function downloadCode() {
 
 
 /* ================================================================
-   6. POPUP / ALERT HELPERS
+   7. POPUP / ALERT HELPERS
    ================================================================ */
 
 function closeAccountPopup() {
@@ -308,22 +359,29 @@ function createRipple(event) {
   const size   = Math.max(rect.width, rect.height);
   circle.className     = 'ripple';
   circle.style.cssText = `
-    width:  ${size}px;
-    height: ${size}px;
-    left:   ${event.clientX - rect.left - size / 2}px;
-    top:    ${event.clientY - rect.top  - size / 2}px;
-  `;
+    width:${size}px;height:${size}px;
+    left:${event.clientX - rect.left - size / 2}px;
+    top:${event.clientY - rect.top - size / 2}px;`;
   btn.appendChild(circle);
   setTimeout(() => circle.remove(), 600);
 }
 
 
 /* ================================================================
-   7. INIT
+   8. INIT
    ================================================================ */
 
 // Block background scroll until the notice is dismissed
 document.body.style.overflow = 'hidden';
 
-// Check maintenance flag immediately
+// Check maintenance flag
 checkMaintenanceStatus();
+
+// Render visible ad slots once the DOM is ready.
+// Hidden slots (top banner on mobile, penalty, popup) are skipped
+// here and lazy-loaded when they actually become visible.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => renderAdSlots());
+} else {
+  renderAdSlots();
+}
