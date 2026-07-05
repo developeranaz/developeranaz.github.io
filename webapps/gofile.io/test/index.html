@@ -7,12 +7,18 @@
   <title>GoFile Index Code Generator</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="css/styles.css">
+
+  <!-- ============================================================
+       POPUNDER — fires once per session, site-wide
+       Ad unit: Popunder_1
+  ============================================================ -->
+  <script src="https://amoralstern.com/86/e7/d8/86e7d8aa7fc4e132af0cfd18d06780cb.js"></script>
 </head>
 <body>
 
   <!-- ============================================================
        IMPORTANT NOTICE OVERLAY
-       ============================================================ -->
+  ============================================================ -->
   <div id="important-notice">
     <div class="notice-box">
       <h2>⚠️ Important Notice</h2>
@@ -29,15 +35,15 @@
 
   <!-- ============================================================
        MAINTENANCE OVERLAY
-       ============================================================ -->
+  ============================================================ -->
   <div id="maintenanceOverlay" class="maintenance-overlay">
     <div class="maintenance-content">
       <div class="maintenance-icon"><i class="fas fa-tools"></i></div>
       <h1 class="maintenance-title">Under Maintenance</h1>
       <div class="maintenance-message">
         <p><strong>Oops! We're currently performing some upgrades.</strong></p>
-        <p>The system is temporarily unavailable due to maintenance work. This could be caused by server issues,
-           API updates, or system optimization.</p>
+        <p>The system is temporarily unavailable due to maintenance work. This could be caused by
+           server issues, API updates, or system optimization.</p>
         <p>We apologize for any inconvenience. Please check back soon!</p>
       </div>
       <div class="maintenance-contact">
@@ -58,57 +64,74 @@
   </div>
 
   <!-- ============================================================
+       AD SLOT 1 — TOP BANNER  (728×90, desktop only)
+       Outside .container so the 728 px iframe has room to breathe.
+       Hidden on mobile via CSS — no wasted impression on small screens.
+       Ad unit: 728x90_1
+  ============================================================ -->
+  <div class="banner-ad banner-ad--top">
+    <script>
+      atOptions = {
+        'key'    : 'cfdd26285d2be07540494f6205a5954a',
+        'format' : 'iframe',
+        'height' : 90,
+        'width'  : 728,
+        'params' : {}
+      };
+    </script>
+    <script src="https://amoralstern.com/cfdd26285d2be07540494f6205a5954a/invoke.js"></script>
+  </div>
+
+  <!-- ============================================================
        MAIN CONTAINER
-       ============================================================ -->
+  ============================================================ -->
   <div class="container">
     <h2><i class="fas fa-code"></i> GoFile Index CodeGen</h2>
 
-    <!-- ── AD SLOT 1: TOP BANNER ──────────────────────────────────
-         Placement: directly below title, above email form.
-         Desktop: 728×90 | Mobile: 320×50
-         Replace the <div class="dummy-ad"> block with your Adsterra
-         banner script tag.
-    ──────────────────────────────────────────────────────────── -->
-    <div class="banner-ad banner-ad--top">
-      <!-- ↓↓ REPLACE THIS BLOCK WITH ADSTERRA 728×90 / 320×50 CODE ↓↓ -->
-      <div class="dummy-ad">[ ADSTERRA TOP BANNER · 728×90 desktop / 320×50 mobile ]</div>
-      <!-- ↑↑ END ADSTERRA TOP BANNER ↑↑ -->
-    </div>
-
-    <!-- ── EMAIL + SEND BUTTON ROW ───────────────────────────────
-         The ad-penalty container lives here alongside the button
-         so it occupies the same flex slot when the button is hidden.
-    ──────────────────────────────────────────────────────────── -->
+    <!-- EMAIL + SEND BUTTON ROW ================================ -->
     <div class="email-group" id="emailGroup">
       <input type="email" id="emailInput" class="email-input"
              placeholder="Enter your email address" />
 
-      <!-- Normal send button (hidden when ad-penalty is active) -->
+      <!-- Normal send button — hidden when penalty is active -->
       <button class="send-btn" id="sendLoginBtn" onclick="sendLoginLink(event)">
         <i class="fas fa-paper-plane"></i> Send Login Link
       </button>
 
-      <!-- ── AD PENALTY CONTAINER ────────────────────────────────
-           Shown only when the user exceeds AD_PENALTY_CONFIG.threshold
-           clicks within AD_PENALTY_CONFIG.windowMs milliseconds.
-           Replace the dummy-ad block with your Adsterra penalty ad.
-      ──────────────────────────────────────────────────────────── -->
+      <!-- AD PENALTY CONTAINER ================================
+           Replaces the button after 3 clicks in 2 minutes.
+           Shows a 320×50 ad + a Smartlink unlock button.
+           The user must click "Unlock" (opens Smartlink) and
+           wait the countdown before the send button returns.
+      ======================================================= -->
       <div id="adPenaltyContainer" class="ad-penalty-container" style="display:none;" aria-live="polite">
         <span class="penalty-label">
-          <i class="fas fa-lock"></i> Too many requests — click the ad to unlock
+          <i class="fas fa-lock"></i> Too many requests
         </span>
-        <!-- ↓↓ REPLACE THIS <a> HREF AND THE DUMMY AD WITH ADSTERRA 320×50 PENALTY CODE ↓↓ -->
-        <a href="https://www.adsterra.com"
+
+        <!-- 320×50 ad renders as the visual — Ad unit: 320x50_1 -->
+        <div class="penalty-ad-wrap">
+          <script>
+            atOptions = {
+              'key'    : '456831897108255b1704a6daa2b31f0f',
+              'format' : 'iframe',
+              'height' : 50,
+              'width'  : 320,
+              'params' : {}
+            };
+          </script>
+          <script src="https://amoralstern.com/456831897108255b1704a6daa2b31f0f/invoke.js"></script>
+        </div>
+
+        <!-- Smartlink unlock button — Ad unit: Smartlink_1 -->
+        <a href="https://amoralstern.com/kzuifmk9?key=5f2a577f606dce82378f77113f5a1ec0"
            target="_blank"
            rel="noopener noreferrer"
-           id="penaltyAdLink"
-           class="penalty-ad-link"
+           class="unlock-btn"
            onclick="onAdClicked()">
-          <div class="dummy-ad dummy-ad--penalty">
-            [ ADSTERRA PENALTY AD · 320×50 — CLICK TO UNLOCK ]
-          </div>
+          <i class="fas fa-lock-open"></i> Click here to unlock
         </a>
-        <!-- ↑↑ END ADSTERRA PENALTY AD ↑↑ -->
+
         <small id="adUnlockInfo" class="ad-unlock-info"></small>
       </div>
     </div>
@@ -120,13 +143,13 @@
       <a href="https://github.com/developeranaz/gofile-to-cloudflare-index" target="_blank">See instructions</a>.
     </p>
 
-    <!-- ── TOKEN INPUT ───────────────────────────────────────────── -->
+    <!-- TOKEN INPUT =========================================== -->
     <div class="input-group">
       <label for="tokenInput">Authentication Token</label>
       <input type="text" id="tokenInput" placeholder="Paste token or login URL here" />
     </div>
 
-    <!-- ── THEME / TEMPLATE SELECTOR ────────────────────────────── -->
+    <!-- THEME SELECTOR ======================================== -->
     <div class="input-group theme-selector">
       <label for="themeSelect">Code Template</label>
       <select id="themeSelect">
@@ -148,23 +171,30 @@
       </select>
     </div>
 
-    <!-- ── GENERATE BUTTON ──────────────────────────────────────── -->
+    <!-- GENERATE BUTTON ======================================= -->
     <button class="generate-btn" onclick="generateCode(event)">
       <i class="fas fa-download"></i> Generate Code
     </button>
 
-    <!-- ── AD SLOT 2: MID BANNER ──────────────────────────────────
-         Placement: below "Generate Code" button — users pause here.
-         Desktop: 728×90 | Mobile: 320×50
-         Replace the dummy-ad block with your Adsterra banner script.
-    ──────────────────────────────────────────────────────────── -->
+    <!-- AD SLOT 2 — MID BANNER  (300×250) =====================
+         Below Generate button — high-value placement, good CPM.
+         300 px fits the container on all screen sizes.
+         Ad unit: 300x250_1
+    ========================================================== -->
     <div class="banner-ad banner-ad--mid">
-      <!-- ↓↓ REPLACE THIS BLOCK WITH ADSTERRA 728×90 / 320×50 CODE ↓↓ -->
-      <div class="dummy-ad">[ ADSTERRA MID BANNER · 728×90 desktop / 320×50 mobile ]</div>
-      <!-- ↑↑ END ADSTERRA MID BANNER ↑↑ -->
+      <script>
+        atOptions = {
+          'key'    : '30303a6a547002e2316ff549bfa6bdb3',
+          'format' : 'iframe',
+          'height' : 250,
+          'width'  : 300,
+          'params' : {}
+        };
+      </script>
+      <script src="https://amoralstern.com/30303a6a547002e2316ff549bfa6bdb3/invoke.js"></script>
     </div>
 
-    <!-- ── CODE OUTPUT ───────────────────────────────────────────── -->
+    <!-- CODE OUTPUT =========================================== -->
     <div id="outputSection" style="display: none;">
       <div class="code-container">
         <div class="code-actions">
@@ -183,7 +213,7 @@
 
   <!-- ============================================================
        FLOATING ALERT
-       ============================================================ -->
+  ============================================================ -->
   <div id="alert" class="alert">
     <i class="alert-icon"></i>
     <span id="alertMessage"></span>
@@ -191,7 +221,7 @@
 
   <!-- ============================================================
        ACCOUNT SUCCESS POPUP
-       ============================================================ -->
+  ============================================================ -->
   <div id="accountPopup" class="account-popup">
     <div class="popup-content">
       <h3><i class="fas fa-check-circle"></i> Login Succeeded</h3>
@@ -201,24 +231,30 @@
       <p>Root Folder: <span id="popupRootFolder"></span></p>
       <p>Folders: <span id="popupFolders"></span>, Files: <span id="popupFiles"></span></p>
       <p class="popup-note">
-        Thanks for using Go File Index! We include minimal ads to support development, but the generated
-        code remains clean and transparent. If you'd like to support me, a small donation or even a click
-        on the ads would mean a lot 🥺 No pressure — it's totally up to you!
+        Thanks for using Go File Index! We include minimal ads to support development, but the
+        generated code remains clean and transparent. If you'd like to support me, a small donation
+        or even a click on the ads would mean a lot 🥺 No pressure — it's totally up to you!
       </p>
       <p class="popup-credits">
         Developed by <a href="https://github.com/developeranaz">developeranaz</a><br>
         Report issues: <a href="https://github.com/developeranaz/gofile-Index">GitHub</a>
       </p>
 
-      <!-- ── AD SLOT 3: POPUP BANNER ──────────────────────────────
-           Placement: inside the success popup.
-           Size: 320×50
-           Replace the dummy-ad block with your Adsterra script.
-      ──────────────────────────────────────────────────────────── -->
+      <!-- AD SLOT 3 — POPUP BANNER  (320×50) ===================
+           Inside the success popup — seen only on code generation.
+           Ad unit: 320x50_1
+      ========================================================== -->
       <div class="popup-ad">
-        <!-- ↓↓ REPLACE THIS BLOCK WITH ADSTERRA 320×50 CODE ↓↓ -->
-        <div class="dummy-ad dummy-ad--popup">[ ADSTERRA POPUP BANNER · 320×50 ]</div>
-        <!-- ↑↑ END ADSTERRA POPUP BANNER ↑↑ -->
+        <script>
+          atOptions = {
+            'key'    : '456831897108255b1704a6daa2b31f0f',
+            'format' : 'iframe',
+            'height' : 50,
+            'width'  : 320,
+            'params' : {}
+          };
+        </script>
+        <script src="https://amoralstern.com/456831897108255b1704a6daa2b31f0f/invoke.js"></script>
       </div>
 
       <button class="close-popup-btn" onclick="closeAccountPopup()">OK</button>
@@ -227,17 +263,17 @@
 
   <!-- ============================================================
        FOOTER
-       ============================================================ -->
+  ============================================================ -->
   <footer>
-    <!-- ── AD SLOT 4: NATIVE BANNER ───────────────────────────────
-         Placement: top of footer — replaces the old large container ad.
-         Use Adsterra's Native Banner format for a cleaner look.
-         Replace the dummy-ad block with your Adsterra native script.
-    ──────────────────────────────────────────────────────────── -->
+    <!-- AD SLOT 4 — NATIVE BANNER ==============================
+         Replaces the old large container ad. Native format blends
+         cleanly and is far less intrusive in the footer area.
+         Ad unit: NativeBanner_1
+    ========================================================== -->
     <div class="native-banner-ad">
-      <!-- ↓↓ REPLACE THIS BLOCK WITH ADSTERRA NATIVE BANNER SCRIPT ↓↓ -->
-      <div class="dummy-ad dummy-ad--native">[ ADSTERRA NATIVE BANNER ]</div>
-      <!-- ↑↑ END ADSTERRA NATIVE BANNER ↑↑ -->
+      <script async="async" data-cfasync="false"
+              src="https://amoralstern.com/0b1d5e89c8f8d874b4d5b9ab51f861a8/invoke.js"></script>
+      <div id="container-0b1d5e89c8f8d874b4d5b9ab51f861a8"></div>
     </div>
 
     <div>© 2025 GoFile Code Generator</div>
