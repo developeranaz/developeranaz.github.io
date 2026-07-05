@@ -5,14 +5,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>GoFile Index Code Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="css/styles.css">
 
-  <!-- ============================================================
-       POPUNDER — fires once per session, site-wide
-       Ad unit: Popunder_1
-  ============================================================ -->
-  <script src="https://amoralstern.com/86/e7/d8/86e7d8aa7fc4e132af0cfd18d06780cb.js"></script>
+  <!-- NOTE: Popunder (28262529) intentionally REMOVED.
+       It hijacked the first click on the page and broke mobile.
+       Re-add only if you accept that behavior. -->
 </head>
 <body>
 
@@ -21,13 +22,14 @@
   ============================================================ -->
   <div id="important-notice">
     <div class="notice-box">
-      <h2>⚠️ Important Notice</h2>
+      <div class="notice-icon"><i class="fas fa-triangle-exclamation"></i></div>
+      <h2>Important Notice</h2>
       <p>
         Gofile.io may change its hash system, which can temporarily affect this index.
-        Support will be updated as needed. Cloudflare Worker redeployment may be required if changes occur.
+        Support will be updated as needed. Cloudflare Worker redeployment may be required.
         <br><br>
-        Currently, use <b>"Dark Theme (Best – Superior Working)"</b>. It is the latest tested and working version.
-        Other themes may or may not work.
+        Currently, use <b>"Dark Theme (Best – Superior Working)"</b> — the latest tested
+        and working version. Other themes may or may not work.
       </p>
       <button onclick="acknowledgeNotice()">OK, I Understand</button>
     </div>
@@ -42,21 +44,17 @@
       <h1 class="maintenance-title">Under Maintenance</h1>
       <div class="maintenance-message">
         <p><strong>Oops! We're currently performing some upgrades.</strong></p>
-        <p>The system is temporarily unavailable due to maintenance work. This could be caused by
-           server issues, API updates, or system optimization.</p>
+        <p>The system is temporarily unavailable due to maintenance work.</p>
         <p>We apologize for any inconvenience. Please check back soon!</p>
       </div>
       <div class="maintenance-contact">
         <h4><i class="fas fa-user-circle"></i> Need Help?</h4>
-        <p>Contact the developer:</p>
         <div>
           <a href="https://github.com/developeranaz" target="_blank">
-            <i class="fab fa-github"></i> GitHub: developeranaz
+            <i class="fab fa-github"></i> developeranaz
           </a>
-        </div>
-        <div>
           <a href="https://t.me/gitdeveloperanaz" target="_blank">
-            <i class="fab fa-telegram"></i> Telegram: @gitdeveloperanaz
+            <i class="fab fa-telegram"></i> @gitdeveloperanaz
           </a>
         </div>
       </div>
@@ -64,137 +62,97 @@
   </div>
 
   <!-- ============================================================
-       AD SLOT 1 — TOP BANNER  (728×90, desktop only)
-       Outside .container so the 728 px iframe has room to breathe.
-       Hidden on mobile via CSS — no wasted impression on small screens.
-       Ad unit: 728x90_1
+       AD SLOT 1 — TOP BANNER 728×90 (desktop only)
+       Rendered by js/script.js → renderAdSlots() into an isolated
+       iframe. Empty on mobile; zero layout impact.
   ============================================================ -->
-  <div class="banner-ad banner-ad--top">
-    <script>
-      atOptions = {
-        'key'    : 'cfdd26285d2be07540494f6205a5954a',
-        'format' : 'iframe',
-        'height' : 90,
-        'width'  : 728,
-        'params' : {}
-      };
-    </script>
-    <script src="https://amoralstern.com/cfdd26285d2be07540494f6205a5954a/invoke.js"></script>
-  </div>
+  <div id="adTop" class="ad-slot ad-slot--top" data-ad="728x90"></div>
 
   <!-- ============================================================
-       MAIN CONTAINER
+       MAIN CARD
   ============================================================ -->
-  <div class="container">
-    <h2><i class="fas fa-code"></i> GoFile Index CodeGen</h2>
-
-    <!-- EMAIL + SEND BUTTON ROW ================================ -->
-    <div class="email-group" id="emailGroup">
-      <input type="email" id="emailInput" class="email-input"
-             placeholder="Enter your email address" />
-
-      <!-- Normal send button — hidden when penalty is active -->
-      <button class="send-btn" id="sendLoginBtn" onclick="sendLoginLink(event)">
-        <i class="fas fa-paper-plane"></i> Send Login Link
-      </button>
-
-      <!-- AD PENALTY CONTAINER ================================
-           Replaces the button after 3 clicks in 2 minutes.
-           Shows a 320×50 ad + a Smartlink unlock button.
-           The user must click "Unlock" (opens Smartlink) and
-           wait the countdown before the send button returns.
-      ======================================================= -->
-      <div id="adPenaltyContainer" class="ad-penalty-container" style="display:none;" aria-live="polite">
-        <span class="penalty-label">
-          <i class="fas fa-lock"></i> Too many requests
-        </span>
-
-        <!-- 320×50 ad renders as the visual — Ad unit: 320x50_1 -->
-        <div class="penalty-ad-wrap">
-          <script>
-            atOptions = {
-              'key'    : '456831897108255b1704a6daa2b31f0f',
-              'format' : 'iframe',
-              'height' : 50,
-              'width'  : 320,
-              'params' : {}
-            };
-          </script>
-          <script src="https://amoralstern.com/456831897108255b1704a6daa2b31f0f/invoke.js"></script>
-        </div>
-
-        <!-- Smartlink unlock button — Ad unit: Smartlink_1 -->
-        <a href="https://amoralstern.com/kzuifmk9?key=5f2a577f606dce82378f77113f5a1ec0"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="unlock-btn"
-           onclick="onAdClicked()">
-          <i class="fas fa-lock-open"></i> Click here to unlock
-        </a>
-
-        <small id="adUnlockInfo" class="ad-unlock-info"></small>
+  <main class="container">
+    <header class="app-header">
+      <div class="app-logo"><i class="fas fa-code"></i></div>
+      <div>
+        <h1>GoFile Index CodeGen</h1>
+        <p class="app-tagline">Generate Cloudflare Worker code for your GoFile account</p>
       </div>
-    </div>
+    </header>
 
-    <div id="timerText" class="timer-text"></div>
+    <!-- STEP 1 — EMAIL ========================================= -->
+    <section class="step-card">
+      <div class="step-title"><span class="step-num">1</span> Get your login link</div>
 
-    <p style="margin-top: 20px;">
-      Don't know how to use?
-      <a href="https://github.com/developeranaz/gofile-to-cloudflare-index" target="_blank">See instructions</a>.
-    </p>
+      <div class="email-group" id="emailGroup">
+        <input type="email" id="emailInput" class="email-input"
+               placeholder="Enter your email address" />
 
-    <!-- TOKEN INPUT =========================================== -->
-    <div class="input-group">
-      <label for="tokenInput">Authentication Token</label>
-      <input type="text" id="tokenInput" placeholder="Paste token or login URL here" />
-    </div>
+        <button class="send-btn" id="sendLoginBtn" onclick="sendLoginLink(event)">
+          <i class="fas fa-paper-plane"></i> Send Login Link
+        </button>
 
-    <!-- THEME SELECTOR ======================================== -->
-    <div class="input-group theme-selector">
-      <label for="themeSelect">Code Template</label>
-      <select id="themeSelect">
-        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/public_shared_dark.js">
-          Dark Theme (BEST SUPERIOR WORKING)
-        </option>
-        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/lite-http-server.js">
-          Simple HTML Server Theme (Working with minimal support)
-        </option>
-        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/terminal_dark.js">
-          Dark Terminal Theme (Not WORKING)
-        </option>
-        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/index.js">
-          Light Theme (Not WORKING)
-        </option>
-        <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/beta(shared_link_support).js">
-          Beta – Shared / Public Link Support
-        </option>
-      </select>
-    </div>
+        <!-- AD PENALTY — replaces the button after 3 clicks / 2 min.
+             320×50 ad renders in an isolated iframe (renderAdSlots).
+             Smartlink opens on the unlock click. -->
+        <div id="adPenaltyContainer" class="ad-penalty-container" style="display:none;" aria-live="polite">
+          <span class="penalty-label"><i class="fas fa-lock"></i> Too many requests</span>
+          <div id="adPenalty" class="ad-slot" data-ad="320x50"></div>
+          <a href="https://amoralstern.com/kzuifmk9?key=5f2a577f606dce82378f77113f5a1ec0"
+             target="_blank" rel="noopener noreferrer"
+             class="unlock-btn" onclick="onAdClicked()">
+            <i class="fas fa-lock-open"></i> Click here to unlock
+          </a>
+          <small id="adUnlockInfo" class="ad-unlock-info"></small>
+        </div>
+      </div>
 
-    <!-- GENERATE BUTTON ======================================= -->
-    <button class="generate-btn" onclick="generateCode(event)">
-      <i class="fas fa-download"></i> Generate Code
-    </button>
+      <div id="timerText" class="timer-text"></div>
+      <p class="hint-text">
+        Don't know how to use?
+        <a href="https://github.com/developeranaz/gofile-to-cloudflare-index" target="_blank">See instructions</a>
+      </p>
+    </section>
 
-    <!-- AD SLOT 2 — MID BANNER  (300×250) =====================
-         Below Generate button — high-value placement, good CPM.
-         300 px fits the container on all screen sizes.
-         Ad unit: 300x250_1
-    ========================================================== -->
-    <div class="banner-ad banner-ad--mid">
-      <script>
-        atOptions = {
-          'key'    : '30303a6a547002e2316ff549bfa6bdb3',
-          'format' : 'iframe',
-          'height' : 250,
-          'width'  : 300,
-          'params' : {}
-        };
-      </script>
-      <script src="https://amoralstern.com/30303a6a547002e2316ff549bfa6bdb3/invoke.js"></script>
-    </div>
+    <!-- STEP 2 — TOKEN ========================================= -->
+    <section class="step-card">
+      <div class="step-title"><span class="step-num">2</span> Paste your token</div>
+      <div class="input-group">
+        <input type="text" id="tokenInput" placeholder="Paste token or login URL here" />
+      </div>
+    </section>
 
-    <!-- CODE OUTPUT =========================================== -->
+    <!-- STEP 3 — THEME + GENERATE ============================== -->
+    <section class="step-card">
+      <div class="step-title"><span class="step-num">3</span> Choose template &amp; generate</div>
+      <div class="input-group">
+        <select id="themeSelect">
+          <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/public_shared_dark.js">
+            Dark Theme (BEST — SUPERIOR WORKING)
+          </option>
+          <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/lite-http-server.js">
+            Simple HTML Server Theme (minimal support)
+          </option>
+          <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/terminal_dark.js">
+            Dark Terminal Theme (Not working)
+          </option>
+          <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/index.js">
+            Light Theme (Not working)
+          </option>
+          <option value="https://raw.githubusercontent.com/developeranaz/gofile-to-cloudflare-index/refs/heads/main/src/themes/beta(shared_link_support).js">
+            Beta — Shared / Public Link Support
+          </option>
+        </select>
+      </div>
+      <button class="generate-btn" onclick="generateCode(event)">
+        <i class="fas fa-bolt"></i> Generate Code
+      </button>
+    </section>
+
+    <!-- AD SLOT 2 — 300×250 (single, isolated iframe) =========== -->
+    <div id="adMid" class="ad-slot ad-slot--mid" data-ad="300x250"></div>
+
+    <!-- CODE OUTPUT ============================================ -->
     <div id="outputSection" style="display: none;">
       <div class="code-container">
         <div class="code-actions">
@@ -205,80 +163,64 @@
             <i class="fas fa-download"></i>
           </button>
         </div>
-        <textarea id="codeOutput" readonly></textarea>
+        <textarea id="codeOutput" readonly spellcheck="false"></textarea>
       </div>
       <div class="copy-notification" id="copyNotification">Copied to clipboard!</div>
     </div>
-  </div><!-- /.container -->
+  </main>
 
-  <!-- ============================================================
-       FLOATING ALERT
-  ============================================================ -->
+  <!-- FLOATING ALERT =========================================== -->
   <div id="alert" class="alert">
     <i class="alert-icon"></i>
     <span id="alertMessage"></span>
   </div>
 
-  <!-- ============================================================
-       ACCOUNT SUCCESS POPUP
-  ============================================================ -->
+  <!-- ACCOUNT SUCCESS POPUP ==================================== -->
   <div id="accountPopup" class="account-popup">
     <div class="popup-content">
       <h3><i class="fas fa-check-circle"></i> Login Succeeded</h3>
-      <p>Email: <span id="popupEmail"></span></p>
-      <p>Tier: <span id="popupTier"></span></p>
-      <p>Created: <span id="popupCreateTime"></span></p>
-      <p>Root Folder: <span id="popupRootFolder"></span></p>
-      <p>Folders: <span id="popupFolders"></span>, Files: <span id="popupFiles"></span></p>
+      <div class="popup-stats">
+        <p>Email: <span id="popupEmail"></span></p>
+        <p>Tier: <span id="popupTier"></span></p>
+        <p>Created: <span id="popupCreateTime"></span></p>
+        <p>Root Folder: <span id="popupRootFolder"></span></p>
+        <p>Folders: <span id="popupFolders"></span> · Files: <span id="popupFiles"></span></p>
+      </div>
       <p class="popup-note">
-        Thanks for using Go File Index! We include minimal ads to support development, but the
-        generated code remains clean and transparent. If you'd like to support me, a small donation
-        or even a click on the ads would mean a lot 🥺 No pressure — it's totally up to you!
+        Thanks for using GoFile Index! We include minimal ads to support development —
+        the generated code stays clean and transparent. A small donation or a click on
+        the ads would mean a lot 🥺 No pressure!
       </p>
       <p class="popup-credits">
-        Developed by <a href="https://github.com/developeranaz">developeranaz</a><br>
-        Report issues: <a href="https://github.com/developeranaz/gofile-Index">GitHub</a>
+        Developed by <a href="https://github.com/developeranaz">developeranaz</a> ·
+        <a href="https://github.com/developeranaz/gofile-Index">Report issues</a>
       </p>
 
-      <!-- AD SLOT 3 — POPUP BANNER  (320×50) ===================
-           Inside the success popup — seen only on code generation.
-           Ad unit: 320x50_1
-      ========================================================== -->
-      <div class="popup-ad">
-        <script>
-          atOptions = {
-            'key'    : '456831897108255b1704a6daa2b31f0f',
-            'format' : 'iframe',
-            'height' : 50,
-            'width'  : 320,
-            'params' : {}
-          };
-        </script>
-        <script src="https://amoralstern.com/456831897108255b1704a6daa2b31f0f/invoke.js"></script>
-      </div>
+      <!-- AD SLOT 3 — 320×50 in popup (isolated iframe) -->
+      <div id="adPopup" class="ad-slot ad-slot--popup" data-ad="320x50"></div>
 
       <button class="close-popup-btn" onclick="closeAccountPopup()">OK</button>
     </div>
   </div>
 
-  <!-- ============================================================
-       FOOTER
-  ============================================================ -->
+  <!-- FOOTER =================================================== -->
   <footer>
-    <!-- AD SLOT 4 — NATIVE BANNER ==============================
-         Replaces the old large container ad. Native format blends
-         cleanly and is far less intrusive in the footer area.
-         Ad unit: NativeBanner_1
-    ========================================================== -->
+    <!-- AD SLOT 4 — Native Banner (loads directly; it has its own
+         container div and doesn't use the shared atOptions global,
+         so no isolation needed) -->
     <div class="native-banner-ad">
       <script async="async" data-cfasync="false"
               src="https://amoralstern.com/0b1d5e89c8f8d874b4d5b9ab51f861a8/invoke.js"></script>
       <div id="container-0b1d5e89c8f8d874b4d5b9ab51f861a8"></div>
     </div>
 
-    <div>© 2025 GoFile Code Generator</div>
-    <div>Developed by <a href="https://github.com/developeranaz">developeranaz</a></div>
-    <div>Telegram: <a href="https://t.me/gitdeveloperanaz">@gitdeveloperanaz</a></div>
+    <div class="footer-meta">
+      <span>© 2025 GoFile Code Generator</span>
+      <span>·</span>
+      <a href="https://github.com/developeranaz"><i class="fab fa-github"></i> developeranaz</a>
+      <span>·</span>
+      <a href="https://t.me/gitdeveloperanaz"><i class="fab fa-telegram"></i> @gitdeveloperanaz</a>
+    </div>
   </footer>
 
   <script src="js/script.js"></script>
