@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="css/styles.css">
 
+  <!-- ====== Anti‑Adblock CSS (must be loaded early) ====== -->
+  <link rel="stylesheet" href="css/antiadblock.css">
+
   <!-- NOTE: Popunder (28262529) intentionally REMOVED.
        It hijacked the first click on the page and broke mobile.
        Re-add only if you accept that behavior. -->
@@ -223,6 +226,44 @@
     </div>
   </footer>
 
+  <!-- ====== Main site script ====== -->
   <script src="js/script.js"></script>
+
+  <!-- ====== Anti‑Adblock script and initialisation ====== -->
+  <script src="js/antiadblock.js"></script>
+  <script>
+    (function() {
+      // Wait for the page to be fully interactive before starting the detector
+      // to avoid interfering with the main UI scripts.
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAntiAdblock);
+      } else {
+        initAntiAdblock();
+      }
+
+      function initAntiAdblock() {
+        // Do not run if we are in a maintenance state (the overlay is shown)
+        // because that would be a false positive scenario.
+        if (document.getElementById('maintenanceOverlay') &&
+            document.getElementById('maintenanceOverlay').style.display !== 'none') {
+          console.log('[AntiAdblock] Maintenance overlay active – skipping detector.');
+          return;
+        }
+
+        // The important notice overlay is shown by default, but it's dismissed
+        // by the user; we can start detection after that, but it's fine to start now.
+
+        AntiAdblock.init({
+          responseMode: 'lock',     // Blurs the page and shows a modal overlay
+          threshold: 2,             // Default; raise to 2.5 if false positives occur
+          recheckMin: 8000,
+          recheckMax: 20000,
+          debug: false             // Set to true for console logs during testing
+        });
+
+        console.log('[AntiAdblock] Detection initialised.');
+      }
+    })();
+  </script>
 </body>
 </html>
