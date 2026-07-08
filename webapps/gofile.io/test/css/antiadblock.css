@@ -1,0 +1,111 @@
+/* ==========================================================================
+   Anti-Adblock overlay styles
+   Include this file in <head>, e.g.:
+   <link rel="stylesheet" href="css/antiadblock.css">
+   ========================================================================== */
+
+.aab-blurred {
+  filter: blur(8px) saturate(0.6);
+  pointer-events: none;
+  user-select: none;
+  transition: filter 0.3s ease;
+}
+
+.aab-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647; /* max, so it always sits on top */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 15, 20, 0.55);
+  backdrop-filter: blur(2px);
+  animation: aab-fade-in 0.25s ease;
+}
+
+@keyframes aab-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.aab-box {
+  max-width: 440px;
+  width: calc(100% - 48px);
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 32px 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1a1a1a;
+}
+
+.aab-box h2 {
+  margin: 0 0 12px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.aab-box p {
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #4a4a4a;
+}
+
+.aab-box .aab-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 16px;
+  display: block;
+}
+
+.aab-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.aab-btn {
+  appearance: none;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.aab-btn:active {
+  transform: scale(0.98);
+}
+
+.aab-btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.aab-btn-primary:hover {
+  opacity: 0.92;
+}
+
+.aab-btn-secondary {
+  background: transparent;
+  color: #6b6b6b;
+  font-weight: 500;
+  font-size: 0.85rem;
+  padding: 6px;
+}
+
+.aab-btn-secondary:hover {
+  color: #333;
+  text-decoration: underline;
+}
+
+.aab-hint {
+  margin-top: 14px;
+  font-size: 0.78rem;
+  color: #9a9a9a;
+}
