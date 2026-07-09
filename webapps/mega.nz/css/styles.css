@@ -1,0 +1,692 @@
+/* ================================================================
+   GLOBAL DESIGN TOKENS — refined dark theme
+   ================================================================ */
+:root {
+  --primary:      #00e5c0;
+  --primary-dim:  rgba(0, 229, 192, 0.12);
+  --secondary:    #8b7bff;
+  --background:   #0b0d12;
+  --surface:      #141821;
+  --surface-2:    #1a1f2b;
+  --text:         #e8eaf2;
+  --text-dim:     rgba(232, 234, 242, 0.55);
+  --border:       rgba(255, 255, 255, 0.08);
+  --warning:      #ffab40;
+  --error:        #ff5c5c;
+  --radius:       14px;
+  --font-body:    'Sora', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ================================================================
+   RESET & BASE
+   ================================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  line-height: 1.6;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0, 229, 192, 0.06), transparent),
+    var(--background);
+  color: var(--text);
+  padding: 1.5rem 1rem 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* CRITICAL: nothing may ever push the page sideways */
+  overflow-x: hidden;
+}
+
+/* ================================================================
+   AD SLOTS — hard-constrained containers
+   Every ad lives inside a fixed-size, overflow-hidden box.
+   An ad can NEVER cover or push the page content.
+   ================================================================ */
+.ad-slot {
+  overflow: hidden;
+  text-align: center;
+  line-height: 0;
+  max-width: 100%;
+}
+
+/* Slot 1 — top 728×90: DESKTOP ONLY. display:none on mobile also
+   prevents the JS from loading it (renderAdSlots skips hidden). */
+.ad-slot--top {
+  display: none;
+  margin: 0 auto 1.25rem;
+  max-width: 728px;
+  height: 90px;
+}
+@media (min-width: 820px) {
+  .ad-slot--top { display: block; }
+}
+
+/* Slot 2 — 300×250 below Generate */
+.ad-slot--mid {
+  margin: 1.75rem auto 0;
+  width: 300px;
+  max-width: 100%;
+  height: 250px;
+}
+
+/* Slot 3 — 320×50 inside popup */
+.ad-slot--popup {
+  margin: 0.9rem auto;
+  width: 320px;
+  max-width: 100%;
+  height: 50px;
+}
+
+/* Native banner in footer — height-capped so it can't take over */
+.native-banner-ad {
+  max-width: 800px;
+  margin: 0 auto 1rem;
+  max-height: 320px;
+  overflow: hidden;
+}
+
+/* ================================================================
+   IMPORTANT NOTICE OVERLAY — restyled to match the theme
+   ================================================================ */
+#important-notice {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 6, 10, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.notice-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--warning);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 460px;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+
+.notice-icon {
+  font-size: 2rem;
+  color: var(--warning);
+  margin-bottom: 0.5rem;
+}
+
+.notice-box h2 {
+  color: var(--text);
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.notice-box p {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.notice-box b { color: var(--primary); }
+
+.notice-box button {
+  margin-top: 1.25rem;
+  padding: 0.8rem 1.8rem;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  color: #000;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  border-radius: 10px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.notice-box button:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* ================================================================
+   MAIN CARD
+   ================================================================ */
+.container {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+}
+
+/* ================================================================
+   HEADER
+   ================================================================ */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.app-logo {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: var(--primary);
+  background: var(--primary-dim);
+  border: 1px solid rgba(0, 229, 192, 0.25);
+  border-radius: 14px;
+}
+
+.app-header h1 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.app-tagline {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+/* ================================================================
+   STEP CARDS
+   ================================================================ */
+.step-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  margin-bottom: 1.1rem;
+}
+
+.step-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.step-num {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #000;
+  background: var(--primary);
+  border-radius: 8px;
+}
+
+/* ================================================================
+   FORM ELEMENTS
+   ================================================================ */
+.input-group { position: relative; }
+
+input, textarea, select {
+  width: 100%;
+  padding: 0.95rem 1.2rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid var(--border);
+  border-radius: 11px;
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  color: var(--text);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  appearance: none;
+}
+
+select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e8eaf2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+  cursor: pointer;
+}
+
+input::placeholder { color: var(--text-dim); }
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 229, 192, 0.12);
+}
+
+/* ================================================================
+   EMAIL ROW
+   ================================================================ */
+.email-group {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.email-input { flex: 1; }
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+button {
+  padding: 0.95rem 1.5rem;
+  border: none;
+  border-radius: 11px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  color: #000;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+button:hover:not(:disabled)  { opacity: 0.9; transform: translateY(-1px); }
+button:active:not(:disabled) { transform: scale(0.98); }
+button:disabled              { opacity: 0.45; cursor: not-allowed; }
+
+.generate-btn { width: 100%; margin-top: 1rem; }
+
+/* Ripple */
+@keyframes ripple { to { transform: scale(4); opacity: 0; } }
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(0);
+  animation: ripple 600ms linear;
+  pointer-events: none;
+}
+
+/* ================================================================
+   AD PENALTY CONTAINER
+   ================================================================ */
+.ad-penalty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem;
+  border: 1.5px dashed var(--warning);
+  border-radius: var(--radius);
+  background: rgba(255, 171, 64, 0.05);
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 352px;
+  text-align: center;
+  animation: penaltyFadeIn 0.35s ease;
+}
+
+@keyframes penaltyFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.penalty-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--warning);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.unlock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.2rem;
+  background: linear-gradient(45deg, var(--warning), #ffc670);
+  color: #000;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 9px;
+  text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.unlock-btn:hover { opacity: 0.88; transform: scale(1.03); }
+
+.ad-unlock-info {
+  font-size: 0.78rem;
+  color: var(--primary);
+  min-height: 1.1em;
+  line-height: 1.3;
+}
+.ad-unlock-info.unlocking { color: var(--warning); }
+.ad-unlock-info.unlocked  { color: var(--primary); }
+
+/* ================================================================
+   MISC TEXT
+   ================================================================ */
+.timer-text {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 0.6rem;
+  min-height: 1.2em;
+}
+
+.hint-text {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-top: 0.8rem;
+}
+.hint-text a { color: var(--primary); text-decoration: none; }
+
+/* ================================================================
+   CODE OUTPUT
+   ================================================================ */
+.code-container {
+  position: relative;
+  margin-top: 1.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #0d1017;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s ease;
+}
+.code-container.visible { opacity: 1; transform: translateY(0); }
+
+.code-actions {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  display: flex;
+  gap: 0.6rem;
+  z-index: 2;
+}
+
+.code-action {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.code-action:hover { background: var(--primary); color: #000; }
+
+#codeOutput {
+  width: 100%;
+  height: 300px;
+  padding: 1.25rem;
+  padding-top: 3.5rem;
+  border: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  resize: vertical;
+  color: var(--text);
+}
+#codeOutput:focus { box-shadow: none; }
+
+/* ================================================================
+   COPY NOTIFICATION
+   ================================================================ */
+.copy-notification {
+  position: fixed;
+  bottom: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--secondary);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1002;
+}
+.copy-notification.show { opacity: 1; bottom: 30px; }
+
+/* ================================================================
+   FLOATING ALERT
+   ================================================================ */
+.alert {
+  position: fixed;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem 1.8rem;
+  border-radius: var(--radius);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+  max-width: 90%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+.alert.show    { opacity: 1; top: 24px; }
+.alert-success { border-left: 3px solid var(--primary); }
+.alert-success .alert-icon { color: var(--primary); }
+.alert-error   { border-left: 3px solid var(--error); }
+.alert-error .alert-icon   { color: var(--error); }
+
+/* ================================================================
+   ACCOUNT SUCCESS POPUP
+   ================================================================ */
+.account-popup {
+  position: fixed;
+  bottom: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 400px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--surface);
+  color: var(--text);
+  padding: 1.5rem;
+  border-radius: 18px;
+  box-shadow: 0 16px 56px rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  border: 1px solid var(--border);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0;
+  visibility: hidden;
+}
+.account-popup.visible { bottom: 2rem; opacity: 1; visibility: visible; }
+
+.popup-content h3 {
+  margin-bottom: 0.9rem;
+  font-size: 1.05rem;
+  color: var(--primary);
+}
+
+.popup-stats {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  font-size: 0.85rem;
+}
+.popup-stats span { color: var(--primary); word-break: break-all; }
+
+.popup-note {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin: 0.9rem 0;
+}
+
+.popup-credits {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+.popup-credits a { color: var(--primary); text-decoration: none; }
+
+.close-popup-btn {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.6rem;
+}
+
+/* ================================================================
+   MAINTENANCE OVERLAY
+   ================================================================ */
+.maintenance-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 13, 18, 0.98);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  padding: 1rem;
+}
+.maintenance-overlay.active { display: flex; }
+
+.maintenance-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 560px;
+  text-align: center;
+}
+
+.maintenance-icon {
+  font-size: 4rem;
+  color: var(--warning);
+  margin-bottom: 1.25rem;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+.maintenance-title   { font-size: 1.6rem; color: var(--primary); margin-bottom: 1rem; }
+.maintenance-message { font-size: 0.95rem; color: var(--text-dim); margin-bottom: 1.5rem; line-height: 1.7; }
+
+.maintenance-contact {
+  background: var(--surface-2);
+  padding: 1.25rem;
+  border-radius: var(--radius);
+}
+.maintenance-contact h4 { color: var(--primary); margin-bottom: 0.75rem; font-size: 0.95rem; }
+.maintenance-contact a  {
+  color: var(--secondary);
+  text-decoration: none;
+  display: inline-block;
+  margin: 0.35rem 0.7rem;
+  font-size: 0.9rem;
+}
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+footer {
+  margin-top: auto;      /* pushes to bottom of flex body */
+  padding: 2rem 0 1.5rem;
+  text-align: center;
+}
+
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+.footer-meta a { color: var(--primary); text-decoration: none; }
+
+/* ================================================================
+   RESPONSIVE — MOBILE  (≤ 640 px)
+   ================================================================ */
+@media (max-width: 640px) {
+  body       { padding: 1rem 0.75rem 0; }
+  .container { padding: 1.25rem; border-radius: 16px; }
+
+  .app-header h1 { font-size: 1.2rem; }
+  .app-logo      { width: 44px; height: 44px; font-size: 1.15rem; }
+
+  .step-card { padding: 1.1rem; }
+
+  /* Stack input above button */
+  .email-group { flex-direction: column; }
+  .email-group > button,
+  .ad-penalty-container { width: 100%; max-width: 100%; }
+
+  .maintenance-content { padding: 1.75rem; }
+  .maintenance-icon    { font-size: 3rem; }
+  .maintenance-title   { font-size: 1.3rem; }
+}
+
+/* ================================================================
+   ADBLOCKER OVERLAY
+   ================================================================ */
+.adblocker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 13, 18, 0.98);
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(12px);
+  padding: 1rem;
+  color: var(--text);
+}
+.adblocker-overlay.active { display: flex; }
+
+.adblocker-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--error);
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 560px;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+
+.adblocker-icon {
+  font-size: 4rem;
+  color: var(--error);
+  margin-bottom: 1.25rem;
+}
+
+.adblocker-title   { font-size: 1.6rem; color: var(--error); margin-bottom: 1rem; }
+.adblocker-message { font-size: 0.95rem; color: var(--text-dim); margin-bottom: 1.5rem; line-height: 1.7; }
+.reload-btn {
+  padding: 0.8rem 1.8rem;
+  background: var(--error);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: 10px;
+}
+.reload-btn:hover { opacity: 0.9; }
+
