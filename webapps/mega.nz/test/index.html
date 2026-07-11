@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="MEGA.nz Index – Cloudflare Workers. Securely generate customized Cloudflare Worker indexer scripts for your MEGA.nz account. Build, copy, and download your cloud file indexer in seconds.">
+  <meta name="keywords" content="MEGA.nz Index, Cloudflare Workers, MEGA, Cloudflare Worker, Indexer, Code Generator, Cloud Indexer, MEGA.nz API">
+  <meta name="author" content="developeranaz">
+  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/developeranaz/developeranaz.github.io/refs/heads/gh-pages/webapps/gofile.io/17470597399662.ico">
+  <title>MEGA Index Cloudflare | Code Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       IMPORTANT NOTICE OVERLAY
+  ============================================================ -->
+  <div id="important-notice">
+    <div class="notice-box">
+      <div class="notice-icon"><i class="fas fa-triangle-exclamation"></i></div>
+      <h2>Important Notice</h2>
+      <p>
+        The credentials derived by this tool are processed securely to compile your ready-to-deploy worker script.
+        <br><br>
+        Currently, use the <b>"Dark Theme (Official – Recommended)"</b> template for full responsive support.
+      </p>
+      <button onclick="acknowledgeNotice()">OK, I Understand</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MAINTENANCE OVERLAY
+  ============================================================ -->
+  <div id="maintenanceOverlay" class="maintenance-overlay">
+    <div class="maintenance-content">
+      <div class="maintenance-icon"><i class="fas fa-tools"></i></div>
+      <h1 class="maintenance-title">Under Maintenance</h1>
+      <div class="maintenance-message">
+        <p><strong>Oops! We're currently performing some upgrades.</strong></p>
+        <p>The system is temporarily unavailable due to maintenance work.</p>
+        <p>We apologize for any inconvenience. Please check back soon!</p>
+      </div>
+      <div class="maintenance-contact">
+        <h4><i class="fas fa-user-circle"></i> Need Help?</h4>
+        <div>
+          <a href="https://github.com/developeranaz" target="_blank">
+            <i class="fab fa-github"></i> developeranaz
+          </a>
+          <a href="https://t.me/gitdeveloperanaz" target="_blank">
+            <i class="fab fa-telegram"></i> @gitdeveloperanaz
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ADBLOCKER DETECTION OVERLAY (STRICT UNLOCK)
+  ============================================================ -->
+  <div id="adblockerOverlay" class="adblocker-overlay">
+    <div class="adblocker-content">
+      <div class="adblocker-icon"><i class="fas fa-shield-halved"></i></div>
+      <h1 class="adblocker-title">AdBlocker Detected!</h1>
+      <div class="adblocker-message">
+        <p><strong>Strict AdBlocker Detection Active.</strong></p>
+        <p>Our code generation service is completely free and supported by minimal ads.</p>
+        <p>To access this tool, please disable your AdBlocker (or Brave Shields) and reload the page.</p>
+      </div>
+      <button class="reload-btn" onclick="window.location.reload()">
+        <i class="fas fa-rotate-right"></i> Reload Page
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       AD SLOT 1 — TOP BANNER 728×90 (desktop only)
+  ============================================================ -->
+  <div id="adTop" class="ad-slot ad-slot--top" data-ad="728x90"></div>
+
+  <!-- ============================================================
+       MAIN CARD
+  ============================================================ -->
+  <main class="container">
+    <header class="app-header">
+      <div class="app-logo"><i class="fas fa-code"></i></div>
+      <div>
+        <h1>MEGA Index CodeGen</h1>
+        <p class="app-tagline">Generate Cloudflare Worker code for your MEGA account</p>
+      </div>
+    </header>
+
+    <!-- STEP 1 — CREDENTIALS =================================== -->
+    <section class="step-card">
+      <div class="step-title"><span class="step-num">1</span> Enter MEGA account details</div>
+      
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label for="emailInput" class="input-label" style="display:block; font-size:0.82rem; margin-bottom:0.4rem; color:var(--text-dim);">MEGA Account Email</label>
+        <div class="input-group">
+          <input type="email" id="emailInput" placeholder="example@duck.com" required autocomplete="username" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="passwordInput" class="input-label" style="display:block; font-size:0.82rem; margin-bottom:0.4rem; color:var(--text-dim);">MEGA Account Password</label>
+        <div class="input-group" style="position:relative;">
+          <input type="password" id="passwordInput" placeholder="••••••••••••" required autocomplete="current-password" style="padding-right: 3rem;" />
+          <i class="fa-solid fa-eye toggle-password" id="togglePassword" style="position:absolute; right:1.2rem; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-dim);"></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2 — THEME & GENERATION ============================ -->
+    <section class="step-card">
+      <div class="step-title"><span class="step-num">2</span> Choose theme &amp; generate</div>
+      
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label for="themeSelect" class="input-label" style="display:block; font-size:0.82rem; margin-bottom:0.4rem; color:var(--text-dim);">Select Template Theme</label>
+        <div class="input-group">
+          <select id="themeSelect">
+            <option value="https://raw.githubusercontent.com/developeranaz/MEGA-INDEX-CLOUDFLARE/refs/heads/main/Cloudflare-Worker/src/worker.js">
+              Official Dark Theme (BEST — Recommended)
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <button class="generate-btn" id="generateBtn" onclick="generateMegaCode(event)">
+        <i class="fas fa-bolt"></i> Generate Custom worker.js
+      </button>
+
+      <!-- AD PENALTY — replaces the generate button after threshold clicks
+           320×50 ad renders in an isolated iframe. Smartlink unlock click is required. -->
+      <div id="adPenaltyContainer" class="ad-penalty-container" style="display:none; margin-top: 1rem;" aria-live="polite">
+        <span class="penalty-label"><i class="fas fa-lock"></i> Too many generation attempts</span>
+        <div id="adPenalty" class="ad-slot" data-ad="320x50"></div>
+        <a href="https://amoralstern.com/kzuifmk9?key=5f2a577f606dce82378f77113f5a1ec0"
+           target="_blank" rel="noopener noreferrer"
+           class="unlock-btn" onclick="onAdClicked()">
+          <i class="fas fa-lock-open"></i> Click here to unlock
+        </a>
+        <small id="adUnlockInfo" class="ad-unlock-info"></small>
+      </div>
+
+      <div id="timerText" class="timer-text" style="margin-top: 0.8rem; text-align:center;"></div>
+    </section>
+
+    <!-- AD SLOT 2 — 300×250 (single, isolated iframe) =========== -->
+    <div id="adMid" class="ad-slot ad-slot--mid" data-ad="300x250"></div>
+
+    <!-- CODE OUTPUT ============================================ -->
+    <div id="outputSection" style="display: none;">
+      <div class="code-container">
+        <div class="code-actions">
+          <button class="code-action" onclick="copyCode()" title="Copy code">
+            <i class="far fa-copy"></i>
+          </button>
+          <button class="code-action" onclick="downloadCode()" title="Download code">
+            <i class="fas fa-download"></i>
+          </button>
+        </div>
+        <textarea id="codeOutput" readonly spellcheck="false"></textarea>
+      </div>
+      <div class="copy-notification" id="copyNotification">Copied to clipboard!</div>
+    </div>
+  </main>
+
+  <!-- FLOATING ALERT =========================================== -->
+  <div id="alert" class="alert">
+    <i class="alert-icon"></i>
+    <span id="alertMessage"></span>
+  </div>
+
+  <!-- ACCOUNT SUCCESS POPUP ==================================== -->
+  <div id="accountPopup" class="account-popup">
+    <div class="popup-content">
+      <h3><i class="fas fa-check-circle"></i> worker.js Compiled Successfully</h3>
+      <div class="popup-stats" style="margin-top: 0.5rem;">
+        <p>Email: <span id="popupEmail"></span></p>
+        <p>Session ID: <span id="popupSession"></span></p>
+        <p>Master Key: <span id="popupMaster"></span></p>
+      </div>
+      <p class="popup-note">
+        Thank you for choosing MEGA Index! We include minimal ads to fund the generator infrastructure —
+        the compiled worker code remains fully direct, transparent, and ads-free.
+      </p>
+      <p class="popup-credits">
+        Developed by <a href="https://github.com/developeranaz">developeranaz</a>
+      </p>
+
+      <!-- AD SLOT 3 — 320×50 inside popup -->
+      <div id="adPopup" class="ad-slot ad-slot--popup" data-ad="320x50"></div>
+
+      <button class="close-popup-btn" onclick="closeAccountPopup()">OK</button>
+    </div>
+  </div>
+
+  <!-- FOOTER =================================================== -->
+  <footer>
+    <!-- AD SLOT 4 — Native Banner -->
+    <div class="native-banner-ad">
+      <script async="async" data-cfasync="false"
+              src="https://amoralstern.com/0b1d5e89c8f8d874b4d5b9ab51f861a8/invoke.js"></script>
+      <div id="container-0b1d5e89c8f8d874b4d5b9ab51f861a8"></div>
+    </div>
+
+    <div class="footer-meta">
+      <span>© 2026 MEGA Code Generator</span>
+      <span>·</span>
+      <a href="https://github.com/developeranaz"><i class="fab fa-github"></i> developeranaz</a>
+      <span>·</span>
+      <a href="https://t.me/gitdeveloperanaz"><i class="fab fa-telegram"></i> @gitdeveloperanaz</a>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
