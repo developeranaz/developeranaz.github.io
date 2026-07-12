@@ -244,21 +244,30 @@ async function generateMegaCode(e) {
     }
 
     const data = await res.json();
-    if (!data || !data.code) {
-      throw new Error('No custom worker code received from generator backend.');
+    if (!data || !data.DEFAULT_SESSION_ID || !data.DEFAULT_MASTER_KEY) {
+      throw new Error('Invalid credentials or no session data received from server.');
     }
 
-    const workerCode = data.code;
+    const sidVal = data.DEFAULT_SESSION_ID;
+    const masterVal = data.DEFAULT_MASTER_KEY;
+
+    // Download the template script
+    const templateSelect = document.getElementById('themeSelect');
+    const templateUrl = templateSelect.value;
+    const templateRes = await fetch(templateUrl);
+    if (!templateRes.ok) {
+      throw new Error(`Failed to download worker template. Status: ${templateRes.status}`);
+    }
+
+    let workerCode = await templateRes.text();
+    
+    // Replace placeholders exactly
+    workerCode = workerCode.replace(/THE_SESSION_ID_FROM_MEGA\.NZ_CODE_GENERATOR/g, sidVal);
+    workerCode = workerCode.replace(/THE_MASTER_KEY_FROM_MEGA\.NZ_CODE_GENERATOR/g, masterVal);
+
     document.getElementById('codeOutput').value = workerCode;
     document.querySelector('.code-container').classList.add('visible');
     document.getElementById('outputSection').style.display = 'block';
-
-    // Parse session info for visual confirmation popup
-    const sidMatch = workerCode.match(/const DEFAULT_SESSION_ID\s*=\s*"([^"]+)"/);
-    const masterMatch = workerCode.match(/const DEFAULT_MASTER_KEY\s*=\s*"([^"]+)"/);
-    
-    const sidVal = sidMatch ? sidMatch[1] : 'Unknown';
-    const masterVal = masterMatch ? masterMatch[1] : 'Unknown';
 
     // Display parsed info in stats popup (truncated for security)
     document.getElementById('popupEmail').textContent = email;
