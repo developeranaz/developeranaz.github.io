@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GoFile Notice</title>
+
   <style>
     body {
       margin: 0;
@@ -46,11 +47,67 @@
       color: #856404;
       font-weight: bold;
     }
+
+    /* Additional information - collapsed by default */
+    .extra-info {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .extra-info summary {
+      cursor: pointer;
+      padding: 10px 14px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      color: #555;
+      font-size: 14px;
+      user-select: none;
+    }
+
+    .extra-content {
+      padding: 15px;
+      margin-top: 5px;
+      background: #fafafa;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #666;
+    }
+
+    .extra-content p {
+      font-size: 14px;
+      margin: 8px 0;
+    }
   </style>
 </head>
+
 <body>
 
   <div class="notice">
+
+    <!-- Collapsed information -->
+    <details class="extra-info">
+      <summary>⚙️ GoFile Indexer & Download System</summary>
+
+      <div class="extra-content">
+        <strong>Cloudflare Worker-based GoFile.io Indexer</strong>
+    <p>
+      A Cloudflare Worker-based indexer for
+      <a href="https://gofile.io" target="_blank" rel="noopener noreferrer">
+        GoFile.io
+      </a>
+      that improves download speed, enhances stability, and offers
+      unlimited access to private free account files.
+    </p>
+
+    <p>
+      Automatically fetches and serves GoFile links through fast,
+      reliable, permanent links with extreme pause-resume support
+      and multithreaded downloads.
+    </p>
+      </div>
+    </details>
+
     <h1>⚠️ GoFile Has Changed</h1>
 
     <p>
@@ -70,8 +127,8 @@
     <p>
       Thank you for your patience and understanding.
     </p>
+
   </div>
 
 </body>
 </html>
-
